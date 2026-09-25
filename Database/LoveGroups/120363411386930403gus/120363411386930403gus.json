@@ -1,0 +1,483 @@
+{
+  "groupId": "120363411386930403",
+  "groupJid": "120363411386930403@g.us",
+  "subject": "𓆩♡𓆪 910maxi 𓆩♡𓆪 Dev gruppe",
+  "creator": "269574108926096@lid",
+  "owner": "269574108926096@lid",
+  "ownerUsername": null,
+  "active": true,
+  "activatedAt": "2026-09-03T22:13:34.333Z",
+  "activatedBy": "4915155894714@s.whatsapp.net",
+  "createdAt": "2026-09-02T00:01:11.825Z",
+  "setupAt": "2026-09-03T22:13:34.333Z",
+  "setupBy": "4915155894714@s.whatsapp.net",
+  "setupByName": "269574108926096",
+  "setupDescription": "🖤 *LoveBot* ist in @Maxichen Dev gruppe aktiv 🤖\nNutze *$dsgvo* / *$verify* für weitere Infos.\n\n⏱️ *Setup gesetzt:* Fr., 04.09.2026, 00:13:34\n🎮 *von:* 269574108926096",
+  "warns": {
+    "44582230311125": [
+      {
+        "reason": "Badword (s******)",
+        "by": "LoveBot Automod 🤖",
+        "at": "2026-09-13T15:43:09.692Z"
+      }
+    ]
+  },
+  "autodl": true,
+  "welcome": true,
+  "goodbye": true,
+  "kick": true,
+  "promote": true,
+  "demote": true,
+  "liebe": true,
+  "fun": true,
+  "media": true,
+  "tools": true,
+  "badwords": false,
+  "antilink": true,
+  "night": true,
+  "afk": true,
+  "memberCount": 36,
+  "adminCount": 36,
+  "metaAt": 1789808062224,
+  "gset": {
+    "welcome": true,
+    "goodbye": true,
+    "antilink": false,
+    "antispam": false,
+    "antiflood": false,
+    "automod": true,
+    "autoreply": false,
+    "mentionGuard": false,
+    "commandProtection": false,
+    "aiEnabled": true,
+    "economyEnabled": true,
+    "progressionEnabled": true,
+    "logsEnabled": true
+  },
+  "xp": {
+    "total": 4122,
+    "level": 8,
+    "msgs": 2061,
+    "games": 2,
+    "members": {
+      "44582230311125": {
+        "m": 111,
+        "xp": 222,
+        "games": 0,
+        "last": 1789505513857
+      },
+      "257466679955665": {
+        "m": 127,
+        "xp": 254,
+        "games": 0,
+        "last": 1789534863983
+      },
+      "269574108926096": {
+        "m": 689,
+        "xp": 1378,
+        "games": 1,
+        "last": 1789808633168
+      },
+      "31396361941215": {
+        "m": 32,
+        "xp": 64,
+        "games": 0,
+        "last": 1789578584022
+      },
+      "57956708180043": {
+        "m": 46,
+        "xp": 92,
+        "games": 0,
+        "last": 1789534751299
+      },
+      "87089790083286": {
+        "m": 11,
+        "xp": 22,
+        "games": 0,
+        "last": 1789326628286
+      },
+      "9462232387698": {
+        "m": 33,
+        "xp": 66,
+        "games": 0,
+        "last": 1789495235480
+      },
+      "108813734645801": {
+        "m": 364,
+        "xp": 728,
+        "games": 1,
+        "last": 1789663047961
+      },
+      "269724751503435": {
+        "m": 25,
+        "xp": 50,
+        "games": 0,
+        "last": 1789562497710
+      },
+      "217875822411849": {
+        "m": 40,
+        "xp": 80,
+        "games": 0,
+        "last": 1789534732699
+      },
+      "27187981906063": {
+        "m": 114,
+        "xp": 228,
+        "games": 0,
+        "last": 1789564722047
+      },
+      "13504031494153": {
+        "m": 35,
+        "xp": 70,
+        "games": 0,
+        "last": 1789504912473
+      },
+      "133139926114502": {
+        "m": 101,
+        "xp": 202,
+        "games": 0,
+        "last": 1789565630774
+      },
+      "119864568102927": {
+        "m": 74,
+        "xp": 148,
+        "games": 0,
+        "last": 1789514525453
+      },
+      "60392088825948": {
+        "m": 9,
+        "xp": 18,
+        "games": 0,
+        "last": 1789314999541
+      },
+      "213215799677089": {
+        "m": 5,
+        "xp": 10,
+        "games": 0,
+        "last": 1789452662079
+      },
+      "null": {
+        "m": 2,
+        "xp": 4,
+        "games": 0,
+        "last": 1789428845957
+      },
+      "69415898980503": {
+        "m": 9,
+        "xp": 18,
+        "games": 0,
+        "last": 1789326523951
+      },
+      "157205181517834": {
+        "m": 49,
+        "xp": 98,
+        "games": 0,
+        "last": 1789564097109
+      },
+      "23365326762079": {
+        "m": 6,
+        "xp": 12,
+        "games": 0,
+        "last": 1789382048275
+      },
+      "63029366505685": {
+        "m": 8,
+        "xp": 16,
+        "games": 0,
+        "last": 1789407320356
+      },
+      "73298650079285": {
+        "m": 4,
+        "xp": 8,
+        "games": 0,
+        "last": 1789497581621
+      },
+      "257565715894382": {
+        "m": 15,
+        "xp": 30,
+        "games": 0,
+        "last": 1789559600754
+      },
+      "97642273091831": {
+        "m": 26,
+        "xp": 52,
+        "games": 0,
+        "last": 1789497580583
+      },
+      "79436309372989": {
+        "m": 2,
+        "xp": 4,
+        "games": 0,
+        "last": 1789431571808
+      },
+      "225130039009415": {
+        "m": 7,
+        "xp": 14,
+        "games": 0,
+        "last": 1789431916967
+      },
+      "85389033345224": {
+        "m": 12,
+        "xp": 24,
+        "games": 0,
+        "last": 1789473414567
+      },
+      "198527078666413": {
+        "m": 4,
+        "xp": 8,
+        "games": 0,
+        "last": 1789502324618
+      },
+      "256478971691210": {
+        "m": 56,
+        "xp": 112,
+        "games": 0,
+        "last": 1789565786502
+      },
+      "11562823758022": {
+        "m": 11,
+        "xp": 22,
+        "games": 0,
+        "last": 1789579100595
+      },
+      "200412552556578": {
+        "m": 3,
+        "xp": 6,
+        "games": 0,
+        "last": 1789808606808
+      },
+      "155019043160306": {
+        "m": 3,
+        "xp": 6,
+        "games": 0,
+        "last": 1789808570151
+      },
+      "70373894836297": {
+        "m": 2,
+        "xp": 4,
+        "games": 0,
+        "last": 1789808567273
+      }
+    },
+    "week": {
+      "k": "2026-W39",
+      "xp": 28
+    },
+    "month": {
+      "k": "2026-09",
+      "xp": 4122
+    },
+    "daily": {
+      "k": "2026-09-19",
+      "msgs": 14
+    },
+    "streak": {
+      "c": 1,
+      "last": "2026-09-19"
+    },
+    "history": {
+      "2026-09-10": 8,
+      "2026-09-11": 264,
+      "2026-09-12": 26,
+      "2026-09-13": 1660,
+      "2026-09-14": 712,
+      "2026-09-15": 804,
+      "2026-09-16": 604,
+      "2026-09-17": 16,
+      "2026-09-19": 28
+    }
+  },
+  "goals": {
+    "daily": {
+      "k": "2026-09-19",
+      "target": 50,
+      "progress": 14,
+      "claimed": false
+    },
+    "weekly": {
+      "k": "2026-W39",
+      "target": 200,
+      "progress": 28,
+      "claimed": false
+    }
+  },
+  "gach": {
+    "gmsg_100": 1789128759112,
+    "gxp_1k": 1789314943086,
+    "gmsg_1k": 1789378752857,
+    "gstreak_7": 1789533881666
+  },
+  "gbadges": {
+    "g_love": 1789378752858,
+    "g_active": 1789533881666
+  },
+  "gevents": [],
+  "gaudit": [
+    {
+      "ts": 1789123704566,
+      "actor": "system",
+      "action": "goal",
+      "detail": "daily-Ziel (50) erreicht, +250 Treasury"
+    },
+    {
+      "ts": 1789128759112,
+      "actor": "system",
+      "action": "goal",
+      "detail": "weekly-Ziel (200) erreicht, +1000 Treasury"
+    },
+    {
+      "ts": 1789289052377,
+      "actor": "269574108926096",
+      "action": "setting",
+      "detail": "aiEnabled → an"
+    },
+    {
+      "ts": 1789294909727,
+      "actor": "system",
+      "action": "goal",
+      "detail": "daily-Ziel (50) erreicht, +250 Treasury"
+    },
+    {
+      "ts": 1789307575295,
+      "actor": "system",
+      "action": "goal",
+      "detail": "weekly-Ziel (200) erreicht, +1000 Treasury"
+    },
+    {
+      "ts": 1789380922248,
+      "actor": "system",
+      "action": "goal",
+      "detail": "daily-Ziel (50) erreicht, +250 Treasury"
+    },
+    {
+      "ts": 1789461992534,
+      "actor": "system",
+      "action": "goal",
+      "detail": "daily-Ziel (50) erreicht, +250 Treasury"
+    },
+    {
+      "ts": 1789495385568,
+      "actor": "269574108926096",
+      "action": "kick",
+      "detail": "Gekickt: 4915679260192"
+    },
+    {
+      "ts": 1789559163235,
+      "actor": "system",
+      "action": "goal",
+      "detail": "daily-Ziel (50) erreicht, +250 Treasury"
+    },
+    {
+      "ts": 1789559735175,
+      "actor": "108813734645801",
+      "action": "kick",
+      "detail": "Gekickt: 4915679602734"
+    }
+  ],
+  "gtreasury": {
+    "balance": 5010,
+    "log": [
+      {
+        "ts": 1789123704566,
+        "delta": 250,
+        "reason": "daily-Ziel erreicht"
+      },
+      {
+        "ts": 1789128759112,
+        "delta": 1000,
+        "reason": "weekly-Ziel erreicht"
+      },
+      {
+        "ts": 1789128759112,
+        "delta": 150,
+        "reason": "Achievement Gesprächig"
+      },
+      {
+        "ts": 1789288888708,
+        "delta": 110,
+        "reason": "Group-Level 1"
+      },
+      {
+        "ts": 1789294909727,
+        "delta": 250,
+        "reason": "daily-Ziel erreicht"
+      },
+      {
+        "ts": 1789307575295,
+        "delta": 1000,
+        "reason": "weekly-Ziel erreicht"
+      },
+      {
+        "ts": 1789313286021,
+        "delta": 120,
+        "reason": "Group-Level 2"
+      },
+      {
+        "ts": 1789314943086,
+        "delta": 150,
+        "reason": "Achievement Sammelphase"
+      },
+      {
+        "ts": 1789315298616,
+        "delta": 130,
+        "reason": "Group-Level 3"
+      },
+      {
+        "ts": 1789329239670,
+        "delta": 140,
+        "reason": "Group-Level 4"
+      },
+      {
+        "ts": 1789378752857,
+        "delta": 150,
+        "reason": "Group-Level 5"
+      },
+      {
+        "ts": 1789378752858,
+        "delta": 150,
+        "reason": "Achievement Redselig"
+      },
+      {
+        "ts": 1789380922248,
+        "delta": 250,
+        "reason": "daily-Ziel erreicht"
+      },
+      {
+        "ts": 1789427983244,
+        "delta": 160,
+        "reason": "Group-Level 6"
+      },
+      {
+        "ts": 1789461992534,
+        "delta": 250,
+        "reason": "daily-Ziel erreicht"
+      },
+      {
+        "ts": 1789473007365,
+        "delta": 170,
+        "reason": "Group-Level 7"
+      },
+      {
+        "ts": 1789533881666,
+        "delta": 150,
+        "reason": "Achievement Aktive Woche"
+      },
+      {
+        "ts": 1789559163235,
+        "delta": 250,
+        "reason": "daily-Ziel erreicht"
+      },
+      {
+        "ts": 1789563802046,
+        "delta": 180,
+        "reason": "Group-Level 8"
+      }
+    ]
+  },
+  "gbanned": {},
+  "warnCfg": {
+    "w1": "warn",
+    "w2": "warn",
+    "w3": "kick"
+  }
+}

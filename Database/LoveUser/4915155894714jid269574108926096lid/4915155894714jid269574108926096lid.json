@@ -1,0 +1,1364 @@
+{
+  "identity": {
+    "username": "",
+    "bid": "4915155894714jid269574108926096lid",
+    "phone": "+4915155894714",
+    "jid": "4915155894714@s.whatsapp.net",
+    "lid": "269574108926096@lid",
+    "cleanJid": "4915155894714",
+    "cleanLid": "269574108926096"
+  },
+  "status": {
+    "dsgvo": {
+      "accepted": true,
+      "acceptedAt": "2026-09-01T21:53:02.915Z",
+      "rejected": false,
+      "rejectedAt": null
+    },
+    "verified": true,
+    "verifiedAt": "2026-09-01T18:48:13.201Z",
+    "unverified": false,
+    "unverifiedAt": null,
+    "mappedAt": "2026-09-01T18:47:01.901Z"
+  },
+  "progression": {
+    "level": 98,
+    "prestige": 0,
+    "xp": 1164,
+    "neededXpForLvOrPrestigeUp": 1604,
+    "lastDaily": "2026-09-13",
+    "totalXp": 112221,
+    "streak": 5,
+    "xpWindow": [
+      {
+        "t": 1790183098696,
+        "a": 3,
+        "s": "msg"
+      },
+      {
+        "t": 1790183102708,
+        "a": 2,
+        "s": "cmd"
+      },
+      {
+        "t": 1790184594220,
+        "a": 3,
+        "s": "msg"
+      },
+      {
+        "t": 1790184663493,
+        "a": 5,
+        "s": "msg"
+      },
+      {
+        "t": 1790184675933,
+        "a": 2,
+        "s": "cmd"
+      }
+    ],
+    "xpSources": {
+      "messages": 1648,
+      "love": 51,
+      "commands": 1064,
+      "games": 15,
+      "dailies": 100,
+      "work": 0,
+      "compliments": 0,
+      "media": 46,
+      "achievements": 140,
+      "admin": 109057,
+      "monthlybonus": 100
+    },
+    "streaks": {
+      "daily": {
+        "c": 5,
+        "last": "2026-09-23"
+      },
+      "chat": {
+        "c": 5,
+        "last": "2026-09-23"
+      },
+      "xp": {
+        "c": 1,
+        "last": "2026-09-23"
+      }
+    },
+    "xpLog": [
+      {
+        "s": "commands",
+        "a": 2,
+        "t": 1790160041763
+      },
+      {
+        "s": "messages",
+        "a": 5,
+        "t": 1790160399287
+      },
+      {
+        "s": "commands",
+        "a": 2,
+        "t": 1790160409902
+      },
+      {
+        "s": "commands",
+        "a": 2,
+        "t": 1790166830566
+      },
+      {
+        "s": "messages",
+        "a": 3,
+        "t": 1790166881329
+      },
+      {
+        "s": "commands",
+        "a": 2,
+        "t": 1790166925032
+      },
+      {
+        "s": "commands",
+        "a": 2,
+        "t": 1790166942555
+      },
+      {
+        "s": "messages",
+        "a": 3,
+        "t": 1790168760593
+      },
+      {
+        "s": "messages",
+        "a": 3,
+        "t": 1790168940262
+      },
+      {
+        "s": "messages",
+        "a": 6,
+        "t": 1790169022047
+      },
+      {
+        "s": "commands",
+        "a": 2,
+        "t": 1790169029139
+      },
+      {
+        "s": "love",
+        "a": 9,
+        "t": 1790169791447
+      },
+      {
+        "s": "commands",
+        "a": 2,
+        "t": 1790174045422
+      },
+      {
+        "s": "commands",
+        "a": 2,
+        "t": 1790174055639
+      },
+      {
+        "s": "commands",
+        "a": 2,
+        "t": 1790174181660
+      },
+      {
+        "s": "commands",
+        "a": 2,
+        "t": 1790177605758
+      },
+      {
+        "s": "messages",
+        "a": 3,
+        "t": 1790177624450
+      },
+      {
+        "s": "messages",
+        "a": 3,
+        "t": 1790178046433
+      },
+      {
+        "s": "messages",
+        "a": 3,
+        "t": 1790178111643
+      },
+      {
+        "s": "messages",
+        "a": 3,
+        "t": 1790178175478
+      },
+      {
+        "s": "messages",
+        "a": 3,
+        "t": 1790178296156
+      },
+      {
+        "s": "messages",
+        "a": 3,
+        "t": 1790178366520
+      },
+      {
+        "s": "messages",
+        "a": 3,
+        "t": 1790178474356
+      },
+      {
+        "s": "commands",
+        "a": 2,
+        "t": 1790178488502
+      },
+      {
+        "s": "messages",
+        "a": 3,
+        "t": 1790178712736
+      },
+      {
+        "s": "messages",
+        "a": 3,
+        "t": 1790178981960
+      },
+      {
+        "s": "messages",
+        "a": 3,
+        "t": 1790179063375
+      },
+      {
+        "s": "commands",
+        "a": 2,
+        "t": 1790179090171
+      },
+      {
+        "s": "commands",
+        "a": 2,
+        "t": 1790179100717
+      },
+      {
+        "s": "messages",
+        "a": 3,
+        "t": 1790179455027
+      },
+      {
+        "s": "messages",
+        "a": 3,
+        "t": 1790179947854
+      },
+      {
+        "s": "commands",
+        "a": 2,
+        "t": 1790179976741
+      },
+      {
+        "s": "commands",
+        "a": 2,
+        "t": 1790179999754
+      },
+      {
+        "s": "messages",
+        "a": 3,
+        "t": 1790180014785
+      },
+      {
+        "s": "commands",
+        "a": 2,
+        "t": 1790180067404
+      },
+      {
+        "s": "messages",
+        "a": 3,
+        "t": 1790183098696
+      },
+      {
+        "s": "commands",
+        "a": 2,
+        "t": 1790183102708
+      },
+      {
+        "s": "messages",
+        "a": 3,
+        "t": 1790184594220
+      },
+      {
+        "s": "messages",
+        "a": 5,
+        "t": 1790184663493
+      },
+      {
+        "s": "commands",
+        "a": 2,
+        "t": 1790184675933
+      }
+    ],
+    "xpDaily": [
+      {
+        "d": "2026-09-10",
+        "a": 21
+      },
+      {
+        "d": "2026-09-11",
+        "a": 439
+      },
+      {
+        "d": "2026-09-12",
+        "a": 73
+      },
+      {
+        "d": "2026-09-13",
+        "a": 869
+      },
+      {
+        "d": "2026-09-14",
+        "a": 368
+      },
+      {
+        "d": "2026-09-15",
+        "a": 233
+      },
+      {
+        "d": "2026-09-16",
+        "a": 302
+      },
+      {
+        "d": "2026-09-17",
+        "a": 32
+      },
+      {
+        "d": "2026-09-19",
+        "a": 27
+      },
+      {
+        "d": "2026-09-20",
+        "a": 240
+      },
+      {
+        "d": "2026-09-21",
+        "a": 237
+      },
+      {
+        "d": "2026-09-22",
+        "a": 159
+      },
+      {
+        "d": "2026-09-23",
+        "a": 164
+      }
+    ],
+    "recentMsgs": [
+      {
+        "h": "c55bcbf7",
+        "t": 1790184663493
+      }
+    ],
+    "unlocks": {
+      "goal-d2026-09-11": 1789107475625,
+      "goal-dc2026-09-11": 1789107500586,
+      "goal-dm2026-09-11": 1789135079809,
+      "lv5": 1789163264330,
+      "lv10": 1789163264330,
+      "lv20": 1789163264330,
+      "lv25": 1789163264330,
+      "lv30": 1789163264330,
+      "lv50": 1789163264330,
+      "lv75": 1789163264330,
+      "chest-lv25": 1789163264330,
+      "chest-lv75": 1789163264330,
+      "goal-w2026-W37": 1789199805672,
+      "goal-d2026-09-12": 1789200269163,
+      "goal-dc2026-09-12": 1789200382223,
+      "goal-dc2026-09-13": 1789291175297,
+      "goal-d2026-09-13": 1789291176033,
+      "goal-dm2026-09-13": 1789310304414,
+      "goal-wm2026-W37": 1789341117491,
+      "goal-d2026-09-14": 1789380295958,
+      "goal-dc2026-09-14": 1789380476968,
+      "goal-dm2026-09-14": 1789407396913,
+      "goal-d2026-09-15": 1789465608312,
+      "goal-dc2026-09-15": 1789465608312,
+      "goal-dm2026-09-15": 1789490931180,
+      "goal-w2026-W38": 1789491088702,
+      "goal-d2026-09-16": 1789534967304,
+      "goal-m2026-09": 1789534967304,
+      "goal-dm2026-09-16": 1789565194759,
+      "goal-wm2026-W38": 1789661766089,
+      "goal-d2026-09-20": 1789938063801,
+      "goal-dc2026-09-20": 1789938405065,
+      "goal-dm2026-09-20": 1789941110179,
+      "goal-d2026-09-21": 1789979281657,
+      "goal-dc2026-09-21": 1789985491673,
+      "goal-dm2026-09-21": 1789987575199,
+      "goal-d2026-09-22": 1790110703508,
+      "goal-dc2026-09-22": 1790110996293,
+      "goal-dc2026-09-23": 1790149142801,
+      "goal-d2026-09-23": 1790160041763,
+      "goal-w2026-W39": 1790178046433,
+      "goal-dm2026-09-23": 1790183102708
+    },
+    "lastXpAt": 1790184675933,
+    "lastActiveDay": "2026-09-23",
+    "recentMsgsAllDay": [
+      {
+        "h": "f9583a4",
+        "d": "2026-09-23"
+      },
+      {
+        "h": "f9583a4",
+        "d": "2026-09-23"
+      },
+      {
+        "h": "d797b596",
+        "d": "2026-09-23"
+      },
+      {
+        "h": "1b5a831f",
+        "d": "2026-09-23"
+      },
+      {
+        "h": "b888d0c",
+        "d": "2026-09-23"
+      },
+      {
+        "h": "b53bb0df",
+        "d": "2026-09-23"
+      },
+      {
+        "h": "5978a8",
+        "d": "2026-09-23"
+      },
+      {
+        "h": "5977fa",
+        "d": "2026-09-23"
+      },
+      {
+        "h": "8f26d121",
+        "d": "2026-09-23"
+      },
+      {
+        "h": "be87b39b",
+        "d": "2026-09-23"
+      },
+      {
+        "h": "417973f8",
+        "d": "2026-09-23"
+      },
+      {
+        "h": "22bb1841",
+        "d": "2026-09-23"
+      },
+      {
+        "h": "cdf820bf",
+        "d": "2026-09-23"
+      },
+      {
+        "h": "500754e1",
+        "d": "2026-09-23"
+      },
+      {
+        "h": "a367443a",
+        "d": "2026-09-23"
+      },
+      {
+        "h": "fad47eb2",
+        "d": "2026-09-23"
+      },
+      {
+        "h": "5976c1",
+        "d": "2026-09-23"
+      },
+      {
+        "h": "bb643d6e",
+        "d": "2026-09-23"
+      },
+      {
+        "h": "b88c316",
+        "d": "2026-09-23"
+      },
+      {
+        "h": "130d1274",
+        "d": "2026-09-23"
+      },
+      {
+        "h": "597a10",
+        "d": "2026-09-23"
+      },
+      {
+        "h": "76292d",
+        "d": "2026-09-23"
+      },
+      {
+        "h": "100b0418",
+        "d": "2026-09-23"
+      },
+      {
+        "h": "76292c",
+        "d": "2026-09-23"
+      },
+      {
+        "h": "2b5d3",
+        "d": "2026-09-23"
+      },
+      {
+        "h": "8a8b58d0",
+        "d": "2026-09-23"
+      },
+      {
+        "h": "c55bcbf7",
+        "d": "2026-09-23"
+      }
+    ],
+    "lastMsgXpAt": 1790184663493,
+    "xpMonthly": {
+      "2026-09": 3143
+    },
+    "statsMonthly": {
+      "2026-09": {
+        "d": "2026-09",
+        "m": 428,
+        "c": 408,
+        "g": 1,
+        "w": 1
+      }
+    },
+    "title": {
+      "min": 50,
+      "emoji": "👑",
+      "name": "Elite"
+    },
+    "titleLevel": 50,
+    "badges": {
+      "first_steps": 1789163264330,
+      "rising_star": 1789163264330,
+      "veteran": 1789163264330,
+      "elite": 1789163264330,
+      "collector_10": 1789163264442,
+      "commander_100": 1789291759398,
+      "collector_25": 1789323644521,
+      "chatter_100": 1789324838252,
+      "streak_7": 1789534967304
+    },
+    "bestStreak": 8,
+    "records": {
+      "highestLevel": 98,
+      "highestDailyXp": 869,
+      "mostXpOneAction": 100
+    },
+    "statsDaily": [
+      {
+        "d": "2026-09-11",
+        "m": 36,
+        "c": 63,
+        "g": 0,
+        "w": 0
+      },
+      {
+        "d": "2026-09-12",
+        "m": 3,
+        "c": 11,
+        "g": 0,
+        "w": 0
+      },
+      {
+        "d": "2026-09-13",
+        "m": 112,
+        "c": 96,
+        "g": 0,
+        "w": 0
+      },
+      {
+        "d": "2026-09-14",
+        "m": 61,
+        "c": 65,
+        "g": 1,
+        "w": 1
+      },
+      {
+        "d": "2026-09-15",
+        "m": 50,
+        "c": 21,
+        "g": 0,
+        "w": 0
+      },
+      {
+        "d": "2026-09-16",
+        "m": 39,
+        "c": 3,
+        "g": 0,
+        "w": 0
+      },
+      {
+        "d": "2026-09-17",
+        "m": 1,
+        "c": 7,
+        "g": 0,
+        "w": 0
+      },
+      {
+        "d": "2026-09-19",
+        "m": 2,
+        "c": 3,
+        "g": 0,
+        "w": 0
+      },
+      {
+        "d": "2026-09-20",
+        "m": 25,
+        "c": 41,
+        "g": 0,
+        "w": 0
+      },
+      {
+        "d": "2026-09-21",
+        "m": 51,
+        "c": 35,
+        "g": 0,
+        "w": 0
+      },
+      {
+        "d": "2026-09-22",
+        "m": 21,
+        "c": 33,
+        "g": 0,
+        "w": 0
+      },
+      {
+        "d": "2026-09-23",
+        "m": 27,
+        "c": 30,
+        "g": 0,
+        "w": 0
+      }
+    ],
+    "rewardsClaimed": {
+      "copper": 3125
+    },
+    "activeTitle": {
+      "min": 50,
+      "emoji": "👑",
+      "name": "Elite"
+    },
+    "rewardsLog": [
+      {
+        "t": 1789199805672,
+        "kind": "weeklygoal",
+        "label": "🏆 Wochenziel 2026-W37",
+        "copper": 250
+      },
+      {
+        "t": 1789200269163,
+        "kind": "dailygoal",
+        "label": "🎯 Tagesziel 2026-09-12",
+        "copper": 50
+      },
+      {
+        "t": 1789200382223,
+        "kind": "dailygoal",
+        "label": "⌨️ Befehlsziel 2026-09-12",
+        "copper": 25
+      },
+      {
+        "t": 1789291175297,
+        "kind": "dailygoal",
+        "label": "⌨️ Befehlsziel 2026-09-13",
+        "copper": 25
+      },
+      {
+        "t": 1789291176033,
+        "kind": "dailygoal",
+        "label": "🎯 Tagesziel 2026-09-13",
+        "copper": 50
+      },
+      {
+        "t": 1789310304414,
+        "kind": "dailygoal",
+        "label": "💬 Nachrichtenziel 2026-09-13",
+        "copper": 25
+      },
+      {
+        "t": 1789341117491,
+        "kind": "weeklygoal",
+        "label": "💬 Wochen-Nachrichten 2026-W37",
+        "copper": 25
+      },
+      {
+        "t": 1789380295958,
+        "kind": "dailygoal",
+        "label": "🎯 Tagesziel 2026-09-14",
+        "copper": 50
+      },
+      {
+        "t": 1789380476968,
+        "kind": "dailygoal",
+        "label": "⌨️ Befehlsziel 2026-09-14",
+        "copper": 25
+      },
+      {
+        "t": 1789407396913,
+        "kind": "dailygoal",
+        "label": "💬 Nachrichtenziel 2026-09-14",
+        "copper": 25
+      },
+      {
+        "t": 1789465608312,
+        "kind": "dailygoal",
+        "label": "🎯 Tagesziel 2026-09-15",
+        "copper": 50
+      },
+      {
+        "t": 1789465608312,
+        "kind": "dailygoal",
+        "label": "⌨️ Befehlsziel 2026-09-15",
+        "copper": 25
+      },
+      {
+        "t": 1789490931180,
+        "kind": "dailygoal",
+        "label": "💬 Nachrichtenziel 2026-09-15",
+        "copper": 25
+      },
+      {
+        "t": 1789491088702,
+        "kind": "weeklygoal",
+        "label": "🏆 Wochenziel 2026-W38",
+        "copper": 250
+      },
+      {
+        "t": 1789534967304,
+        "kind": "dailygoal",
+        "label": "🎯 Tagesziel 2026-09-16",
+        "copper": 50
+      },
+      {
+        "t": 1789534967304,
+        "kind": "monthlygoal",
+        "label": "📅 Monatsziel 2026-09",
+        "copper": 1000
+      },
+      {
+        "t": 1789565194759,
+        "kind": "dailygoal",
+        "label": "💬 Nachrichtenziel 2026-09-16",
+        "copper": 25
+      },
+      {
+        "t": 1789661766089,
+        "kind": "weeklygoal",
+        "label": "💬 Wochen-Nachrichten 2026-W38",
+        "copper": 25
+      },
+      {
+        "t": 1789938063801,
+        "kind": "dailygoal",
+        "label": "🎯 Tagesziel 2026-09-20",
+        "copper": 50
+      },
+      {
+        "t": 1789938405065,
+        "kind": "dailygoal",
+        "label": "⌨️ Befehlsziel 2026-09-20",
+        "copper": 25
+      },
+      {
+        "t": 1789941110179,
+        "kind": "dailygoal",
+        "label": "💬 Nachrichtenziel 2026-09-20",
+        "copper": 25
+      },
+      {
+        "t": 1789979281657,
+        "kind": "dailygoal",
+        "label": "🎯 Tagesziel 2026-09-21",
+        "copper": 50
+      },
+      {
+        "t": 1789985491673,
+        "kind": "dailygoal",
+        "label": "⌨️ Befehlsziel 2026-09-21",
+        "copper": 25
+      },
+      {
+        "t": 1789987575199,
+        "kind": "dailygoal",
+        "label": "💬 Nachrichtenziel 2026-09-21",
+        "copper": 25
+      },
+      {
+        "t": 1790110703508,
+        "kind": "dailygoal",
+        "label": "🎯 Tagesziel 2026-09-22",
+        "copper": 50
+      },
+      {
+        "t": 1790110996293,
+        "kind": "dailygoal",
+        "label": "⌨️ Befehlsziel 2026-09-22",
+        "copper": 25
+      },
+      {
+        "t": 1790149142801,
+        "kind": "dailygoal",
+        "label": "⌨️ Befehlsziel 2026-09-23",
+        "copper": 25
+      },
+      {
+        "t": 1790160041763,
+        "kind": "dailygoal",
+        "label": "🎯 Tagesziel 2026-09-23",
+        "copper": 50
+      },
+      {
+        "t": 1790178046433,
+        "kind": "weeklygoal",
+        "label": "🏆 Wochenziel 2026-W39",
+        "copper": 250
+      },
+      {
+        "t": 1790183102708,
+        "kind": "dailygoal",
+        "label": "💬 Nachrichtenziel 2026-09-23",
+        "copper": 25
+      }
+    ],
+    "pendingRewards": [
+      {
+        "id": "chest-lv25",
+        "label": "🎁 Truhe Level 25",
+        "copper": 500,
+        "at": 1789163264330
+      },
+      {
+        "id": "chest-lv75",
+        "label": "🎁 Truhe Level 75",
+        "copper": 1500,
+        "at": 1789163264330
+      }
+    ],
+    "goalStreak": {
+      "c": 4,
+      "best": 6,
+      "last": "2026-09-23"
+    },
+    "hourActivity": [
+      42,
+      61,
+      4,
+      0,
+      0,
+      0,
+      4,
+      27,
+      21,
+      20,
+      28,
+      69,
+      91,
+      31,
+      37,
+      36,
+      15,
+      52,
+      40,
+      25,
+      43,
+      35,
+      60,
+      119
+    ],
+    "weekdayActivity": [
+      176,
+      194,
+      102,
+      9,
+      106,
+      21,
+      252
+    ],
+    "rankHistory": [],
+    "rewardsLogMigrated": true
+  },
+  "games": {
+    "gamesPlayed": 0,
+    "lastPlayedAt": null,
+    "lastWin": 0,
+    "lastWinAt": null,
+    "totalWin": 0,
+    "highestWin": 0,
+    "highestWinAt": null,
+    "winStreak": 0,
+    "highestWinStreak": 0,
+    "highestWinStreakAt": null,
+    "lastLoss": 0,
+    "lastLossAt": null,
+    "totalLoss": 0,
+    "highestLoss": 0,
+    "highestLossAt": null,
+    "lossStreak": 0,
+    "highestLossStreak": 0,
+    "highestLossStreakAt": null
+  },
+  "wallet": {
+    "copper": 11016,
+    "silver": 0,
+    "gold": 0,
+    "platin": 0
+  },
+  "bank": {
+    "active": false,
+    "copper": 0,
+    "silver": 0,
+    "gold": 0,
+    "platin": 0
+  },
+  "rewards": {
+    "lastDailyAt": null,
+    "lastWeeklyAt": null,
+    "lastMonthlyAt": null,
+    "lastYearlyAt": null,
+    "lastWorkAt": "2026-09-05T23:32:36.894Z"
+  },
+  "registration": {
+    "registered": true,
+    "name": "maxichen",
+    "age": "16",
+    "status": "vergeben",
+    "city": "recklinghausen",
+    "value": "maxichen.16.vergeben.recklinghausen",
+    "registeredAt": "2026-09-01T19:58:11.534Z"
+  },
+  "love": {
+    "married": true,
+    "spouseName": "4915758256378",
+    "spouseKey": "57956708180043",
+    "spouseBid": "4915758256378jid57956708180043lid",
+    "marriedAt": "2026-04-01T00:00:00.000Z",
+    "divorcedAt": null,
+    "marriages": 2
+  },
+  "flags": {
+    "media": {
+      "first": 1789291634592,
+      "providers": {
+        "youtube": 1789292634361,
+        "tiktok": 1789294490879
+      },
+      "day": "2026-09-13",
+      "count": 3
+    }
+  },
+  "stats": {
+    "messages": 428,
+    "commands": 408,
+    "games": 1,
+    "gameWins": 1,
+    "gameLosses": 0,
+    "loveActions": 14,
+    "complimentsGiven": 0,
+    "dailiesClaimed": 2,
+    "workClaimed": 0,
+    "dailyloveClaimed": 0
+  },
+  "economy": {
+    "tx": [
+      {
+        "t": 1790183102709,
+        "v": "wallet",
+        "d": 25,
+        "s": "dailygoal",
+        "r": "🎯 Tagesziel"
+      },
+      {
+        "t": 1790178046440,
+        "v": "wallet",
+        "d": 250,
+        "s": "weeklygoal",
+        "r": "🏆 Wochenziel"
+      },
+      {
+        "t": 1790160041764,
+        "v": "wallet",
+        "d": 50,
+        "s": "dailygoal",
+        "r": "🎯 Tagesziel"
+      },
+      {
+        "t": 1790149142803,
+        "v": "wallet",
+        "d": 25,
+        "s": "dailygoal",
+        "r": "🎯 Tagesziel"
+      },
+      {
+        "t": 1790110996294,
+        "v": "wallet",
+        "d": 25,
+        "s": "dailygoal",
+        "r": "🎯 Tagesziel"
+      },
+      {
+        "t": 1790110703509,
+        "v": "wallet",
+        "d": 50,
+        "s": "dailygoal",
+        "r": "🎯 Tagesziel"
+      },
+      {
+        "t": 1789987575199,
+        "v": "wallet",
+        "d": 25,
+        "s": "dailygoal",
+        "r": "🎯 Tagesziel"
+      },
+      {
+        "t": 1789985491674,
+        "v": "wallet",
+        "d": 25,
+        "s": "dailygoal",
+        "r": "🎯 Tagesziel"
+      },
+      {
+        "t": 1789979281658,
+        "v": "wallet",
+        "d": 50,
+        "s": "dailygoal",
+        "r": "🎯 Tagesziel"
+      },
+      {
+        "t": 1789941110180,
+        "v": "wallet",
+        "d": 25,
+        "s": "dailygoal",
+        "r": "🎯 Tagesziel"
+      },
+      {
+        "t": 1789938405066,
+        "v": "wallet",
+        "d": 25,
+        "s": "dailygoal",
+        "r": "🎯 Tagesziel"
+      },
+      {
+        "t": 1789938063802,
+        "v": "wallet",
+        "d": 50,
+        "s": "dailygoal",
+        "r": "🎯 Tagesziel"
+      },
+      {
+        "t": 1789661766095,
+        "v": "wallet",
+        "d": 25,
+        "s": "weeklygoal",
+        "r": "🏆 Wochenziel"
+      },
+      {
+        "t": 1789565194760,
+        "v": "wallet",
+        "d": 25,
+        "s": "dailygoal",
+        "r": "🎯 Tagesziel"
+      },
+      {
+        "t": 1789534967306,
+        "v": "wallet",
+        "d": 1000,
+        "s": "monthlygoal",
+        "r": "📅 Monatsziel"
+      },
+      {
+        "t": 1789534967305,
+        "v": "wallet",
+        "d": 50,
+        "s": "dailygoal",
+        "r": "🎯 Tagesziel"
+      },
+      {
+        "t": 1789508201847,
+        "v": "wallet",
+        "d": 400,
+        "s": "levelup",
+        "r": "⭐ Level-Up"
+      },
+      {
+        "t": 1789491088703,
+        "v": "wallet",
+        "d": 250,
+        "s": "weeklygoal",
+        "r": "🏆 Wochenziel"
+      },
+      {
+        "t": 1789490931181,
+        "v": "wallet",
+        "d": 25,
+        "s": "dailygoal",
+        "r": "🎯 Tagesziel"
+      },
+      {
+        "t": 1789470990211,
+        "v": "wallet",
+        "d": -1608,
+        "s": "rob",
+        "r": "Beraubt von DoK"
+      },
+      {
+        "t": 1789465608314,
+        "v": "wallet",
+        "d": 25,
+        "s": "dailygoal",
+        "r": "🎯 Tagesziel"
+      },
+      {
+        "t": 1789465608313,
+        "v": "wallet",
+        "d": 50,
+        "s": "dailygoal",
+        "r": "🎯 Tagesziel"
+      },
+      {
+        "t": 1789407396913,
+        "v": "wallet",
+        "d": 25,
+        "s": "dailygoal",
+        "r": "🎯 Tagesziel"
+      },
+      {
+        "t": 1789380512805,
+        "v": "wallet",
+        "d": 189,
+        "s": "rob",
+        "r": "Beute"
+      },
+      {
+        "t": 1789380476969,
+        "v": "wallet",
+        "d": 25,
+        "s": "dailygoal",
+        "r": "🎯 Tagesziel"
+      },
+      {
+        "t": 1789380295959,
+        "v": "wallet",
+        "d": 50,
+        "s": "dailygoal",
+        "r": "🎯 Tagesziel"
+      },
+      {
+        "t": 1789341117492,
+        "v": "wallet",
+        "d": 25,
+        "s": "weeklygoal",
+        "r": "🏆 Wochenziel"
+      },
+      {
+        "t": 1789323656201,
+        "v": "wallet",
+        "d": 200,
+        "s": "daily",
+        "r": "Tag 1 (Serie)"
+      },
+      {
+        "t": 1789310304416,
+        "v": "wallet",
+        "d": 25,
+        "s": "dailygoal",
+        "r": "🎯 Tagesziel"
+      },
+      {
+        "t": 1789291176033,
+        "v": "wallet",
+        "d": 50,
+        "s": "dailygoal",
+        "r": "🎯 Tagesziel"
+      },
+      {
+        "t": 1789291175300,
+        "v": "wallet",
+        "d": 25,
+        "s": "dailygoal",
+        "r": "🎯 Tagesziel"
+      },
+      {
+        "t": 1789200382223,
+        "v": "wallet",
+        "d": 25,
+        "s": "dailygoal",
+        "r": "🎯 Tagesziel"
+      },
+      {
+        "t": 1789200269164,
+        "v": "wallet",
+        "d": 50,
+        "s": "dailygoal",
+        "r": "🎯 Tagesziel"
+      },
+      {
+        "t": 1789199805673,
+        "v": "wallet",
+        "d": 250,
+        "s": "weeklygoal",
+        "r": "🏆 Wochenziel"
+      },
+      {
+        "t": 1789163264335,
+        "v": "wallet",
+        "d": 3750,
+        "s": "milestone",
+        "r": "🎁 Meilenstein"
+      },
+      {
+        "t": 1789163264335,
+        "v": "wallet",
+        "d": 2500,
+        "s": "milestone",
+        "r": "🎁 Meilenstein"
+      },
+      {
+        "t": 1789163264335,
+        "v": "wallet",
+        "d": 1000,
+        "s": "milestone",
+        "r": "🎁 Meilenstein"
+      },
+      {
+        "t": 1789163264334,
+        "v": "wallet",
+        "d": 750,
+        "s": "milestone",
+        "r": "🎁 Meilenstein"
+      },
+      {
+        "t": 1789163264334,
+        "v": "wallet",
+        "d": 500,
+        "s": "milestone",
+        "r": "🎁 Meilenstein"
+      },
+      {
+        "t": 1789163264334,
+        "v": "wallet",
+        "d": 250,
+        "s": "milestone",
+        "r": "🎁 Meilenstein"
+      },
+      {
+        "t": 1789163264334,
+        "v": "wallet",
+        "d": 100,
+        "s": "milestone",
+        "r": "🎁 Meilenstein"
+      },
+      {
+        "t": 1789135079810,
+        "v": "wallet",
+        "d": 25,
+        "s": "dailygoal",
+        "r": "🎯 Tagesziel"
+      },
+      {
+        "t": 1789123709164,
+        "v": "wallet",
+        "d": -10,
+        "s": "pet",
+        "r": "Füttern"
+      },
+      {
+        "t": 1789123704960,
+        "v": "wallet",
+        "d": -10,
+        "s": "pet",
+        "r": "Füttern"
+      },
+      {
+        "t": 1789123701980,
+        "v": "wallet",
+        "d": -10,
+        "s": "pet",
+        "r": "Füttern"
+      },
+      {
+        "t": 1789123688452,
+        "v": "wallet",
+        "d": -10,
+        "s": "pet",
+        "r": "Füttern"
+      },
+      {
+        "t": 1789107500586,
+        "v": "wallet",
+        "d": 25,
+        "s": "dailygoal",
+        "r": "🎯 Tagesziel"
+      },
+      {
+        "t": 1789107478802,
+        "v": "wallet",
+        "d": 200,
+        "s": "daily",
+        "r": "Tag 1 (Serie)"
+      },
+      {
+        "t": 1789107475626,
+        "v": "wallet",
+        "d": 50,
+        "s": "dailygoal",
+        "r": "🎯 Tagesziel"
+      }
+    ],
+    "stats": {
+      "earned": 12564,
+      "spent": 1648,
+      "highBal": 11016,
+      "highWallet": 11016,
+      "highBank": 0
+    },
+    "periods": {
+      "day": {
+        "k": "2026-09-23",
+        "e": 350,
+        "s": 0
+      },
+      "week": {
+        "k": "2026-W39",
+        "e": 525,
+        "s": 0
+      },
+      "month": {
+        "k": "2026-09",
+        "e": 12564,
+        "s": 1648
+      },
+      "year": {
+        "k": "2026",
+        "e": 12564,
+        "s": 1648
+      }
+    },
+    "monthly": {
+      "2026-09": {
+        "e": 12564,
+        "s": 1648
+      }
+    },
+    "daily": {
+      "last": "2026-09-13",
+      "streak": 1,
+      "best": 1,
+      "history": [
+        {
+          "d": "2026-09-13",
+          "c": 200,
+          "s": 1
+        },
+        {
+          "d": "2026-09-11",
+          "c": 200,
+          "s": 1
+        }
+      ],
+      "lastWeekReward": "",
+      "lastMonthReward": "",
+      "lastYearReward": ""
+    },
+    "interest": {
+      "lastAt": 0
+    },
+    "transferDaily": {
+      "d": "",
+      "sum": 0
+    },
+    "lastAdminAdjust": null
+  }
+}

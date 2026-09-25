@@ -1,0 +1,115 @@
+{
+  "groupId": "120363426867190531",
+  "groupJid": "120363426867190531@g.us",
+  "subject": "💬🤖🏳️‍⚧️Onimai Treffpunkt🏳️‍⚧️🤖💬",
+  "creator": "245642786021560@lid",
+  "owner": "245642786021560@lid",
+  "ownerUsername": null,
+  "active": false,
+  "activatedAt": null,
+  "activatedBy": null,
+  "createdAt": "2026-09-20T20:50:42.367Z",
+  "gset": {
+    "welcome": true,
+    "goodbye": true,
+    "antilink": false,
+    "antispam": false,
+    "antiflood": false,
+    "automod": true,
+    "autoreply": false,
+    "mentionGuard": false,
+    "commandProtection": false,
+    "aiEnabled": false,
+    "economyEnabled": true,
+    "progressionEnabled": true,
+    "logsEnabled": true
+  },
+  "xp": {
+    "total": 64,
+    "level": 0,
+    "msgs": 32,
+    "games": 0,
+    "members": {
+      "13504031494153": {
+        "m": 1,
+        "xp": 2,
+        "games": 0,
+        "last": 1789937442398
+      },
+      "88099174543386": {
+        "m": 6,
+        "xp": 12,
+        "games": 0,
+        "last": 1789937887915
+      },
+      "269574108926096": {
+        "m": 14,
+        "xp": 28,
+        "games": 0,
+        "last": 1789937889061
+      },
+      "104827971465333": {
+        "m": 9,
+        "xp": 18,
+        "games": 0,
+        "last": 1789937878122
+      },
+      "267903567958223": {
+        "m": 2,
+        "xp": 4,
+        "games": 0,
+        "last": 1789937889145
+      }
+    },
+    "week": {
+      "k": "2026-W39",
+      "xp": 64
+    },
+    "month": {
+      "k": "2026-09",
+      "xp": 64
+    },
+    "daily": {
+      "k": "2026-09-20",
+      "msgs": 32
+    },
+    "streak": {
+      "c": 1,
+      "last": "2026-09-20"
+    },
+    "history": {
+      "2026-09-20": 64
+    }
+  },
+  "goals": {
+    "daily": {
+      "k": "2026-09-20",
+      "target": 50,
+      "progress": 32,
+      "claimed": false
+    },
+    "weekly": {
+      "k": "2026-W39",
+      "target": 200,
+      "progress": 64,
+      "claimed": false
+    }
+  },
+  "gach": {},
+  "gbadges": {},
+  "gevents": [],
+  "gaudit": [],
+  "gtreasury": {
+    "balance": 0,
+    "log": []
+  },
+  "gbanned": {},
+  "warnCfg": {
+    "w1": "warn",
+    "w2": "warn",
+    "w3": "kick"
+  },
+  "memberCount": 28,
+  "adminCount": 5,
+  "metaAt": 1789937866190
+}

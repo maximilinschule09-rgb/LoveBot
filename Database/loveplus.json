@@ -1,0 +1,176 @@
+{
+  "users": {
+    "4915155894714jid269574108926096lid": {
+      "achievements": {
+        "couple_7": 1788689092241,
+        "married": 1788689092241,
+        "first_pet": 1788991943885,
+        "first_msg": 1789102581450,
+        "together_30": 1789102581453,
+        "second_chance": 1789102581455,
+        "first_cmd": 1789102792717,
+        "goal_daily_1": 1789107475631,
+        "first_daily": 1789107487858,
+        "rich_1000": 1789163264410,
+        "level_10": 1789163264412,
+        "level_25": 1789163264414,
+        "level_50": 1789163264416,
+        "xp_10k": 1789163264418,
+        "xp_100k": 1789163264421,
+        "xp_1k": 1789163264423,
+        "titles_5": 1789163264425,
+        "level_5": 1789163264438,
+        "badges_5": 1789163264443,
+        "goal_weekly_1": 1789199805682,
+        "hours_12": 1789200269171,
+        "goalstreak_3": 1789291175310,
+        "goals_daily_7": 1789291176040,
+        "cmd_100": 1789291759395,
+        "dailyxp_500": 1789323644515,
+        "msg_100": 1789324838245,
+        "hours_20": 1789340583267,
+        "first_game": 1789380562098,
+        "rich_10k": 1789380562101,
+        "prog_streak_7": 1789534967332,
+        "goals_weekly_4": 1789661766116
+      },
+      "counters": {},
+      "lovebonus": {
+        "lastAt": "2026-9-6",
+        "streak": 1
+      },
+      "pet": {
+        "name": "Simba",
+        "type": "🐹",
+        "createdAt": 1788991943885,
+        "lastTick": 1789123747323,
+        "love": 60,
+        "hunger": 76,
+        "mood": 100,
+        "energy": 100,
+        "level": 2,
+        "xp": 90,
+        "totalCare": 13
+      },
+      "inventory": {},
+      "cooldowns": {
+        "rob": 1789380512800
+      }
+    },
+    "420721199654jid155019043160306lid": {
+      "achievements": {
+        "first_cmd": 1789388053298,
+        "goal_daily_1": 1789458481769,
+        "first_msg": 1789808566731
+      },
+      "counters": {},
+      "lovebonus": {
+        "lastAt": 0,
+        "streak": 0
+      },
+      "pet": null,
+      "inventory": {},
+      "cooldowns": {}
+    },
+    "420606990992jid108813734645801lid": {
+      "achievements": {
+        "first_msg": 1789324306595,
+        "goal_daily_1": 1789324658963,
+        "first_cmd": 1789327336568,
+        "hours_12": 1789427065788,
+        "goalstreak_3": 1789467119573,
+        "rich_1000": 1789471003971,
+        "first_game": 1789471003975,
+        "msg_100": 1789477378894,
+        "goals_daily_7": 1789563387486
+      },
+      "counters": {},
+      "lovebonus": {
+        "lastAt": 0,
+        "streak": 0
+      },
+      "pet": null,
+      "inventory": {},
+      "cooldowns": {
+        "rob": 1789470990207
+      }
+    },
+    "4555207028jid69415898980503lid": {
+      "achievements": {
+        "first_msg": 1789326332196
+      },
+      "counters": {},
+      "lovebonus": {
+        "lastAt": 0,
+        "streak": 0
+      },
+      "pet": null,
+      "inventory": {},
+      "cooldowns": {}
+    },
+    "41767076660jid87089790083286lid": {
+      "achievements": {
+        "first_msg": 1789326628297
+      },
+      "counters": {},
+      "lovebonus": {
+        "lastAt": 0,
+        "streak": 0
+      },
+      "pet": null,
+      "inventory": {},
+      "cooldowns": {}
+    },
+    "4915222360533jid97642273091831lid": {
+      "achievements": {
+        "first_msg": 1789426337986,
+        "first_cmd": 1789426917210,
+        "goal_daily_1": 1789427000492,
+        "married": 1789427197639
+      },
+      "counters": {},
+      "lovebonus": {
+        "lastAt": 0,
+        "streak": 0
+      },
+      "pet": null,
+      "inventory": {},
+      "cooldowns": {}
+    },
+    "4915751515239jid119864568102927lid": {
+      "achievements": {
+        "first_cmd": 1789427145871,
+        "first_msg": 1789427155181,
+        "married": 1789427197639
+      },
+      "counters": {},
+      "lovebonus": {
+        "lastAt": 0,
+        "streak": 0
+      },
+      "pet": null,
+      "inventory": {},
+      "cooldowns": {}
+    }
+  },
+  "couples": {
+    "269574108926096|57956708180043": {
+      "loveXp": 40,
+      "streak": 1,
+      "lastDay": "2026-9-6",
+      "memories": 0,
+      "n1": "maxichen",
+      "n2": "4915758256378"
+    },
+    "4915222360533|4915751515239": {
+      "loveXp": 100,
+      "streak": 0,
+      "lastDay": "",
+      "memories": 0,
+      "n1": "Jetzt",
+      "n2": "ꪶ𝚯𝚩⁰⁶⁶ꫂ𝔰𝔠𝔥𝔞𝔱𝔱𝔢\ud835",
+      "marriedAt": "2026-09-14T23:06:37.639Z"
+    }
+  },
+  "games": {}
+}

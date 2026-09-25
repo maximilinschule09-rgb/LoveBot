@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<script src="/js/maintgate.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LoveBot by Maxichen 2026 💜 — Der WhatsApp-Bot mit Herz | maxichen.gamebot.me</title>
+<meta name="description" content="LoveBot by Maxichen 2026 — der WhatsApp-Bot mit Herz: Liebe &amp; Ehe, Gruppen-Tools, Economy, AI, Security &amp; ein Live-Dashboard. 232+ Befehle, direkt im Chat. Dashboard: maxichen.gamebot.me · Website: maxichen.de">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/assets/img/icon-192.png">
+<link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+<meta name="theme-color" content="#07050f">
+<meta property="og:title" content="LoveBot by Maxichen 2026 💜 — Der WhatsApp-Bot mit Herz">
+<meta property="og:description" content="232+ Befehle: Liebe & Ehe, Economy, AI, Gruppen-Tools & ein Live-Dashboard. Direkt im Chat. maxichen.gamebot.me · maxichen.de">
+<meta property="og:type" content="website">
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/consent.css">
+</head>
+<body>
+<div class="aurora"></div>
+<div class="grid-overlay"></div>
+<div class="hearts" id="hearts"></div>
+
+<header class="topnav">
+  <a class="brand" href="/"><span class="h">💜</span><b>LOVEBOT</b></a>
+  <button class="nav-burger" onclick="this.nextElementSibling.classList.toggle('open')" aria-label="Menü">☰</button>
+  <nav class="nav-links">
+    <a href="/" class="active">Start</a>
+    <a href="/features.html">Features</a>
+    <a href="/cmd.html">Befehle</a>
+    <a href="/spiele.html">Spiele</a>
+    <a href="/level.html">Level</a>
+    <a href="/regeln.html">Regeln</a>
+    <a href="/status.html">Status</a><a href="/statistics.html">Statistiken</a><a href="/leaderboard.html">Bestenliste</a><a href="/sessions.html">Sessions</a><a href="/docs.html">Docs</a>
+    <a href="/faq.html">FAQ</a>
+    <a class="cta-mobile" href="/login.html"><span class="btn" style="padding:10px 22px">Einloggen</span></a>
+  </nav>
+  <a href="/login.html" class="cta">Einloggen →</a>
+</header>
+
+<div class="wrap-page">
+
+  <!-- ══════════ HERO ══════════ -->
+  <section class="hero" style="padding-top:70px">
+    <span class="badge"><span class="dot"></span> Läuft gerade · <span data-clock-brief>—</span></span>
+    <img class="hero-logo" src="/assets/img/logo.png" alt="LoveBot Logo" onerror="this.outerHTML='<span class=&quot;hero-emoji&quot;>💜</span>'">
+    <p class="sub" style="letter-spacing:.28em;font-weight:800;font-size:12px;margin-bottom:10px;color:var(--muted)">YOUR CHAT. YOUR WORLD.</p>
+    <h1>Der WhatsApp-Bot,<br>mit dem man sich <span class="grad">verliebt</span>.</h1>
+    <p class="sub"><b>LoveBot by Maxichen 2026</b> — nicht nur ein Bot, sondern ein komplettes Ecosystem: <b>XP &amp; Levels</b>, <b>Spiele</b>, <b>Economy</b>, <b>Pets</b>, <b>Media</b> &amp; <b>Community</b> — alles in einem System, direkt im Chat. <b>232+ Befehle</b>, ein Präfix: <b>$</b></p>
+    <div class="platform-chips">
+      <span class="pchip">💜 XP &amp; Level</span>
+      <span class="pchip">🎮 Games</span>
+      <span class="pchip">💰 Economy</span>
+      <span class="pchip">🐾 Pets</span>
+      <span class="pchip">🎬 Media</span>
+      <span class="pchip">👥 Community</span>
+    </div>
+    <div class="cta-row">
+      <a class="btn" href="/login.html">💜 Dashboard öffnen</a>
+      <a class="btn ghost" href="/cmd.html">📜 Bot &amp; Befehle ansehen</a>
+    </div>
+    <p class="hint" style="margin-top:16px">🔗 Erreichbar unter <a href="https://maxichen.gamebot.me" target="_blank" rel="noopener"><b>maxichen.gamebot.me</b></a> &amp; <a href="https://maxichen.de" target="_blank" rel="noopener"><b>maxichen.de</b></a></p>
+
+    <div class="chat-demo">
+      <div class="bub me"><code>$marry @Leni</code></div>
+      <div class="bub">💍 *Leni, willst du Maxichen heiraten?* — antworte mit <code>$marryja</code> 💜</div>
+      <div class="bub me"><code>$marryja</code> 💍</div>
+      <div class="bub">🥰 Herzlichen Glückwunsch! Ihr seid jetzt verheiratet — Liebe +100 💕</div>
+    </div>
+  </section>
+
+  <!-- ══════════ LIVE-STATS ══════════ -->
+  <section style="padding-top:26px;padding-bottom:10px">
+    <div class="livebar">
+      <div class="cell"><div class="num" id="cntUsers">…</div><div class="lbl">Nutzer</div></div>
+      <div class="cell"><div class="num" id="cntGroups">…</div><div class="lbl">Gruppen</div></div>
+      <div class="cell"><div class="num" id="cntCmds">…</div><div class="lbl">Befehle</div></div>
+      <div class="cell"><div class="num" id="cntSessions">…</div><div class="lbl">Sessions</div></div>
+      <div class="cell"><div class="num" id="cntPets">…</div><div class="lbl">Pets</div></div>
+      <div class="cell"><div class="num" id="cntCouples">…</div><div class="lbl">Paare</div></div>
+      <div class="cell"><div class="st on" id="cntBot"><span class="dot"></span> LIVE</div><div class="lbl">ALL SYSTEMS</div></div>
+    </div>
+  </section>
+
+  <!-- ══════════ LEVEL SYSTEM ══════════ -->
+  <section id="levelsystem" style="padding-top:34px">
+    <div class="sec-head reveal">
+      <div class="kicker">💜 Neu: Level-System</div>
+      <h2>Jede nette Nachricht bringt <span class="grad-text">Level</span>.</h2>
+      <p>XP für Nachrichten, Komplimente, Befehle, Dailies &amp; Spiele — 15 Ränge, 743 Level pro Prestige-Zyklus und Kupfer-Belohnungen bei jedem Level-Up. <b>Level 0 → 743, dann ein neues Kapitel.</b></p>
+    </div>
+    <div class="lvl-wrap reveal">
+      <div class="lvl-card">
+        <div class="lvl-top">
+          <div class="lvl-avatar">💜</div>
+          <div>
+            <div class="lvl-name">maxichen <span class="lvl-rank-badge">🌷 Flirter</span></div>
+            <div class="lvl-sub">Prestige 0 · Level 24 · 🔥 3 Tage Streak</div>
+          </div>
+        </div>
+        <div class="lvl-xp">
+          <div class="lvl-xp-labels"><span><b>1.284 XP</b></span><span>Level 25 — noch 612 XP</span></div>
+          <div class="lvl-bar"><div class="lvl-bar-fill" style="--target:68%"></div></div>
+        </div>
+        <div class="lvl-chips">
+          <span class="chip">💬 Nachricht +5 XP</span>
+          <span class="chip">💜 Nette Nachricht ×2–×3</span>
+          <span class="chip">🌹 „Du bist so schön“ +5 Bonus</span>
+          <span class="chip">⚙️ Jeder Befehl +2 XP</span>
+          <span class="chip">💋 Liebes-Aktion +5 XP</span>
+          <span class="chip">🎮 Spiel-Sieg +15 XP</span>
+          <span class="chip">💎 $daily +50 XP</span>
+        </div>
+      </div>
+      <div class="lvl-ranks">
+        <div class="lvl-rank-row"><span class="r-emoji">🐣</span><span class="r-name">Neuling</span><span class="r-lv">Level 0</span></div>
+        <div class="lvl-rank-row"><span class="r-emoji">🌸</span><span class="r-name">Herzling</span><span class="r-lv">Level 10</span></div>
+        <div class="lvl-rank-row hot"><span class="r-emoji">🌷</span><span class="r-name">Flirter</span><span class="r-lv">Level 25</span></div>
+        <div class="lvl-rank-row"><span class="r-emoji">💕</span><span class="r-name">Romantiker</span><span class="r-lv">Level 50</span></div>
+        <div class="lvl-rank-row"><span class="r-emoji">🌹</span><span class="r-name">Rose des Herzens</span><span class="r-lv">Level 100</span></div>
+        <div class="lvl-rank-row"><span class="r-emoji">👑</span><span class="r-name">Herzfürst(in) <small style="color:var(--faint)">→ bis 💖 Mythisch (743) &amp; 🕊️ Prestige-Titel</small></span><span class="r-lv">Level 500</span></div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:26px" class="reveal">
+      <a class="btn" href="/level.html">💜 Level-System im Detail</a>
+    </div>
+  </section>
+
+  <!-- ══════════ LOVEPLUS-UPDATE ══════════ -->
+  <section id="loveplus" style="padding-top:34px">
+    <div class="sec-head reveal">
+      <div class="kicker">✨ Neu: LovePlus-Update</div>
+      <h2>Mehr als ein Bot — <span class="grad-text">ein kleines Leben</span>.</h2>
+      <p>19 neue Befehle: Beziehungen mit Love-XP, eigene Haustiere, Geschenke &amp; Shop, Achievements, Streaks und Mini-Games.</p>
+    </div>
+    <div class="cards">
+      <div class="card reveal"><div class="ico">❤️</div><h3>Beziehungssystem</h3><p>Verheiratet? <b>$relationship</b> zeigt gemeinsame Tage, Love-XP, Couple-Level, Treue und den nächsten Jahrestag. Täglicher <b>$lovebonus</b> mit Streak.</p><a class="card-link" href="/cmd.html">Befehle ansehen →</a></div>
+      <div class="card reveal"><div class="ico">🐶</div><h3>Haustiere</h3><p>Adoptiere mit <b>$pet create</b> dein eigenes Haustier — füttern, spielen, Level aufsteigen. Vernachlässigung wird bestraft. 🥺</p></div>
+      <div class="card reveal"><div class="ico">🎁</div><h3>Shop &amp; Geschenke</h3><p>Rosen, Teddys, Ringe und mehr im <b>$shop</b>. Verschenke sie mit <b>$gift</b> — Geschenke an den Partner geben Love-XP.</p></div>
+      <div class="card reveal"><div class="ico">🏆</div><h3>Achievements &amp; Spiele</h3><p>13 Achievements freischalten, <b>$hangman</b> &amp; <b>$riddle</b> spielen, Kupfer verdienen — und mit <b>$rob</b> alles riskieren. 😈</p></div>
+    </div>
+    <div class="chat-demo" style="margin-top:34px">
+      <div class="bub me"><code>$relationship</code></div>
+      <div class="bub">❤️ <b>EURE BEZIEHUNG</b> — Max 💞 Lisa<br>💯 Gemeinsame Tage: 45 · ⭐ Couple-Level 2<br>[████████░░░] 72% zum Level 3 · 🤝 Treue: 91%</div>
+    </div>
+  </section>
+
+  <!-- ══════════ FEATURES ══════════ -->
+  <section id="features">
+    <div class="sec-head reveal">
+      <div class="kicker">Was kann LoveBot?</div>
+      <h2>Ein Bot. <span class="grad-text">Tausend Herzen.</span></h2>
+      <p>Alles, was deine Gruppe braucht — Unterhaltung, Spiele, Verwaltung und Schutz, sauber in einem Bot vereint.</p>
+    </div>
+    <div class="cards">
+      <div class="card reveal"><div class="ico">💍</div><h3>Liebe &amp; Ehe</h3><p>Echte Anträge mit Ja/Nein-Antwort, Scheidung, Ship &amp; Love-o-Meter, Küsse, Umarmungen und Komplimente.</p><a class="card-link" href="/cmd.html">Befehle ansehen →</a></div>
+      <div class="card reveal"><div class="ico">🎰</div><h3>Spiele &amp; Slot</h3><p>Slot-Machine mit Sound, Mini-Slot, Würfeln, 8-Ball, Quiz, Wahrheit oder Pflicht, Schere-Stein-Papier &amp; mehr.</p><a class="card-link" href="/cmd.html">Befehle ansehen →</a></div>
+      <div class="card reveal"><div class="ico">💰</div><h3>Economy &amp; Level</h3><p>XP für nette Nachrichten (bis ×3!), Dailies, Spiele &amp; Arbeit — 15 Ränge, 743 Level, Prestige-Titel, Kupfer-Belohnungen und eine Live-Bestenliste.</p><a class="card-link" href="/level.html">Level-System ansehen →</a></div>
+      <div class="card reveal"><div class="ico">👥</div><h3>Gruppen-Tools</h3><p>TagAll, Umfragen, Gruppen-Infos, Regeln, Willkommens-Nachrichten — 14 Features per <b>$an / $aus</b> schaltbar.</p><a class="card-link" href="/features.html">Alle Features →</a></div>
+      <div class="card reveal"><div class="ico">🛡️</div><h3>Automod &amp; Schutz</h3><p>Badword-Filter mit Warn-Kette, Anti-Link, Auto-Kick, Ban-System mit JID- &amp; LID-Erkennung überall.</p><a class="card-link" href="/features.html">Mehr erfahren →</a></div>
+      <div class="card reveal"><div class="ico">🎨</div><h3>Medien &amp; KI</h3><p>AI-Bilder &amp; Videos, Audio-Effekte, Musik laden, YouTube-, TikTok- &amp; Instagram-Auto-Download.</p><a class="card-link" href="/features.html">Mehr erfahren →</a></div>
+      <div class="card reveal"><div class="ico">🖥️</div><h3>Live-Dashboard</h3><p>Groups, Badwords, Bans, Broadcasts, Logs &amp; Live-Monitor — alles im Browser steuern, sicher mit 2FA-Login.</p><a class="card-link" href="/login.html">Zum Login →</a></div>
+      <div class="card reveal"><div class="ico">📡</div><h3>Immer erreichbar</h3><p>Auto-Reconnect, Session-Handling, Speedtest, Uptime &amp; Status — öffentlich einsehbar in Echtzeit.</p><a class="card-link" href="/status.html">Live-Status →</a></div>
+    </div>
+  </section>
+
+  <!-- ══════════ BEFEHLE-VORSCHAU ══════════ -->
+  <section id="befehle">
+    <div class="sec-head reveal">
+      <div class="kicker">Befehle</div>
+      <h2><span id="cmdTotal">265+</span> Befehle, <span class="grad-text">14 Kategorien</span></h2>
+      <p>Vom Heiraten bis zum Speedtest — hier ein Vorgeschmack. Die komplette Liste mit Suche findest du auf der Befehle-Seite.</p>
+    </div>
+    <div class="cmdgrid" id="cmdGrid"></div>
+    <div style="text-align:center;margin-top:26px" class="reveal">
+      <a class="btn" href="/cmd.html">📜 Alle Befehle durchstöbern</a>
+    </div>
+  </section>
+
+  <!-- ══════════ SO FUNKTIONIERT'S ══════════ -->
+  <section id="anleitung">
+    <div class="sec-head reveal">
+      <div class="kicker">In 2 Minuten drin</div>
+      <h2>Bot rein, <span class="grad-text">Spaß an</span>.</h2>
+      <p>Drei Schritte, dann übernimmt der Bot — den Rest erklärt er dir selbst mit <b>$help</b>.</p>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card reveal"><div class="nr">01</div><h3>Bot in die Gruppe holen</h3><p>Schreib dem Owner direkt und schicke deinen Gruppen-Link — der Bot tritt bei.</p></div>
+      <div class="step-card reveal"><div class="nr">02</div><h3>Registrieren &amp; Menü öffnen</h3><p>Einmal <code>$register Name.Alter.Status.Stadt</code> — danach zeigt <code>$help</code> oder <code>$menu</code> alles, was der Bot kann.</p></div>
+      <div class="step-card reveal"><div class="nr">03</div><h3>Features anpassen</h3><p>Mit <code>$gi</code> siehst du alle 14 Gruppen-Features — einschalten mit <code>$an welcome</code>, ausschalten mit <code>$aus welcome</code>.</p></div>
+    </div>
+  </section>
+
+</div>
+
+<!-- ══════════ FOOTER ══════════ -->
+<footer>
+  <div class="foot-inner">
+    <div>
+      <div class="foot-brand"><span class="h">💜</span><b>LOVEBOT</b></div>
+      <p class="foot-desc">Der WhatsApp-Bot mit Herz — gebaut von Maxichen. Liebe, Spiele, Economy, KI und ein Live-Dashboard in einem.</p>
+    </div>
+    <div>
+      <h4>Navigation</h4>
+      <div class="flinks">
+        <a href="/">Start</a>
+        <a href="/features.html">Features</a>
+        <a href="/cmd.html">Befehle</a>
+        <a href="/level.html">Level-System</a>
+        <a href="/status.html">Live-Status</a>
+        <a href="/statistics.html">Statistiken</a>
+        <a href="/leaderboard.html">Bestenliste</a>
+        <a href="/faq.html">FAQ</a>
+        <a href="/datenschutz.html">Datenschutz</a>
+        <a href="/impressum.html">Impressum</a>
+      </div>
+    </div>
+    <div>
+      <h4>Community</h4>
+      <div class="socials" id="socials"></div>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <p id="footOwner"></p>
+    <p style="margin-top:6px">© <span id="year">2026</span> LoveBot by Maxichen 2026 · <a href="https://maxichen.gamebot.me" target="_blank" rel="noopener">maxichen.gamebot.me</a> · <a href="https://maxichen.de" target="_blank" rel="noopener">maxichen.de</a> · Made with 💜</p>
+  </div>
+</footer>
+
+<script src="/js/common.js"></script>
+<script src="/js/commands-data.js"></script>
+<script src="/js/landing.js"></script>
+</body>
+</html>

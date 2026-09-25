@@ -1,0 +1,961 @@
+# LoveBot – vollständige Installations- und Nutzungsanleitung
+
+> Die Informationen in dieser Datei sind als ausführliches Handbuch für die Nutzung dieses Projekts gedacht. Sie erklären den kompletten Ablauf von der Installation bis zur Verwendung, inklusive Login, Registrierungsprozess, Befehle und Hinweise zu Datenschutz, Sicherheit und Verantwortung.
+
+> Wichtiger Hinweis zur Verantwortung: Wenn du dieses Projekt herunterlädst, installierst und ausführst, trägst du als Nutzer die alleinige Verantwortung für die Nutzung, die Konfiguration, den richtigen Betrieb, die Sicherheit deines Geräts, deinen WhatsApp-Account, deine Daten und die Einhaltung aller geltenden Gesetze und Richtlinien. Der Entwickler/Autor dieses Projekts, die Verwalter und alle Mitwirkenden übernehmen keine Haftung und keine Verantwortung für Schäden, Datenverluste, Accountprobleme, rechtliche Folgen, Kommunikationsfehler, Missbrauch oder sonstige Ereignisse, die durch die Nutzung des Bots entstehen. Dieses Projekt wird ohne Gewährleistung bereitgestellt.
+
+---
+
+## 1. Überblick
+
+Dieses Projekt ist ein WhatsApp-Bot, der mit Baileys und Node.js läuft. Es enthält:
+
+- Verbindung zu WhatsApp über einen Login mit QR-Code oder Pairing-Code
+- Session-Handling mit gespeicherten Credentials
+- Registrierungslogik für Nutzerprofile
+- Info-Befehle wie `$me`, `$owner`, `$ping`, `$help`
+- Gruppen- und Admin-Funktionen
+- Medien-/AI-/Link-/Hash-Funktionen
+- Profil- und Statusfunktionen
+- lokale Datenspeicherung im Projektordner
+
+Das Projekt nutzt unter anderem:
+
+- Node.js
+- Baileys
+- `qrcode-terminal`
+- `ffmpeg-static`
+- `pino` und weitere Pakete
+
+Das Projekt ist im aktuellen Zustand ein lokaler Bot, der auf deinem eigenen Rechner ausgeführt wird. Das bedeutet: Du selbst bist der Betreiber.
+
+---
+
+## 2. Voraussetzungen
+
+Vor dem Start solltest du folgendes vorbereitet haben:
+
+### 2.1 Software
+
+- Node.js Version 24 oder höher
+- npm oder pnpm (npm wird hier vorausgesetzt)
+- Git (optional, aber nützlich zum Download)
+- Terminal oder PowerShell
+- Auf Windows: PowerShell oder CMD
+
+### 2.2 Hardware / Umgebung
+
+- Ein Computer mit laufendem Betriebssystem
+- Internetzugang
+- Zugriff auf dein WhatsApp-Konto mit dem du den Bot verbinden möchtest
+- Ein Smartphone, auf dem du WhatsApp benutzt und mit dem du den QR-Code oder Pairing-Code scannen kannst
+- Stabiler Speicherplatz auf dem Rechner
+
+### 2.3 Wichtig vor dem Start
+
+- Stelle sicher, dass du die Nutzung von WhatsApp-Bots auf deinem Account und Gerät erlaubst
+- Nutze nur dein eigenes WhatsApp-Konto oder ein Konto, für das du die Rechte und Erlaubnis hast
+- Vermeide das Ausführen des Bots auf öffentlichen oder unsicheren Rechnern
+- Sichere wichtige Daten, bevor du Session-Ordner oder WhatsApp-Session-Dateien löschst
+
+---
+
+## 3. Projekt herunterladen
+
+### Option A: ZIP herunterladen
+
+1. Lade das Projekt als ZIP-Datei herunter.
+2. Entpacke es an einen beliebigen Ort, zum Beispiel:
+   - `C:\Users\DeinName\Desktop\LoveBot`
+3. Öffne danach das Projektverzeichnis in einem Terminal.
+
+### Option B: mit Git klonen
+
+```bash
+git clone <repository-url>
+cd LoveBot
+```
+
+Falls du den vollständigen Link nicht hast, wähle den Download auf GitHub oder den Ordner, den du von der Quelle erhalten hast.
+
+---
+
+## 4. Projektverzeichnis verstehen
+
+Im Basisordner findest du unter anderem diese wichtigen Dateien und Ordner:
+
+- `Love.js` – Hauptprogramm des Bots
+- `waApi.js` – WhatsApp-API-Logik und Pairing-/Login-Funktionen
+- `nodeApi.js` – Node-/Systemfunktionen
+- `colorApi.js` – farbige Konsolenausgabe
+- `package.json` – Projektkonfiguration und Startbefehle
+- `Bilder/` – Bilddateien, z. B. Profilbilder, Menübilder, Owner-Bilder
+- `Database/` – lokale Datenbank-/Profilordner
+- `Sessions/` – Session-Dateien nach dem Login
+- `README.md` – Doku
+
+Das Wichtige: Nach dem ersten Login wird ein Session-Ordner für WhatsApp-Credentials erstellt. Dieser enthält lokal gespeicherte Authentifizierungsdaten. Das ist nicht automatisch „unsicher“, aber du bist für die sichere Aufbewahrung verantwortlich.
+
+---
+
+## 5. Abhängigkeiten installieren
+
+Öffne PowerShell oder CMD im Projektordner und führe aus:
+
+```bash
+npm install
+```
+
+Wenn alles korrekt ist, werden die benötigten Pakete installiert und der `node_modules`-Ordner wird angelegt.
+
+### Prüfen der benötigten Version
+
+In `package.json` ist die Mindestversion gesetzt:
+
+```json
+"engines": {
+  "node": ">=24.0.0"
+}
+```
+
+Wenn du eine ältere Node.js-Version hast, installiere zuerst eine passende Version. Auf Windows kannst du z. B. nvm-windows verwenden oder eine neuere Node-Version direkt installieren.
+
+---
+
+## 6. Projekt starten
+
+Der Startbefehl ist in `package.json` definiert:
+
+```json
+"scripts": {
+  "start": "node Love.js",
+  "watch": "node --watch Love.js"
+}
+```
+
+Starte das Projekt mit:
+
+```bash
+npm start
+```
+
+Oder mit Watch-Modus:
+
+```bash
+npm run watch
+```
+
+Wenn das Projekt korrekt gestartet wird, erscheint das Pairing-Menü bzw. je nach aktuellem Zustand eine Session-Auswahl.
+
+---
+
+## 7. Login- und Pairing-Ablauf
+
+Der Bot hat je nach Sessionzustand ein Menü, das durch `pairMenu()` bereitgestellt wird.
+
+### 7.1 Noch keine Session vorhanden
+
+Wenn keine gültige Session gefunden wurde, erscheint ein Menü wie dieses:
+
+- `[p]` – Pairing per Telefonnummer + Code initialisieren
+- `[q]` – QR-Code im Terminal für den Login generieren
+- `[x]` – Skript beenden
+
+### 7.2 Pairing über Telefonnummer und Code
+
+Wenn du `p` wählst, wirst du nach einer Telefonnummer mit Ländervorwahl gefragt.
+
+Beispiel:
+
+```text
+491701234567
+```
+
+Danach startet der Bot den Pairing-Prozess.
+
+Der Bot ruft die Funktion `sock.requestPairingCode(cleanNumber)` auf und zeigt dir den erhaltenen Code im Terminal an.
+
+Dann musst du in WhatsApp auf deinem Smartphone handeln:
+
+1. WhatsApp öffnen
+2. Auf das Drei-Punkte-Menü oder auf das Zahnradsymbol gehen
+3. „Verknüpfte Geräte“ auswählen
+4. „Mit Telefonnummer verknüpfen“ wählen
+5. Den im Terminal angezeigten Pairing-Code eingeben
+
+Der Code ist nur für den Verbindungsaufbau relevant und dient dazu, das Gerät als WhatsApp-Verknüpfung zu registrieren.
+
+### 7.3 Login über QR-Code
+
+Wenn du `q` wählst, wird ein QR-Code im Terminal generiert.
+
+Danach geht man so vor:
+
+1. WhatsApp auf dem Smartphone öffnen
+2. „Verknüpfte Geräte“ auswählen
+3. „Gerät koppeln“ / „QR-Code scannen“
+4. QR-Code im Terminal mit der Kamera scannen
+
+Der QR-Code erscheint im Terminal und wird mit `qrcode-terminal` dargestellt. Das ist ein standardmäßiger Login-Mechanismus für WhatsApp-Clients.
+
+### 7.4 Session gefunden
+
+Wenn bereits eine valide Session existiert, erscheint ein Menu mit:
+
+- `[r]` – Reconnect mit vorhandenen Credentials
+- `[d]` – Session löschen
+- `[x]` – Skript beenden
+
+Das ist wichtig, denn der Bot erkennt bereits gespeicherte Auth-Daten und kann die Verbindung wiederherstellen.
+
+### 7.5 Session löschen
+
+Wenn du `[d]` auswählst, werden die Session-Daten gelöscht. Das kann praktisch sein, wenn du einen neuen Login durchführen willst oder eine alte Session wegen Fehlern entfernen musst.
+
+> Achtung: Beim Löschen der Session werden lokale Auth-Daten entfernt. Danach musst du erneut pairen oder einen QR-Code scannen.
+
+---
+
+## 8. Wie der Bot nach dem Login aufläuft
+
+Sobald die Verbindung zu WhatsApp hergestellt ist, zeigt der Bot Informationen wie:
+
+- Präfix des Bots (z. B. `$`)
+- Host JID
+- Host LID
+- Host SID
+- Erfolgsmeldung „WhatsApp verbunden“
+
+Anschließend wird automatisch versucht, das Bot-Profil zu initialisieren, z. B.:
+
+- Name setzen
+- Status/Bio setzen
+- Profilbild setzen
+- Newsletter/Channel folgen
+
+Diese Aktionen sind Teil der automatischen Initialisierung. Sie sind im Code als `triggerLoveAutoConnectionActions` implementiert.
+
+---
+
+## 9. Registrierung mit `$register`
+
+Der Bot hat eine eigene Registrierungsfunktion. Die genaue Logik findet sich im Code im Bereich `case 'register'`.
+
+### 9.1 Format
+
+```text
+$register Name[.Alter][.Status][.Stadt]
+```
+
+Beispiele:
+
+```text
+$register Maxichen
+$register Maxichen.25.Single.Kerkrade
+```
+
+### 9.2 Aufteilung
+
+- `Name` = Maxichen (Pflicht, mind. 2 Zeichen)
+- `Alter` = optional (Zahl oder `18+`)
+- `Status` = optional, z. B. Single
+- `Stadt` = optional
+
+### 9.2.1 🔒 Datenschutz bei der Registrierung
+
+Der Bot läuft in Gruppen — deshalb können Minderjährige mitlesen und
+mitschreiben. Deshalb gilt seit dem Love-Core-Update:
+
+- **Unter 13:** keine Registrierung möglich.
+- **Unter 18:** es wird **kein exaktes Alter** gespeichert, nur die Spanne
+  „unter 18“. Bestandsprofile werden von `scripts/migrate-privacy.mjs`
+  automatisch bereinigt.
+- **Stadt:** optional und in Gruppen immer maskiert (`K●●●●●●●`).
+- **Öffentliche Profile** (Website) sind erst ab 18 und nur mit Opt-in möglich.
+- Mit `$privacy` steuert jeder Nutzer seine Sichtbarkeit selbst.
+
+Details: **[LOVE-CORE-2.md](./LOVE-CORE-2.md)**
+
+### 9.3 Wie du es nutzt
+
+1. Schreib in dem Chat mit dem Bot:
+
+```text
+$register Maxichen.16.Single.Recklinghausen
+```
+
+2. Der Bot prüft das Format.
+3. Wenn es korrekt ist, speichert er die Daten lokal.
+4. Der Bot bestätigt die Registrierung mit einer Textbestätigung oder einem Bildanhang.
+
+### 9.4 Was genau gespeichert wird
+
+Bei erfolgreicher Registrierung werden unter anderem folgende Felder gespeichert:
+
+- `registered: true`
+- `name`
+- `age`
+- `status`
+- `city`
+- `value`
+- `registeredAt`
+
+Das passiert im lokal gespeicherten Profil des Nutzers in der Projektstruktur, z. B. in einem Benutzerprofil unter `Database` oder in den Session-/User-Daten.
+
+### 9.5 Fehler bei ungültigem Format
+
+Wenn du nur `$register` schreibst oder ein falsches Format nutzt, gibt der Bot Hilfe aus. Dann zeigt er ein Beispiel und erklärt das Format.
+
+Beispielhilfe:
+
+```text
+$register Maxichen.16.Single.Recklinghausen
+
+Format:
+$register Name.Alter.Status.Stadt
+```
+
+---
+
+## 10. Profil abrufen mit `$me`
+
+Der Befehl `$me` zeigt Informationen zu dem registrierten Benutzer an.
+
+### 10.1 Funktion
+
+Wenn der Nutzer noch nicht registriert ist, erhält er eine Meldung:
+
+```text
+Du bist noch nicht registriert.
+Nutze: $register für Hilfe
+```
+
+Wenn der Nutzer registriert ist, zeigt der Bot Dinge wie:
+
+- Name
+- Alter
+- Status
+- Stadt
+- Registriert seit
+- Username
+- JID
+- LID
+- BID
+- DSGVO-Status
+- Verify-Status
+- Guthaben / Wallet
+- Fortschritt / Level / Prestige / XP
+- Gruppenrolle, falls in einer Gruppe
+
+### 10.2 Beispiel
+
+```text
+$me
+```
+
+### 10.3 Was der Bot damit kann
+
+Das dient dazu, die aktuelle Profilinformation leicht anzuzeigen. Für den Entwickler/Betreiber ist das wichtig für Debugging, Kontrolle und einfache Nutzerverwaltung.
+
+---
+
+## 11. Hilfe-Menü und Befehle
+
+Der Bot hat ein komplettes Hilfe-Menü (`$menu` / `$help`) und ein interaktives
+Single-Select-Menü (`$menunew`), das **alle Befehle in Kategorien** mit sichtbaren,
+klickbaren Buttons (iOS **und** Android) anzeigt und **`Bilder/Menu.png`** als Anhang sendet.
+
+### 11.1 Allgemein
+
+- `$ping` – **echte Live-Messung** in 7 übersichtlichen Blöcken: ① Bot-Ping (WebSocket / IQ / Sende-RTT), ② **Website-Ping auf `maxichen.de` UND `maxichen.gamebot.me`** (Status, DNS/TCP/TLS/TTFB, ICMP – immer dabei), ③ Netzwerk-Ping (ICMP), ④ Verbindungsaufbau (DNS · TCP · TLS · TTFB), ⑤ öffentliche IP/Edge, ⑥ Speed, ⑦ System – alles gemessen, nichts geschätzt
+- `$ping <url>` – Webseiten-Ping für eine **beliebige** Adresse (DNS · TCP · TLS · TTFB · Status · HTTP-Version · ICMP)
+- `$ping full` – zusätzlich großer Speedtest · `$ping nospeed` – ohne Speedtest
+- `$me` – zeigt eigene Infos + Profilbild
+- `$register <Name.Alter.Status.Stadt>` – Registrierung
+- `$username` – zeigt Username-Infos
+- `$system` / `$stats` – zeigt Uptime, Nutzer, Gruppen, AFK, Bans, RAM *(schön formatiert)*
+- `$sys` – V8-Speicherinfo
+- `$info` / `$botinfo` – Bot-Infos, Version, Features
+- `$id` – zeigt Chat-ID, deine JID/LID, Bot-JID/LID
+- `$hash <text>` – berechnet Hashes
+- `$url <link>` – analysiert einen Link
+- `$i2` / `$fetch` – liest zitierte Nachrichten
+- `$i3` – zeigt Debug-Tabelle
+- `$m7` – *(nur Host)* sendet eine Newsletter-Admin-Einladung für den LoveBot-Kanal in den aktuellen Chat, inkl. hübscher Live-Info-Box (Abonnenten, Verifizierung, Erstellungsdatum, Beschreibung) davor und einer Erfolgs-Zusammenfassung mit Ablaufdatum danach
+- `$menunew` – **interaktives Single-Select-Menü** mit Bild (iOS + Android)
+- `$owner` – zeigt Owner-Kontakt
+- `$love` / `$socials` – zeigt Love-/Social-Links
+- `$gits` – zeigt GitHub-Repos
+
+#### 📡 Kanal-Spiegel (automatisch, kein Befehl nötig) — `channelrelay.js`
+
+Jede neue Veröffentlichung im **LoveBot-Kanal** (`whatsapp.com/channel/0029VbDpdyBCMY0A62s19W0P`)
+wird automatisch in die Chats gespiegelt, in denen LoveBot mit dem **Owner** aktiv ist:
+
+- **Privater Owner-Chat** → der Post kommt nur dort an (Owner-Chat ist immer Ziel).
+- **Gruppen**, in denen der Owner mit LoveBot schreibt, werden automatisch angemeldet
+  → der Post kommt nur in genau dieser Gruppe an.
+- Weitergeleitet wird **alles**: Bilder, Videos, Audios/Sprachnachrichten, Sticker,
+  Dokumente, Texte, Kontakte, Standorte … (keine Reaktionen/Systemmeldungen).
+- Läuft **immer**, sobald der Bot verbunden ist — ohne Befehl, ohne doppelte Zustellung.
+- Konfiguration in `Database/Database.json` → `meta.channelRelay`:
+  `enabled` (Standard `true`), `sources` (Kanal-JIDs), `targets` (zusätzliche feste Ziele).
+  Der Owner-Chat lässt sich nicht entfernen.
+- **Live-Empfang**: Beim Verbindungsaufbau folgt der Bot dem Kanal automatisch **und**
+  abonniert die Live-Updates (`subscribeNewsletterUpdates` — wird regelmäßig erneuert).
+  Ohne dieses Abo kommen neue Kanal-Posts nicht zuverlässig beim Bot an.
+- **`$kanal` (Owner)**: `$kanal` = Status (Quelle, Ziele) · `$kanal on/off` = An/Aus ·
+  `$kanal test` = Testnachricht, an der du siehst, ob die Kanal-Markierung aktiv ist.
+
+#### 🏷️ JEDE Bot-Nachricht erscheint als „über den LoveBot-Kanal weitergeleitet"
+
+Der LoveBot markiert **wirklich jede ausgehende Nachricht** mit dem Kanal-Kontext
+(`contextInfo.forwardedNewsletterMessageInfo`, forwardScore 999) — so zeigt WhatsApp
+bei **jeder** Antwort den Kanal-Namen/-Link an:
+
+- **Alle Medien**: Bilder, Videos, Audios/Sprachnachrichten, Sticker, Dokumente, Kontakte, Standorte
+- **Alle Texte**: normale Antworten, Menüs, Listen, Buttons, Rich-Responses (Meta-AI-Karten, Ban-Check u. a.)
+- **Bearbeitungen**: auch Live-Bearbeitungen (z. B. der fertige `$ping`-Report) behalten die Markierung
+- **Nicht markiert** werden nur interne Steuer-Nachrichten (Reaktionen, Nachrichten löschen, echte Weiterleitungen)
+
+Die Markierung wird zentral auf `sock.relayMessage` (der Wurzel jeder ausgehenden Nachricht)
+in `Love.js` angewendet — Text-`conversation` wird automatisch in `extendedTextMessage`
+umgewandelt, damit der Kanal-Kontext auch dort ankommt.
+
+### 11.1a Extra-Befehle (Spaß, Tools, Love) — `extracmds.js`
+
+**Spaß & Spiele**
+- `$shipname <name1> & <name2>` – Kompatibilitäts-Prozentrechner + Ship-Name für zwei Namen
+- `$tarot` – zieht eine Zufalls-Tarotkarte mit Deutung
+- `$wortkette <wort>` – findet ein Folgewort (Wortketten-Spiel)
+- `$anagram <wort>` – mischt die Buchstaben eines Wortes zum Rätseln
+- `$palindrom <text>` – prüft, ob ein Text ein Palindrom ist
+- `$mathequiz` – kleine Kopfrechenaufgabe
+- `$duell @user` – Zufalls-Duell zwischen dir und einer anderen Person
+- `$wuerfelduell @user` (Alias `$würfelduell`) – Würfelduell 1-6 gegen eine andere Person
+- `$sternzeichen TT.MM.[JJJJ]` – berechnet das Sternzeichen aus einem Geburtsdatum
+- `$emoji <text>` – übersetzt einzelne Wörter in passende Emojis
+
+**Nützliche Tools (echte APIs)**
+- `$advice` (Alias `$lebensrat`) – zufälliger Lebensrat (adviceslip.com)
+- `$chucknorris` – zufälliger Chuck-Norris-Witz (api.chucknorris.io)
+- `$kanye` – zufälliges Zitat (api.kanye.rest)
+- `$activity` (Alias `$langeweile`) – Zufalls-Aktivität gegen Langeweile
+- `$iss` – aktuelle Live-Position der ISS im Orbit (open-notify.org)
+- `$meineip` (Alias `$meinip`) – öffentliche IP-Adresse des Bot-Servers
+- `$githubzen` – zufälliger GitHub-Design-Leitsatz
+- `$bmi <kg> <cm>` – berechnet den Body-Mass-Index
+- `$countdown TT.MM.JJJJ` – zeigt die Tage bis zu einem Datum
+- `$tagderwoche TT.MM.JJJJ` – berechnet den Wochentag eines Datums
+- `$zeitzone <stadt>` – zeigt die aktuelle Uhrzeit in einer Zeitzone
+
+**Love-Erweiterungen**
+- `$liebescheck @user` – süßer Zufalls-Kompatibilitäts-Report des Tages
+- `$kuschelvorschlag` – Zufallsvorschlag für ein Kuschel-/Date-Ritual
+- `$komplimentgenerator @user` – generiert ein zufälliges Kompliment
+
+_Alle 24 Extra-Befehle sind für jeden nutzbar, nutzen echte APIs (keine erfundenen Werte) und melden Fehler ehrlich, falls eine externe API nicht erreichbar ist._
+
+### 11.2 Profil & Info
+
+- `$bio` / `$status` – zeigt Bio/Status
+- `$devices` – prüft Geräteinfos
+- `$check <id>` – prüft ID/JID/LID
+- `$check2 <nummer>` – prüft Ban-/Status
+
+### 11.3 Gruppe
+
+- `$tagall` / `$all` – erwähnt alle Mitglieder
+- `$tagadmin` – erwähnt alle Admins
+- `$groups` – zeigt alle Bot-Gruppen
+- `$groupinfo` / `$gcinfo` – Infos zu dieser Gruppe (Name, ID, Mitglieder, Admins, Bot-Status, Beschreibung)
+- `$rules [text]` – Regeln anzeigen, mit Text setzen (Admin)
+- `$kickall` – entfernt alle außer Owner/Admins
+- `$activate` – aktiviert den Bot
+- `$deactivate` – deaktiviert den Bot
+- `$setup` – **Owner:** aktiviert Bot & setzt die Gruppen-Beschreibung
+- `$welcome / $goodbye [on/off]` – Auto-Nachrichten ein-/ausschalten
+- `$kick / $promote / $demote @user` – echte Aktion (Admin); mit `on/off` die Auto-Nachricht togglen
+- `$add <nummer>` – Nutzer hinzufügen
+- `$link` – Einladungslink; `$revoke` – Link zurückziehen
+- `$setname <name>` / `$setdesc <text>` – Gruppenname/-Beschreibung
+- `$mute` / `$unmute` – Gruppe stummschalten/entsperren
+- `$delete` – zitierte Nachricht löschen
+- `$warn @user <grund>` / `$unwarn @user` / `$warns @user` – Verwarnungen
+- `$join <link>` – Gruppe beitreten; `$leave` – Gruppe verlassen (Owner)
+- `$addmeta` – fügt Meta AI hinzu
+- `$kickmeta` – entfernt Meta AI
+
+### 11.4 Admin / Verifikation
+
+- `$verify [accept/reject]` – Verifizierung
+- `$dsgvo [accept/reject]` – DSGVO
+- `$cookie [accept/necessary/reject]` – Cookie-/Speicher-Zustimmung (eigene Kategorien-Tabelle, spiegelt das Web-Cookie-Banner)
+- `$blockcase <befehl> <grund>` / `$opencase <befehl>` / `$listbc` – Owner-only: einzelne Befehle bot-weit sperren/entsperren/auflisten
+- `$block <nr|@user>` / `$unblock <nr|@user>` – blockieren/entblockieren (Owner)
+- `$fp` – Fake Payment
+
+### 11.5 Media / AI
+
+- `$play <link/song>` – lädt Infos/Bild/Video/Audio
+- `$audio <modul>` – Audio beeinflussen
+- `$loadingaiimg` – AI-Bild-Loading
+- `$loadingaivid` – AI-Video-Loading
+- `$imagine <prompt>` – AI-Bild-Generierung (App-Look)
+- `$animate <prompt>` – AI-Video-Generierung (App-Look)
+- `$typing [text]` – AI Lade-Animation
+- `$slot` – Slot-Machine (App-Look mit Sound-Effekt)
+- `$slotmini` – Mini-Slot
+
+### 11.6 Werkzeuge & Utilities
+
+- `$date` / `$today` / `$time` – Datum & Uhrzeit
+- `$calc <ausdruck>` – Rechner, z. B. `$calc (2+3)*4`
+- `$b64 <text>` – Base64 en-/dekodieren
+- `$reverse <text>` – Text umkehren
+- `$flip <text>` – Text auf den Kopf stellen
+- `$upper <text>` / `$lower <text>` – Groß-/Kleinbuchstaben
+- `$length <text>` – Zeichen-, Wort- & Byteanzahl
+- `$invisible` – unsichtbare Zeile
+- `$random <a-b>` – Zufallszahl, z. B. `$random 1-100`
+- `$dice` – würfeln (1–6)
+- `$coin` – Münzwurf (Kopf/Zahl)
+- `$truth` – „Wahrheit“-Frage
+- `$dare` – „Pflicht“-Aufgabe
+- `$quote` / `$zitat` – Zitat
+- `$say <text>` – Bot spricht für dich
+- `$pfp` / `$pp @user` – Profilbild anzeigen
+- `$type <jid>` – JID-Typ prüfen
+- `$join <link>` – Gruppe beitreten
+- `$leave` – Gruppe verlassen (Owner)
+
+### 11.7 AFK, Ban & Moderation
+
+- `$afk <grund>` – AFK setzen
+- `$afk off` – AFK beenden / Auto-Comeback bei jeder Aktion
+- `$afklist` – wer ist gerade AFK
+- `$ban <id|@user|nummer> <grund>` – **Owner:** Ban (PN → block → kick)
+- `$unban <id|@user|nummer> <grund>` – **Owner:** Entbannen (unblock → PN)
+- `$banlist` – **Owner:** alle Bans
+
+### 11.8 Sonstiges
+
+- `$menu` / `$help` – Hilfe-Menü
+- `$owner` – Owner-Kontakt
+
+### 11.9 Love Core 2.0 (neu)
+
+- `$love` – **das Beziehungs-Panel**: Liebeslevel mit Balken, Love-XP, Streak,
+  gemeinsame Liebesnachrichten, Tage zusammen, gemeinsame Aktionen, Trennungen,
+  Meilensteine (7/30/100/365 Tage · 100/500/1.000 Nachrichten · Streak)
+- `$partner` – Kurzversion: Partner, Level, Streak, Nachrichten
+- `$dailylove` – ein Tagesimpuls (Tipp · Kompliment · Challenge · Zitat) inkl.
+  +25 XP und +50 Kupfer, mit eigener Serie
+- `$socials` / `$links` – Love-/Social-Links (früher `$love`)
+- Gezählt werden: `$kiss` · `$hug` · `$slap` · `$compliment` · `$flirt` ·
+  `$anmachen` · `$confess` · `$confesslove` · `$romantic` · `$goodmorning` ·
+  `$goodnight` · `$gift` · `$letter` · `$dateidee`
+
+### 11.10 Privatsphäre (neu)
+
+- `$privacy` – zeigt deine Einstellungen
+- `$privacy stadt an|aus` – Stadt verstecken
+- `$privacy alter an|aus` – Alter verstecken
+- `$privacy profil an|aus` – öffentliches Profil (erst ab 18)
+
+Regeln: unter 13 keine Registrierung · unter 18 kein exaktes Alter · Stadt in
+Gruppen maskiert · Minderjährige nie öffentlich.
+Migration bestehender Profile: `node scripts/migrate-privacy.mjs`
+
+### 11.11 Alltag & Web (neu)
+
+Alle Befehle holen **echte Daten** aus freien APIs. Ist ein Dienst nicht
+erreichbar, sagt der Bot das ehrlich – es werden keine Werte erfunden.
+
+- `$wetter <stadt>` – aktuelles Wetter + Tageswerte (Open-Meteo)
+- `$währung <betrag> <von> [nach]` – Währungen umrechnen (EZB-Referenzkurse, Frankfurter API); `$währung liste` zeigt alle
+- `$übersetze <sprache> <text>` – Text übersetzen (MyMemory), z. B. `$übersetze en Guten Morgen`
+- `$qr <text>` – QR-Code als Bild erzeugen (goqr.me)
+- `$kurz <url>` – Link kürzen (TinyURL, Fallback is.gd)
+- `$passwort [länge]` – sicheres Zufalls-Passwort (`crypto.randomBytes`, 8–64 Zeichen)
+
+---
+
+## 11.1 Level-System (XP, Level, Ränge, Prestige) — neu ab 10.09.2026
+
+Das komplette Level-System steckt in **`levelsystem.js`** (losgekoppelt, wie `loveengine.js`/`loveplus.js`).
+Die ausführliche Doku mit allen Werten: **`Dokumente/LEVEL-SYSTEM.md`**.
+
+**Kurzfassung:**
+
+- **XP-Quellen:** Nachricht 1:1 **+5**, Gruppe **+3**, nette Nachricht **×2**, Liebesnachricht **×3**,
+  Kompliment („du bist so schön …") **+5**, jeder Befehl **+2**, Liebes-Aktion **+5**, `$daily` **+50**,
+  `$dailylove` **+25**, `$work` **+10**, Spiel-Sieg **+15**, Spiel-Niederlage **+2**.
+- **Kurven-Konstante:** identisch zur SQL-Referenz `neededXpForLvOrPrestigeUp.sql` —
+  Basis 743 XP, je Level ×1.00743, 744 Level pro Prestige-Zyklus (0–743), danach Prestige-Up.
+- **Ränge:** 🐣 Neuling (0) → 🌸 Herzling (10) → 🌷 Flirter (25) → 💕 Romantiker (50) →
+  🌹 Rose des Herzens (100) → 🔥 Flammenherz (200) → 🌟 Liebesstern (400) → 👑 Herzfürst(in) (500)
+  → 💖 Mythisch (743).
+- **Prestige-Titel:** 🕊️ Herzengel (P1) · 🌹 Rosenritter(in) (P2) · 💜 Liebe-As (P3) ·
+  🌙 Stern der Liebe (P4) · 🌌 Love-Mythos (P5) · ✨ Unsterbliches Herz (P6+).
+- **Belohnungen:** Level-Up = 20 + 5·Level Kupfer (max. 400) + Chat-Ankündigung;
+  Prestige-Up = +10.000 Kupfer + großer Feiertext.
+- **Anti-Spam:** 300 XP/Stunde aus Nachrichten, 150 XP/Stunde aus Befehlen (gleitendes 60-Min-Fenster).
+- **DSGVO:** XP nur mit `$dsgvo accept` + Registrierung. Die Nette-Erkennung läuft lokal
+  (Wörterliste + Emojis), **keine Inhalte werden gespeichert**.
+- **Befehle:** `$level` (komplettes Profil), `$rank [@user]`, `$top` (Bestenliste mit Rängen).
+- **Website:** `public/level.html` (Detailseite mit Live-Bestenliste) + Sektion auf der Startseite.
+
+**Impressum & DSGVO (Web):**
+
+- Neue Seite **`public/impressum.html`** — vollständiges Impressum (§ 5 TMG, Haftung, Urheberrecht).
+- Daten **zentral in `public/impressum-data.json`**: dort werden **nur echte Angaben**
+  (Name, Adresse, E-Mail, Telefon) hinterlegt. Leere Felder zeigen markierte Platzhalter,
+  und der **Produktionscheck** (Seite + Admin-Dashboard + `/api/legal-check`) warnt,
+  solange das Impressum nicht veröffentlichungsbereit ist: **🔴 fehlt** ↔ **🟢 bereit**.
+  Es werden **nie** erfundene Daten ausgegeben.
+- `public/datenschutz.html` hat einen neuen Abschnitt „Level-System, Economy & Games"
+  (Daten, Zwecke, Rechtsgrundlagen, Text-Inhalte werden nicht gespeichert).
+
+> ⚠️ **Sicherheitshinweis:** Die Datei `.env` (Passwörter) sollte **niemals** ins öffentliche
+> Repository gelangen. Sie ist in `.gitignore` — wenn sie schon mal hochgeladen wurde:
+> Passwörter sofort ändern und die Datei aus der Historie entfernen
+> (`git rm --cached .env`, danach ggf. Historie bereinigen).
+
+---
+
+### 11.1b LoveCore Engine (EventBus, Live-Feed, Owner-XP-Admin) — neu ab 10.09.2026
+
+**`loveengine.js`** ist das zentrale Nervensystem: Jede relevante Aktion (XP,
+Level, Prestige, Coins, Games, Achievements, Owner-Änderungen, Login-Fehlschläge)
+emittiert ein **Event** — In-Memory-Ring (500) + `Database/events.jsonl`
+(5.000 Zeilen, Rotation). `emit()` ist fire-and-forget und kann nie crashen.
+
+- **Live-Feed:** `/api/live` (SSE) pusht die Events alle 3 s → SOUL ECHO
+  Dashboard + XP-Ansicht (`public/control.html → #/xp`) zeigen Live-Aktivität.
+- **XP-Admin:** `POST /api/xp/adjust` (Recht `xp.adjust`, kritisch) —
+  Grund **Pflicht**, Step-up-Passwort, Audit `xp.adjusted`, Event `XP_ADJUSTED`.
+- **System Health:** `GET /api/health` — WhatsApp-Heartbeat, Web, DB, Sessions,
+  Media, Security auf einen Blick.
+- **Konfigurierbare WEB-REQ-07:** Die Request-Flut-Regel (Reload-Schutz) liegt
+  in `Database/security-rules.json` und ist im Center unter *Auto-Regeln*
+  änderbar (Schwellwert/Fenster/Verjährung/Stufen, versioniert + Step-up).
+
+Ausführliche Doku: **`Dokumente/LOVECORE.md`**.
+
+
+## 12. . Neue Features: AFK, Auto-Mod, Setup, Ban, System
+
+Diese Module sind neu und speichern **alles** in `Database/Database.json` (zusätzliche
+Sektionen `afk`, `bans`, `meta`) sowie die Gruppen-Daten zusätzlich in
+`Database/LoveGroups/<groupId>/<groupId>.json`.
+
+### 12.0.1 AFK-System (mit Auto-Comeback)
+- `$afk <grund>` — meldet dich ab, z. B. `$afk (weil ich es kann)`.
+- `$afk off` — beendet den AFK-Status manuell.
+- Wird ein AFK-User **erwähnt (@)** oder **beantwortet** jemand eine seiner
+  Nachrichten, antwortet der Bot mit einem Hinweis: *"Diese Person ist seit
+  (Zeit) AFK, Grund …, und kann gerade nicht reden."*
+- Sobald der AFK-User **irgendetwas** macht (schreibt, antwortet, reagiert mit
+  einem Emoji), kommt automatisch: *"Du bist nach (Dauer) wegen (Grund) AFK —
+  willkommen zurück!"*.
+
+### 12.0.2 Auto-Mod (Welcome / Goodbye / Kick / Promote / Demote)
+Automatische Nachrichten in der Gruppe, einzeln an-/ausschaltbar:
+- **Betritt jemand die Gruppe** → freundliche Willkommensnachricht, die den Bot erklärt.
+- **Verlässt jemand die Gruppe** → *"@person hat @gruppe verlassen, vielleicht sehen wir uns bald wieder :("*.
+- **Wird jemand gekickt** → *"@person wurde von @user aus @gruppe gekickt, halte dich beim nächsten Mal an die Regeln"*.
+- **Wird jemand zum Admin** → *"@user wurde von @admin zum Admin gemacht, du hast jetzt das Vertrauen der Admins — zerstöre es nicht"*.
+- **Wird jemand als Admin entfernt** → *"@user wurde von @admin als Admin entfernt, … du hast versagt"*.
+
+Einstellungen (nur Admin/Superadmin/Owner) in der Gruppe:
+- `$welcome on|off`
+- `$goodbye on|off`
+- `$kick on|off`
+- `$promote on|off`
+- `$demote on|off`
+
+### 12.0.3 System-Befehl
+- `$system` bzw. `$stats` — zeigt **Uptime**, **Nutzer gesamt**, **Gruppen gesamt**,
+  registrierte/verifizierte Nutzer, aktive/inaktive Gruppen, aktuell AFK, Bans und RAM.
+
+### 12.0.4 Setup (nur Owner)
+- `$setup` — aktiviert den Bot für die Gruppe **und** setzt die Gruppen-Beschreibung
+  auf: *"LoveBot ist in <Gruppe> aktiv — nutze $dsgvo / $verify …"* inklusive
+  *"Setup gesetzt am (Zeitpunkt) von <Owner>"*.
+- Wird kein `$setup` durchgeführt, bleibt der Bot in der Gruppe inaktiv, bis der Owner es tut.
+
+### 12.0.5 Ban / Unban / Banlist (nur Owner)
+- `$ban <id|@user|nummer> <grund>` — blockiert die Person, benachrichtigt sie
+  (*"du wurdest von @user gebannt (grund) …"*), und entfernt sie aus **allen**
+  Gruppen, in denen der Bot ist.
+- `$unban <id|@user|nummer> <grund>` — entblockiert und benachrichtigt
+  (*"du wurdest entbannt … sorry für das Missverständnis …"*).
+- `$banlist` — listet alle gebannten Nutzer mit Grund und Zeitpunkt.
+- Schreibt eine gebannte Person in einer Gruppe, wird ihre Nachricht **als Admin
+  gelöscht**, eine Abschiedsnachricht inkl. Grund gesendet und sie wird gekickt.
+
+---
+
+## 12.1 Session-Ordner und Credentials
+
+Der Bot legt seine Authentifizierungsdaten in einem lokalen Session-Ordner ab. Das ist für die dauerhafte Verbindung wichtig. Wenn du den Zustand zwischenzeitig resetten willst, kannst du über das Menükonzept oder über den `Sessions`-Ordner löschen.
+
+### 12.2 Automatische Konfigurationsschritte
+
+Nach erfolgreichem Verbinden wird der Bot versucht, automatisch Name, Bio und Profilbild zu setzen. Das kann je nach WhatsApp-API/Funktionen funktionieren oder fehlschlagen. Das ist Teil der normalen Laufzeit und kein Garant, dass alles immer klappt.
+
+### 12.3 Eine Verbindung ist keine „sichere Permission“
+
+Der Bot nutzt dein WhatsApp-Benutzerkonto, um Nachrichten zu senden, zu reagieren und in Chats zu arbeiten. Du musst selbst sicherstellen, dass:
+
+- du dein Konto kontrollierst
+- du keine vertraulichen Daten unachtsam weitergibst
+- du keine externen Chatinhalte unbedacht verarbeitest
+- du auf Schadcode oder fremde Änderungen achtest
+
+---
+
+## 13. Rechtliche und sicherheitsrelevante Hinweise
+
+### 13.1 Du allein bist verantwortlich
+
+Sobald du das Projekt herunterlädst und ausführst, übernimmt die Person, die den Code nutzt, die Verantwortung für:
+
+- alle Daten, die der Bot verarbeitet
+- alle Account-Aktivitäten
+- die lokale Sicherheit
+- den Schutz von Nutzerdaten
+- die Einhaltung lokaler Gesetze und Vorschriften
+- das Verhalten des Bots in Gruppen, Chats und Netzwerken
+
+Der Entwickler/Betreiber und alle Mitwirkenden übernehmen keine Verantwortung für Schäden oder Folgen der Nutzung.
+
+### 13.2 Datenschutz
+
+Mit dem Bot können personenbezogene Daten verarbeitet werden, z. B.:
+
+- Chat-Nachrichten
+- Profilinformationen
+- JIDs und LIDs
+- Benutzer-Profile
+- Gruppendaten
+- Uhrzeiten, Registrierungen und Status-Informationen
+
+Wenn du dieses Projekt öffentlich oder in einer Umgebung mit mehreren Personen nutzt, musst du sicherstellen, dass der Einsatz rechtlich zulässig ist. Das gilt besonders bei:
+
+- WhatsApp-Chatinhalten
+- personalisierten Daten
+- Gruppenmitgliedern
+- Tracking oder Profilierung
+
+### 13.2a DSGVO-Zustimmungspflicht (verbindlich, Bot & Website)
+
+Sowohl der Bot als auch die Website erzwingen aktiv eine Zustimmung, bevor personenbezogene Daten verarbeitet oder Funktionen genutzt werden können:
+
+**Im WhatsApp-Bot:**
+- Ein neuer Nutzer wird **ohne** DSGVO-Zustimmung angelegt (`dsgvo.accepted: false`).
+- `checkCommandAccess()` (in `waApi.js`) blockiert **jeden** Befehl außer `$dsgvo`, `$cookie`, `$menu`, `$help` und `$ping`, solange nicht per `$dsgvo accept` zugestimmt wurde.
+- Host/Owner/SuperAdmin/Admin sind vom Zwang ausgenommen (der Betreiber selbst).
+- `$dsgvo reject` widerruft die Zustimmung jederzeit und sperrt den Bot wieder für den Nutzer.
+- **`$cookie`** ist das direkte Bot-Pendant zum Website-Cookie-Banner: `$cookie` zeigt dieselbe Kategorien-Tabelle (Technisch notwendig / Anonyme Statistiken) wie auf der Website, `$cookie accept` akzeptiert alles, `$cookie necessary` nur die notwendigen, `$cookie reject` widerruft. Eigener Status `status.cookie` im Profil (`accepted`, `analytics`, Zeitstempel), unabhängig vom `dsgvo`-Status, aber gleiches Verhalten/gleiche Befehlsstruktur (`handleCookieCommand()` in `waApi.js`, `case 'cookie':` in `Love.js`).
+
+### 13.2b `$blockcase` / `$opencase` / `$listbc` — Owner-Befehlssperre
+
+Streng **Owner-only** (Haupt-Owner *und* per `$addowner` eingetragene Zusatz-Owner — kein Admin, kein Superadmin, kein Host über normale Gruppenrechte):
+
+- `$blockcase <befehl> <grund>` — sperrt den angegebenen Befehl bot-weit (in allen Chats, nicht nur einer Gruppe) für alle außer dem Owner selbst. Speichert `{reason, blockedAt, blockedBy}` in `db.meta.blockedCommands[<befehl>]` (Store: `features.js`/`readDb()`/`writeDb()`).
+- `$opencase <befehl>` — entfernt die Sperre wieder.
+- `$listbc` — listet alle aktuell gesperrten Befehle in einer box-drawing-formatierten Tabelle (Befehl / Gesperrt von / Datum / Grund) auf.
+- Die Prüfung läuft in `Love.js` direkt vor dem großen `switch(command)`-Dispatcher (vor den Gruppen-Feature-Toggles): Ist der aufgerufene Befehl in `db.meta.blockedCommands` gelistet und der Absender **kein** Owner, bekommt er eine freundliche Absage mit dem hinterlegten Grund und darf den Befehl nicht ausführen — die drei Blockcase-Befehle selbst sind von dieser Sperre ausgenommen (sonst könnte man sich aussperren) und können auch nicht selbst blockiert werden.
+- Owner-Prüfung nutzt `isStrictOwner()` (Kombination aus `isMainOwner()`/`OWNER_CONFIG` und `getRegisteredOwner()`/`db.meta.owners`), bewusst **nicht** dieselbe (großzügigere) Berechtigungslogik wie bei `$dsgvo`/`$cookie`, wo auch Admins/Superadmins Zugriff haben.
+
+**Auf der Website (öffentlich, `public/`):**
+- Ein blockierendes Cookie-/DSGVO-Consent-Overlay (`consent.css` + Logik in `common.js`) erscheint auf **jeder** Seite, bis der Besucher zustimmt (Alle akzeptieren / Nur Notwendige / individuelle Auswahl). Kein Klick-Außerhalb-Dismiss.
+- Zustimmung wird in `localStorage` gespeichert (`love_consent`, versioniert) und übersteht Logout.
+- Ein 🍪-Button unten links erlaubt jederzeit, die Auswahl zu ändern.
+- Neue Seite `public/datenschutz.html` mit vollständiger Datenschutzerklärung (was gespeichert wird, warum, Rechte, Löschung, Kontakt).
+- **Registrierung im Dashboard** (`login.html`) verlangt eine Pflicht-Checkbox „Ich stimme der Datenschutzerklärung zu“ — client- **und** serverseitig geprüft (`/api/register` lehnt ohne `privacyAccepted: true` ab, unabhängig vom Frontend).
+
+### 13.3 Konformität mit Datenschutzgesetzen
+
+Du bist selbst dafür verantwortlich, dass die Verarbeitung personenbezogener Daten den geltenden Datenschutzvorschriften entspricht. Dazu gehören unter anderem:
+
+- DSGVO / Datenschutz-Grundverordnung (wenn zutreffend)
+- lokale Vorschriften
+- Zustimmung der Beteiligten wo erforderlich
+- angemessene Aufbewahrung
+- sichere Speicherung
+- Zugriffskontrolle
+
+### 13.4 Keine Garantie
+
+Das Projekt wird ohne Gewährleistung bereitgestellt. Eine Haftung für direkte, indirekte, zufällige oder folgenschädliche Schäden wird ausdrücklich ausgeschlossen.
+
+---
+
+## 14. Lokale Daten und Speicherung
+
+### 14.1 Was lokal gespeichert wird
+
+Im Projekt können je nach Nutzung und Funktionen folgende Daten lokal gespeichert werden:
+
+- Session-Dateien
+- Auth-Credentials
+- Benutzerprofile
+- Gruppendaten
+- Registrierungs- und Statusinformationen
+- Bilder oder Medien
+- Logs / Konsolenausgaben
+
+### 14.2 Warum das wichtig ist
+
+Dein Rechner ist die Quelle der Wahrheit. Sobald eine Session oder ein Profil lokal gespeichert wird, sind diese Daten unter deiner Kontrolle. Wenn du den Server oder Bot in einem unsicheren Umfeld laufen lässt, riskierst du Zugriff, Datenverlust oder Missbrauch.
+
+### 14.3 Empfohlene Vorsichtsmaßnahmen
+
+- Nutze starke Passwörter auf deinem System
+- Schütze den Rechner mit einem aktiven Antivirenprogramm
+- Halte Node.js und Abhängigkeiten aktuell
+- Speichere vertrauliche Daten nicht ungeschützt
+- Lade nur vertrauliche Dateien von Originalquellen herunter
+- Analysiere Änderungen im Code, bevor du sie ausführst
+
+---
+
+## 15. Fehlerbehebung
+
+### 15.1 Node.js-Version zu alt
+
+Fehler: `node` Version zu niedrig.
+
+Lösung:
+
+- Installiere Node.js 24+.
+- Prüfe mit:
+
+```bash
+node -v
+```
+
+### 15.2 `npm install` funktioniert nicht
+
+Mögliche Ursachen:
+
+- kein Internet
+- Proxy-/Firewall-Einstellungen
+- fehlende Berechtigungen
+- beschädigte Node-Installation
+
+Lösung:
+
+- Internet prüfen
+- Terminal als Administrator/mit passenden Rechten öffnen
+- Neu starten und erneut installieren
+
+### 15.3 Pairing oder QR fehl schlägt
+
+Mögliche Ursachen:
+
+- falsche Nummer
+- Verbindung fehlgeschlagen
+- WhatsApp-Server-Probleme
+- Session beschädigt
+
+Lösung:
+
+- neu starten
+- Session löschen
+- erneut mit `p` oder `q` pairen
+
+### 15.4 Bot startet, aber Verbindung bricht
+
+Der Code behandelt Verbindungsfehler und versucht bei Bedarf einen automatischen Neustart. Wenn ein Fehler wiederholt auftritt, kann der Bot beendet werden.
+
+Wenn das der Fall ist:
+
+- prüfe die internet-Verbindung
+- prüfe den WhatsApp-Status
+- lösche die Session, falls nötig
+- starte neu
+
+---
+
+## 16. Wichtiger Hinweis zum verantwortungsvollen Einsatz
+
+Dieser Bot ist ein Werkzeug. Die Verantwortung für seinen Einsatz liegt ausschließlich beim Benutzer.
+
+Das bedeutet konkret:
+
+- Du entscheidest, ob und wie du ihn ausführst.
+- Du prüfst die Nutzung auf rechtliche/ethische Zulässigkeit.
+- Du trägst das Risiko von Fehlfunktionen, Datenverlusten und Sicherheitsproblemen.
+- Du bist allein verantwortlich für die Folgen der Nutzung.
+- Der Entwickler, der Autor und die Person, die das Projekt bereitstellt, übernehmen keine Haftung.
+
+Wenn du ein Projekt dieser Art nutzt, musst du selbst verstehen, dass es sich um einen lokalen technischen Agenten handelt, der mit tatsächlichen Kommunikations-, Profil- und Credentials-Daten arbeitet.
+
+---
+
+## 17. Schnellstart: Download → Installation → Login → Nutzung
+
+Wenn du den schnellsten Weg nutzen willst, dann geht es so:
+
+1. Projekt herunterladen
+2. Ordner entpacken
+3. In den Ordner gehen
+4. `npm install` ausführen
+5. `npm start` starten
+6. Im Menu `p` oder `q` wählen
+7. WhatsApp mit QR-Code oder Pairing-Code verbinden
+8. Sobald der Bot online ist, `$register` benutzen
+9. `$me` prüfen
+10. `$help` oder `$menu` nutzen
+11. Befehl flexibel anwenden
+
+---
+
+## 18. Beispiel-Workflow
+
+```text
+1. Download / entpacken
+2. cd LoveBot
+3. npm install
+4. npm start
+5. Auswahl: p
+6. Telefonnummer eingeben
+7. Pairing-Code im WhatsApp-Client eingeben
+8. Verbindung erfolgreich
+9. $register Maxichen.16.Single.Recklinghausen
+10. $me
+11. $help
+```
+
+Das ist der Standard-Ablauf aus dem aktuellen Projekt.
+
+---
+
+## 19. Verweis auf detaillierte Dokumente
+
+Für weiterführende Informationen gibt es in diesem Projekt zusätzlich Dokumente im Ordner `Dokumente`:
+
+- `Dokumente/datenschutz.md`
+- `Dokumente/datenverarbeitung.md`
+- `Dokumente/LEVEL-SYSTEM.md` — komplettes Level-System (XP, Kurve, Ränge, Prestige, Anti-Spam, DSGVO)
+- `Dokumente/LOVECORE.md` — LoveCore Engine (EventBus, Live-Feed, XP-Admin, WEB-REQ-07)
+- `Dokumente/LOVEBOT-5.0-ROADMAP.md` — komplette 5.0-Vision (106 Punkte) mit Status + Phasenplan
+- `handbuch.md`
+
+Diese Dateien ergänzen diese README und erklären die datenschutzrechtlichen und betrieblichen Aspekte ausführlicher.
+
+---
+
+## 20. Abschluss
+
+Dieser Bot kann ein mächtiges Werkzeug sein, aber er ist kein „fertiges, massenvertriebliches Produkt mit automatischer Sicherheit“. Du betreibst ihn lokal, du entscheidest, wie er läuft, und du trägst die Verantwortung für die Konsequenzen.
+
+Wenn du zu 100 % verstehen willst, wie alles funktioniert, nutze diese README zusammen mit dem ausführlichen Handbuch und den Datenschutz- und Datenverarbeitungsdokumenten.
+
+> Verantwortungshinweis: Die Nutzung dieses Projekts erfolgt auf eigene Verantwortung. Der Entwickler oder die bereitstellende Person übernimmt keine Haftung und keine Verantwortung für Folgen, Fehler, Datenverluste, Missbrauch oder Rechtsprobleme.
+
+Wenn du möchtest, kann ich dir als Nächstes noch eine zweite, noch ausführlichere Version mit noch mehr Beispielen, Screenshots-Texten und einem noch umfangreicheren Befehls-Katalog erstellen.

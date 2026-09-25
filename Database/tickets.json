@@ -1,0 +1,19 @@
+{
+  "nextId": 2,
+  "tickets": [
+    {
+      "id": "T-0001",
+      "creatorJid": "420721199654@s.whatsapp.net",
+      "creatorName": "finlay",
+      "bid": "420721199654jid155019043160306lid",
+      "text": "test",
+      "status": "open",
+      "answers": [],
+      "createdAt": "2026-09-15T07:47:43.330Z",
+      "updatedAt": "2026-09-15T07:47:43.330Z"
+    }
+  ],
+  "config": {
+    "devGroup": ""
+  }
+}

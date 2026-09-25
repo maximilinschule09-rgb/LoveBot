@@ -1,0 +1,22 @@
+{"time":"2026-09-10T06:39:03.299Z","actor":"910maxi","action":"reauth.ok","target":"reauth.verify","ip":"185.47.•.•"}
+{"time":"2026-09-10T06:39:19.911Z","actor":"910maxi","action":"session.delete","target":"test910","name":"test910"}
+{"time":"10.9.2026, 11:15:07","actor":"910maxi","action":"download.zip","target":"LoveBot-All-in-One","files":8,"size":657970,"ip":"185.47.•.•"}
+{"time":"2026-09-10T10:01:34.133Z","actor":"910maxi","action":"reauth.ok","target":"reauth.verify","ip":"185.47.•.•"}
+{"time":"10.9.2026, 12:01:42","actor":"910maxi","action":"export.xlsx","target":"owner-export","sheets":"Übersicht, Gruppen, Nutzer & Profile, Nutzer-Details (Spiele · Bank), Accounts & Rechte, Konten-Historie, Web-Sessions, IP-Übersicht & Standorte, Sperren & Bans, Bot-Sessions, Audit-Log, Admin-Aktionen, Rollen-Matrix","via":"reauth"}
+{"time":"2026-09-10T10:02:37.824Z","actor":"910maxi","action":"feature.toggle","target":"120363411386930403 | 𓆩♡𓆪 910maxi 𓆩♡𓆪 Dev gruppe | antilink","key":"antilink","on":false,"before":true,"reason":"Brauche ich ned","group":"𓆩♡𓆪 910maxi 𓆩♡𓆪 Dev gruppe"}
+{"time":"2026-09-11T08:49:41.358Z","actor":"910maxi","action":"reauth.ok","target":"reauth.verify","ip":"185.47.•.•"}
+{"time":"2026-09-11T21:02:32.998Z","actor":"910maxi","action":"reauth.failed","target":"reauth.verify","ip":"193.111.•.•"}
+{"time":"2026-09-11T21:02:38.530Z","actor":"910maxi","action":"reauth.ok","target":"reauth.verify","ip":"193.111.•.•"}
+{"time":"2026-09-13T08:41:30.151Z","actor":"owner","action":"mute","detail":"269724751503435 · permanent"}
+{"time":"2026-09-13T08:44:12.382Z","actor":"269574108926096","action":"ai-group","group":"120363411386930403","detail":"an"}
+{"time":"2026-09-13T09:21:19.050Z","actor":"owner","action":"unmute","detail":"269724751503435"}
+{"time":"2026-09-13T09:22:42.673Z","actor":"self:491793904099jid269724751503435lid","action":"account.unregister","target":"491793904099jid269724751503435lid","backup":"491793904099jid269724751503435lid--2026-09-13T09-22-42-654Z.json","deleted":{"profile":1,"afk":0,"warns":0,"proposals":0,"plusUser":1,"plusCouples":0,"coreUser":0,"coreCouples":0,"sessions":0,"mails":0,"partnerFreed":false,"groupMembers":3,"eventsAnon":7},"reason":"self-service confirmed"}
+{"time":"2026-09-14T07:52:22.348Z","actor":"910maxi","action":"team.role","target":"support_test → user"}
+{"time":"2026-09-14T09:13:39.263Z","actor":"910maxi","action":"reauth.ok","target":"reauth.verify","ip":"185.47.•.•"}
+{"time":"14.9.2026, 11:13:49","actor":"910maxi","action":"download.zip","target":"LoveBot-All-in-One","files":8,"size":669500,"ip":"185.47.•.•"}
+{"time":"2026-09-14T23:39:00.877Z","actor":"910maxi","action":"feature.toggle","target":"120363411386930403 | 𓆩♡𓆪 910maxi 𓆩♡𓆪 Dev gruppe | welcome","key":"welcome","on":true,"before":true,"reason":"Lass an","group":"𓆩♡𓆪 910maxi 𓆩♡𓆪 Dev gruppe"}
+{"time":"2026-09-16T11:53:32.940Z","actor":"owner","action":"mute","detail":"257565715894382 · 2026-09-18T11:53:32.671Z"}
+{"time":"2026-09-16T13:34:49.067Z","actor":"owner","action":"unmute","detail":"257565715894382"}
+{"time":"2026-09-19T09:02:24.408Z","actor":"910maxi","action":"session.create","target":"maxichen10","name":"LoveBot_Maxichen10","mode":"qr","spawned":true,"spawnEnabled":true}
+{"time":"2026-09-19T09:04:50.829Z","actor":"910maxi","action":"session.delete","target":"maxichen10","name":"LoveBot_Maxichen10"}
+{"time":"2026-09-20T21:07:21.735Z","actor":"269574108926096","action":"ai-group","group":"120363427972273321","detail":"an"}

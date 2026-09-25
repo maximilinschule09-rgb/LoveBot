@@ -1,0 +1,23 @@
+{
+  "_kommentar": "IMPRESSUM-DATEN — NUR ECHTE ANGABEN HINTERLEGEN. Leere Felder = Platzhalter auf der Website + roter Produktionscheck. Keine erfundenen Daten!",
+  "updated": "10.09.2026",
+  "betreiber": {
+    "vorname": "Maxichen ",
+    "nachname": "",
+    "strasse": "",
+    "plz": "",
+    "ort": "Recklinghausen",
+    "email": "maxi.kst09@gmail.com",
+    "telefon": "015155894714"
+  },
+  "status": {
+    "kommerziell": false,
+    "hinweis": "LoveBot ist ein privat betriebenes Hobbyprojekt und wird ohne kommerzielle Gewinnerzielungsabsicht betrieben."
+  },
+  "gewerblich": {
+    "ustIdNr": "",
+    "registergericht": "",
+    "registernummer": "",
+    "aufsichtsbehoerde": ""
+  }
+}

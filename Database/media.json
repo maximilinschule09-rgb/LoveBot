@@ -1,0 +1,210 @@
+{
+  "config": {
+    "staticImage": ""
+  },
+  "stats": {
+    "sticker": {
+      "count": 10,
+      "ok": 10,
+      "fail": 0,
+      "msTotal": 13729
+    },
+    "tomp3": {
+      "count": 1,
+      "ok": 1,
+      "fail": 0,
+      "msTotal": 6173
+    },
+    "tomp4": {
+      "count": 5,
+      "ok": 3,
+      "fail": 2,
+      "msTotal": 331248
+    }
+  },
+  "logs": [
+    {
+      "ts": "2026-09-23T17:31:26.426Z",
+      "command": "tomp4",
+      "user": "𓆩♡𓆪 910maxi 𓆩♡𓆪",
+      "group": "Privat",
+      "session": "main",
+      "input": "Audio 0.4 MB",
+      "output": "MP4 1.8 MB",
+      "ms": 10445,
+      "ok": true,
+      "note": "max.jpeg"
+    },
+    {
+      "ts": "2026-09-23T10:46:50.699Z",
+      "command": "sticker",
+      "user": "𓆩♡𓆪 910maxi 𓆩♡𓆪",
+      "group": "Privat",
+      "session": "main",
+      "input": "Bild 0.1 MB",
+      "output": "WebP 512×512",
+      "ms": 711,
+      "ok": true
+    },
+    {
+      "ts": "2026-09-21T12:23:30.423Z",
+      "command": "sticker",
+      "user": "𓆩♡𓆪 910maxi 𓆩♡𓆪",
+      "group": "120363411722505265@g.us",
+      "session": "main",
+      "input": "Sticker",
+      "output": "WebP 512×512",
+      "ms": 1621,
+      "ok": true
+    },
+    {
+      "ts": "2026-09-20T21:53:51.432Z",
+      "command": "tomp4",
+      "user": "𓆩♡𓆪 910maxi 𓆩♡𓆪",
+      "group": "120363411722505265@g.us",
+      "session": "main",
+      "input": "Audio",
+      "output": "-",
+      "ms": 120627,
+      "ok": false,
+      "error": "FFmpeg: Command failed: C:\\Users\\Administrator\\Desktop\\LoveBot\\node_modules\\ffmpeg-static\\ffmpeg.exe -y -loop 1 -i C:\\Us"
+    },
+    {
+      "ts": "2026-09-20T21:53:40.144Z",
+      "command": "tomp4",
+      "user": "𓆩♡𓆪 910maxi 𓆩♡𓆪",
+      "group": "Privat",
+      "session": "main",
+      "input": "Audio 0.3 MB",
+      "output": "MP4 1.7 MB",
+      "ms": 21429,
+      "ok": true,
+      "note": "max.jpeg"
+    },
+    {
+      "ts": "2026-09-20T21:53:39.170Z",
+      "command": "tomp4",
+      "user": "𓆩♡𓆪 910maxi 𓆩♡𓆪",
+      "group": "120363427972273321@g.us",
+      "session": "main",
+      "input": "Audio",
+      "output": "-",
+      "ms": 176394,
+      "ok": false,
+      "error": "FFmpeg: Command failed: C:\\Users\\Administrator\\Desktop\\LoveBot\\node_modules\\ffmpeg-static\\ffmpeg.exe -y -loop 1 -i C:\\Us"
+    },
+    {
+      "ts": "2026-09-20T21:11:08.798Z",
+      "command": "sticker",
+      "user": "𓆩♡𓆪 910maxi 𓆩♡𓆪",
+      "group": "120363427972273321@g.us",
+      "session": "main",
+      "input": "Sticker",
+      "output": "WebP 512×512",
+      "ms": 1921,
+      "ok": true
+    },
+    {
+      "ts": "2026-09-15T09:47:09.850Z",
+      "command": "sticker",
+      "user": "𓆩♡𓆪 910maxi 𓆩♡𓆪",
+      "group": "120363411386930403@g.us",
+      "session": "main",
+      "input": "Bild 0.0 MB",
+      "output": "WebP 512×512",
+      "ms": 1296,
+      "ok": true
+    },
+    {
+      "ts": "2026-09-15T09:41:07.847Z",
+      "command": "sticker",
+      "user": "LoveBot by Maxichen",
+      "group": "120363411386930403@g.us",
+      "session": "main",
+      "input": "Bild 0.0 MB",
+      "output": "WebP 512×512",
+      "ms": 1541,
+      "ok": true
+    },
+    {
+      "ts": "2026-09-14T23:07:12.586Z",
+      "command": "sticker",
+      "user": "𓆩♡𓆪 910maxi 𓆩♡𓆪",
+      "group": "120363411386930403@g.us",
+      "session": "main",
+      "input": "Sticker",
+      "output": "WebP 512×512",
+      "ms": 938,
+      "ok": true
+    },
+    {
+      "ts": "2026-09-14T09:40:02.532Z",
+      "command": "sticker",
+      "user": "𓆩♡𓆪 910maxi 𓆩♡𓆪",
+      "group": "Privat",
+      "session": "main",
+      "input": "Sticker",
+      "output": "WebP 512×512",
+      "ms": 650,
+      "ok": true
+    },
+    {
+      "ts": "2026-09-13T20:40:07.849Z",
+      "command": "sticker",
+      "user": "𓆩♡𓆪 910maxi 𓆩♡𓆪",
+      "group": "120363411386930403@g.us",
+      "session": "main",
+      "input": "Sticker",
+      "output": "WebP 512×512",
+      "ms": 1921,
+      "ok": true
+    },
+    {
+      "ts": "2026-09-13T15:37:30.412Z",
+      "command": "tomp4",
+      "user": "𓆩♡𓆪 910maxi 𓆩♡𓆪",
+      "group": "120363411386930403@g.us",
+      "session": "main",
+      "input": "Audio 0.0 MB",
+      "output": "MP4 0.4 MB",
+      "ms": 2353,
+      "ok": true,
+      "note": "max.jpeg"
+    },
+    {
+      "ts": "2026-09-13T09:27:34.531Z",
+      "command": "tomp3",
+      "user": "𓆩♡𓆪 910maxi 𓆩♡𓆪",
+      "group": "120363411386930403@g.us",
+      "session": "main",
+      "input": "Video 17.5 MB",
+      "output": "MP3 4.1 MB",
+      "ms": 6173,
+      "ok": true
+    },
+    {
+      "ts": "2026-09-13T09:25:57.360Z",
+      "command": "sticker",
+      "user": "𓆩♡𓆪 910maxi 𓆩♡𓆪",
+      "group": "120363424524210962@g.us",
+      "session": "main",
+      "input": "Sticker",
+      "output": "WebP 512×512",
+      "ms": 1793,
+      "ok": true
+    },
+    {
+      "ts": "2026-09-08T10:23:22.262Z",
+      "command": "sticker",
+      "user": "𓆩♡𓆪 910maxi 𓆩♡𓆪",
+      "group": "120363411386930403@g.us",
+      "session": "main",
+      "input": "Sticker",
+      "output": "WebP 512×512",
+      "ms": 1337,
+      "ok": true
+    }
+  ],
+  "live": [],
+  "updated": "2026-09-23T17:31:26.439Z"
+}

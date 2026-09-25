@@ -1,0 +1,301 @@
+{
+  "groupId": "120363411722505265",
+  "groupJid": "120363411722505265@g.us",
+  "subject": "𓆩♡𓆪 910maxi’s Paradise 🌸 | By Maxichen ✨",
+  "creator": "269574108926096@lid",
+  "owner": "269574108926096@lid",
+  "ownerUsername": null,
+  "active": true,
+  "activatedAt": "2026-09-20T20:54:52.095Z",
+  "activatedBy": "4915155894714@s.whatsapp.net",
+  "createdAt": "2026-09-20T20:48:08.019Z",
+  "gset": {
+    "welcome": true,
+    "goodbye": true,
+    "antilink": false,
+    "antispam": false,
+    "antiflood": false,
+    "automod": true,
+    "autoreply": false,
+    "mentionGuard": false,
+    "commandProtection": false,
+    "aiEnabled": false,
+    "economyEnabled": true,
+    "progressionEnabled": true,
+    "logsEnabled": true
+  },
+  "xp": {
+    "total": 764,
+    "level": 2,
+    "msgs": 382,
+    "games": 0,
+    "members": {
+      "193527384428668": {
+        "m": 1,
+        "xp": 2,
+        "games": 0,
+        "last": 1789937288060
+      },
+      "269574108926096": {
+        "m": 172,
+        "xp": 344,
+        "games": 0,
+        "last": 1790184626743
+      },
+      "86496983933091": {
+        "m": 31,
+        "xp": 62,
+        "games": 0,
+        "last": 1790141075338
+      },
+      "135266035617919": {
+        "m": 12,
+        "xp": 24,
+        "games": 0,
+        "last": 1790179151342
+      },
+      "200412552556578": {
+        "m": 41,
+        "xp": 82,
+        "games": 0,
+        "last": 1790182233498
+      },
+      "174582484975682": {
+        "m": 10,
+        "xp": 20,
+        "games": 0,
+        "last": 1789985600859
+      },
+      "112236974600254": {
+        "m": 2,
+        "xp": 4,
+        "games": 0,
+        "last": 1790017338749
+      },
+      "57956708180043": {
+        "m": 15,
+        "xp": 30,
+        "games": 0,
+        "last": 1790141054724
+      },
+      "206618478301185": {
+        "m": 9,
+        "xp": 18,
+        "games": 0,
+        "last": 1790184575063
+      },
+      "66439537004711": {
+        "m": 30,
+        "xp": 60,
+        "games": 0,
+        "last": 1790180076302
+      },
+      "59580675584198": {
+        "m": 6,
+        "xp": 12,
+        "games": 0,
+        "last": 1790015165319
+      },
+      "139779895201866": {
+        "m": 2,
+        "xp": 4,
+        "games": 0,
+        "last": 1789973642795
+      },
+      "178816752337049": {
+        "m": 6,
+        "xp": 12,
+        "games": 0,
+        "last": 1789984082449
+      },
+      "198527078666413": {
+        "m": 9,
+        "xp": 18,
+        "games": 0,
+        "last": 1790015316091
+      },
+      "187308557005020": {
+        "m": 15,
+        "xp": 30,
+        "games": 0,
+        "last": 1790113089521
+      },
+      "180204681039982": {
+        "m": 5,
+        "xp": 10,
+        "games": 0,
+        "last": 1790010723895
+      },
+      "11120140095705": {
+        "m": 1,
+        "xp": 2,
+        "games": 0,
+        "last": 1790014614727
+      },
+      "245161749663894": {
+        "m": 1,
+        "xp": 2,
+        "games": 0,
+        "last": 1790017356268
+      },
+      "74453375541450": {
+        "m": 5,
+        "xp": 10,
+        "games": 0,
+        "last": 1790110137129
+      },
+      "9904765047028": {
+        "m": 9,
+        "xp": 18,
+        "games": 0,
+        "last": 1790169409596
+      }
+    },
+    "week": {
+      "k": "2026-W39",
+      "xp": 764
+    },
+    "month": {
+      "k": "2026-09",
+      "xp": 764
+    },
+    "daily": {
+      "k": "2026-09-23",
+      "msgs": 73
+    },
+    "streak": {
+      "c": 4,
+      "last": "2026-09-23"
+    },
+    "history": {
+      "2026-09-20": 68,
+      "2026-09-21": 476,
+      "2026-09-22": 74,
+      "2026-09-23": 146
+    }
+  },
+  "goals": {
+    "daily": {
+      "k": "2026-09-23",
+      "target": 50,
+      "progress": 73,
+      "claimed": true
+    },
+    "weekly": {
+      "k": "2026-W39",
+      "target": 200,
+      "progress": 764,
+      "claimed": true
+    }
+  },
+  "gach": {
+    "gmsg_100": 1789984460842
+  },
+  "gbadges": {},
+  "gevents": [],
+  "gaudit": [
+    {
+      "ts": 1789982705487,
+      "actor": "system",
+      "action": "goal",
+      "detail": "daily-Ziel (50) erreicht, +250 Treasury"
+    },
+    {
+      "ts": 1789984460842,
+      "actor": "system",
+      "action": "goal",
+      "detail": "weekly-Ziel (200) erreicht, +1000 Treasury"
+    },
+    {
+      "ts": 1790179065591,
+      "actor": "system",
+      "action": "goal",
+      "detail": "daily-Ziel (50) erreicht, +250 Treasury"
+    }
+  ],
+  "gtreasury": {
+    "balance": 1880,
+    "log": [
+      {
+        "ts": 1789982705487,
+        "delta": 250,
+        "reason": "daily-Ziel erreicht"
+      },
+      {
+        "ts": 1789984460842,
+        "delta": 1000,
+        "reason": "weekly-Ziel erreicht"
+      },
+      {
+        "ts": 1789984460842,
+        "delta": 150,
+        "reason": "Achievement Gesprächig"
+      },
+      {
+        "ts": 1789993060617,
+        "delta": 110,
+        "reason": "Group-Level 1"
+      },
+      {
+        "ts": 1790142042640,
+        "delta": 120,
+        "reason": "Group-Level 2"
+      },
+      {
+        "ts": 1790179065591,
+        "delta": 250,
+        "reason": "daily-Ziel erreicht"
+      }
+    ]
+  },
+  "gbanned": {},
+  "warnCfg": {
+    "w1": "warn",
+    "w2": "warn",
+    "w3": "kick"
+  },
+  "memberCount": 20,
+  "adminCount": 5,
+  "metaAt": 1790109578439,
+  "setupAt": "2026-09-20T20:54:52.095Z",
+  "setupBy": "4915155894714@s.whatsapp.net",
+  "setupByName": "269574108926096",
+  "setupDescription": "🖤 *LoveBot* ist in @𓆩♡𓆪 910maxi’s Paradise 🌸 | By Maxichen ✨ aktiv 🤖\nNutze *$dsgvo* / *$verify* für weitere Infos.\n\n⏱️ *Setup gesetzt:* So., 20.09.2026, 22:54:52\n🎮 *von:* 269574108926096",
+  "warns": {
+    "200412552556578": [
+      {
+        "reason": "Badword (s*******)",
+        "by": "LoveBot Automod 🤖",
+        "at": "2026-09-21T10:11:48.864Z"
+      }
+    ],
+    "187308557005020": [
+      {
+        "reason": "Badword (b****)",
+        "by": "LoveBot Automod 🤖",
+        "at": "2026-09-21T15:57:27.537Z"
+      }
+    ],
+    "66439537004711": [
+      {
+        "reason": "Badword (o****)",
+        "by": "LoveBot Automod 🤖",
+        "at": "2026-09-23T13:10:10.861Z"
+      }
+    ]
+  },
+  "autodl": true,
+  "welcome": true,
+  "goodbye": true,
+  "kick": true,
+  "promote": true,
+  "demote": true,
+  "liebe": true,
+  "fun": true,
+  "media": true,
+  "tools": true,
+  "badwords": false,
+  "antilink": true,
+  "night": true,
+  "afk": true
+}

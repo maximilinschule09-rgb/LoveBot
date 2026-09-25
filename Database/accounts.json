@@ -1,0 +1,395 @@
+{
+  "accounts": {
+    "acc_867efdf11ac19e00": {
+      "id": "acc_867efdf11ac19e00",
+      "username": "910maxi",
+      "number": "4915155894714",
+      "role": "owner",
+      "scope": {
+        "type": "global"
+      },
+      "salt": "96bf7472a2d16b8ec0641d65316c5184",
+      "hash": "31baae0fcb9b39b797fe626301abf64221d6642cb687175031f969a2e1d18e23",
+      "status": "active",
+      "mustChange": false,
+      "createdAt": "2026-09-03T21:49:46.724Z",
+      "lastLoginAt": "2026-09-05T23:34:23.103Z",
+      "roleHistory": [
+        {
+          "role": "owner",
+          "at": "2026-09-03T21:49:46.724Z",
+          "by": "system"
+        }
+      ],
+      "passwordChangedAt": "2026-09-03T22:01:39.163Z"
+    },
+    "acc_602d9c6366fbfc2e": {
+      "id": "acc_602d9c6366fbfc2e",
+      "username": "support_test",
+      "number": "1",
+      "role": "user",
+      "scope": {
+        "type": "global"
+      },
+      "salt": "f0b406bc6e2aee1d0a076556edf96381",
+      "hash": "41884b6d62c4b822e285f3193363bb4f32b2c8c06ba3aef01178c185d5d4af23",
+      "status": "active",
+      "mustChange": true,
+      "createdAt": "2026-09-03T22:28:09.588Z",
+      "lastLoginAt": null,
+      "roleHistory": [
+        {
+          "role": "supporter",
+          "at": "2026-09-03T22:28:09.588Z",
+          "by": "system"
+        },
+        {
+          "role": "user",
+          "at": "2026-09-14T07:52:22.348Z",
+          "by": "web:910maxi",
+          "from": "supporter"
+        }
+      ],
+      "statusHistory": [
+        {
+          "at": "2026-09-07T19:53:12.895Z",
+          "by": "910maxi",
+          "from": "locked",
+          "to": "restricted",
+          "reason": "Testweise eingeschränkt"
+        },
+        {
+          "at": "2026-09-07T19:53:19.111Z",
+          "by": "910maxi",
+          "from": "restricted",
+          "to": "disabled",
+          "reason": "Test deaktivieren"
+        },
+        {
+          "at": "2026-09-07T19:53:19.124Z",
+          "by": "910maxi",
+          "from": "disabled",
+          "to": "locked",
+          "reason": "Zurückgesetzt nach Test"
+        },
+        {
+          "at": "2026-09-07T19:53:33.262Z",
+          "by": "910maxi",
+          "from": "restrictions:",
+          "to": "restrictions:broadcast,ban",
+          "reason": "Testeinschränkung"
+        },
+        {
+          "at": "2026-09-07T19:53:33.285Z",
+          "by": "910maxi",
+          "from": "restrictions:broadcast,ban",
+          "to": "restrictions:",
+          "reason": "Test-Cleanup"
+        },
+        {
+          "at": "2026-09-07T19:58:43.353Z",
+          "by": "910maxi",
+          "from": "locked",
+          "to": "active",
+          "reason": "Test-Setup: aktivieren fuer Rechte-Test"
+        }
+      ],
+      "permsExtra": [],
+      "permsRevoked": [
+        "broadcast.send",
+        "users.view",
+        "tickets.manage",
+        "logs.view"
+      ],
+      "permsHistory": [
+        {
+          "at": "2026-09-07T19:53:26.192Z",
+          "by": "910maxi",
+          "reason": "Braucht Broadcast fürs Test-Team",
+          "before": {
+            "extra": [],
+            "revoked": []
+          },
+          "after": {
+            "extra": [
+              "broadcast.send"
+            ],
+            "revoked": []
+          }
+        },
+        {
+          "at": "2026-09-07T19:53:26.212Z",
+          "by": "910maxi",
+          "reason": "Vorlage angewendet",
+          "before": {
+            "extra": [
+              "broadcast.send"
+            ],
+            "revoked": []
+          },
+          "after": {
+            "extra": [
+              "broadcast.send",
+              "users.view",
+              "tickets.manage",
+              "logs.view"
+            ],
+            "revoked": []
+          }
+        },
+        {
+          "at": "2026-09-07T19:53:33.273Z",
+          "by": "910maxi",
+          "reason": "Test-Cleanup",
+          "before": {
+            "extra": [
+              "broadcast.send",
+              "users.view",
+              "tickets.manage",
+              "logs.view"
+            ],
+            "revoked": []
+          },
+          "after": {
+            "extra": [],
+            "revoked": [
+              "broadcast.send",
+              "users.view",
+              "tickets.manage",
+              "logs.view"
+            ]
+          }
+        }
+      ],
+      "restrictions": []
+    },
+    "acc_46ede07a04470698": {
+      "id": "acc_46ede07a04470698",
+      "username": "tavrinox",
+      "number": "4915679260192",
+      "role": "user",
+      "scope": {
+        "type": "global"
+      },
+      "salt": "7ccb447d071dc54669105450691eaea0",
+      "hash": "3783ed0816de6ca64ce66f5e96a9bf42f9aa27d652c6ab0bce6c762ed39750df",
+      "status": "active",
+      "mustChange": false,
+      "createdAt": "2026-09-03T22:35:16.321Z",
+      "lastLoginAt": null,
+      "roleHistory": [
+        {
+          "role": "user",
+          "at": "2026-09-03T22:35:16.321Z",
+          "by": "system"
+        },
+        {
+          "role": "user",
+          "at": "2026-09-03T22:43:49.347Z",
+          "by": "910maxi",
+          "from": "user"
+        }
+      ]
+    },
+    "acc_48661c524cbc2ac3": {
+      "id": "acc_48661c524cbc2ac3",
+      "username": "bambus_inlove",
+      "number": "491706148587",
+      "role": "user",
+      "scope": {
+        "type": "global"
+      },
+      "salt": "8cf979f798db94e7d32cf95329bea3a8",
+      "hash": "670020c1360c14cd687ddc5b1c12265a4f0d8ff93955bb1ce9fad768f8fcab40",
+      "status": "active",
+      "mustChange": false,
+      "createdAt": "2026-09-05T18:09:49.202Z",
+      "lastLoginAt": null,
+      "roleHistory": [
+        {
+          "role": "user",
+          "at": "2026-09-05T18:09:49.202Z",
+          "by": "system"
+        }
+      ]
+    },
+    "acc_31dac6824890c5ae": {
+      "id": "acc_31dac6824890c5ae",
+      "username": "love_5801",
+      "number": "108813734645801",
+      "role": "deputy",
+      "scope": {
+        "type": "global"
+      },
+      "salt": "94b5261c22f55827def98a8c34f2e5ea",
+      "hash": "18265b397fc6c289616c271feb438f036a57eeddf3aad917f417595d5204f4de",
+      "status": "active",
+      "mustChange": true,
+      "createdAt": "2026-09-13T08:45:15.348Z",
+      "lastLoginAt": null,
+      "roleHistory": [
+        {
+          "role": "deputy",
+          "at": "2026-09-13T08:45:15.348Z",
+          "by": "system"
+        },
+        {
+          "role": "user",
+          "at": "2026-09-13T09:19:53.618Z",
+          "by": "owner",
+          "from": "deputy"
+        },
+        {
+          "role": "deputy",
+          "at": "2026-09-13T18:31:11.434Z",
+          "by": "owner",
+          "from": "user"
+        }
+      ]
+    },
+    "acc_966cbbc192c8920d": {
+      "id": "acc_966cbbc192c8920d",
+      "username": "love_3286",
+      "number": "87089790083286",
+      "role": "deputy",
+      "scope": {
+        "type": "global"
+      },
+      "salt": "8cb8bf2385dd3fac0d8000c9e44a6332",
+      "hash": "e3913aa44d2f8e0f4fe04a75b1317bfff6bd8e3bdbb725dd76808741910407c9",
+      "status": "active",
+      "mustChange": true,
+      "createdAt": "2026-09-13T08:45:27.862Z",
+      "lastLoginAt": null,
+      "roleHistory": [
+        {
+          "role": "deputy",
+          "at": "2026-09-13T08:45:27.862Z",
+          "by": "system"
+        },
+        {
+          "role": "user",
+          "at": "2026-09-13T09:20:07.080Z",
+          "by": "owner",
+          "from": "deputy"
+        },
+        {
+          "role": "deputy",
+          "at": "2026-09-13T19:03:37.348Z",
+          "by": "owner",
+          "from": "user"
+        }
+      ]
+    },
+    "acc_f34f776af4bdf4b3": {
+      "id": "acc_f34f776af4bdf4b3",
+      "username": "love_0503",
+      "number": "69415898980503",
+      "role": "deputy",
+      "scope": {
+        "type": "global"
+      },
+      "salt": "e01390692738aebceaa6686c2378a1e0",
+      "hash": "ee91e7af70fc9ce1f09bdf383e7248726821b621cbb9692fc377adcd7793b05c",
+      "status": "restricted",
+      "mustChange": true,
+      "createdAt": "2026-09-13T08:45:37.113Z",
+      "lastLoginAt": null,
+      "roleHistory": [
+        {
+          "role": "deputy",
+          "at": "2026-09-13T08:45:37.113Z",
+          "by": "system"
+        },
+        {
+          "role": "user",
+          "at": "2026-09-13T09:20:15.450Z",
+          "by": "owner",
+          "from": "deputy"
+        },
+        {
+          "role": "deputy",
+          "at": "2026-09-13T19:05:47.834Z",
+          "by": "owner",
+          "from": "user"
+        }
+      ],
+      "statusHistory": [
+        {
+          "at": "2026-09-14T10:13:31.036Z",
+          "by": "910maxi",
+          "from": "active",
+          "to": "restricted",
+          "reason": "Banane"
+        }
+      ]
+    },
+    "acc_65aaca7f09ecc592": {
+      "id": "acc_65aaca7f09ecc592",
+      "username": "love_1831",
+      "number": "97642273091831",
+      "role": "supporter",
+      "scope": {
+        "type": "global"
+      },
+      "salt": "146c35ec4b1cfe47abd667cae9e0ed26",
+      "hash": "6222b73435fad4a0623d3d4eeae0ce74f441e38ab3c2607db967c6e739a81dbf",
+      "status": "active",
+      "mustChange": true,
+      "createdAt": "2026-09-14T23:05:20.046Z",
+      "lastLoginAt": null,
+      "roleHistory": [
+        {
+          "role": "supporter",
+          "at": "2026-09-14T23:05:20.046Z",
+          "by": "system"
+        }
+      ]
+    },
+    "acc_2492b52b015c7459": {
+      "id": "acc_2492b52b015c7459",
+      "username": "dok",
+      "number": "420606990992",
+      "role": "user",
+      "scope": {
+        "type": "global"
+      },
+      "salt": "8b1e835889a90c0e168941c916b057ed",
+      "hash": "ab8bb4ae4cf31cf9a7ac184d47d15a9fb6729725125fab3dd2ee14dd57dd0a2d",
+      "status": "active",
+      "mustChange": false,
+      "createdAt": "2026-09-14T23:34:34.440Z",
+      "lastLoginAt": null,
+      "roleHistory": [
+        {
+          "role": "user",
+          "at": "2026-09-14T23:34:34.440Z",
+          "by": "system"
+        }
+      ]
+    },
+    "acc_38d1bd988970daad": {
+      "id": "acc_38d1bd988970daad",
+      "username": "dok420",
+      "number": "420606990992",
+      "role": "user",
+      "scope": {
+        "type": "global"
+      },
+      "salt": "2775469cb5c35a683bf755fec63b86fb",
+      "hash": "6a760568531424fc30bb04a3a00820d79a0bfe9413f2f8d67f4c5fcbedd6afc4",
+      "status": "active",
+      "mustChange": false,
+      "createdAt": "2026-09-14T23:39:12.856Z",
+      "lastLoginAt": null,
+      "roleHistory": [
+        {
+          "role": "user",
+          "at": "2026-09-14T23:39:12.856Z",
+          "by": "system"
+        }
+      ]
+    }
+  },
+  "history": []
+}

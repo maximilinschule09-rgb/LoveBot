@@ -1,0 +1,57 @@
+{
+  "users": {
+    "4915155894714jid269574108926096lid": {
+      "actions": {
+        "flirt": 3,
+        "anmachen": 1,
+        "confesslove": 1,
+        "dateidee": 1,
+        "romantic": 1,
+        "goodmorning": 1,
+        "hug": 10,
+        "kiss": 2
+      },
+      "loveMessages": 20,
+      "daily": {
+        "date": "",
+        "kind": "",
+        "streak": 0,
+        "total": 0
+      }
+    },
+    "491706148587jid51260870918164lid": {
+      "actions": {
+        "kiss": 1,
+        "hug": 2
+      },
+      "loveMessages": 3,
+      "daily": {
+        "date": "",
+        "kind": "",
+        "streak": 0,
+        "total": 0
+      }
+    }
+  },
+  "couples": {
+    "269574108926096|57956708180043": {
+      "actions": {
+        "flirt": 3,
+        "anmachen": 1,
+        "confesslove": 1,
+        "dateidee": 1,
+        "romantic": 1,
+        "goodmorning": 1,
+        "hug": 10,
+        "kiss": 2
+      },
+      "loveMessages": 20,
+      "breakups": 0,
+      "unlocked": {}
+    }
+  },
+  "meta": {
+    "created": "2026-09-06T10:15:15.219Z",
+    "updated": "2026-09-22T21:44:13.787Z"
+  }
+}
