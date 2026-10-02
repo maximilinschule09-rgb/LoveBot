@@ -1,4 +1,4 @@
-/* LoveBot — öffentliche Bestenliste (kein Login nötig) */
+/* HelloKitty Baby Maxi 💔 — öffentliche Bestenliste (kein Login nötig) */
 makeHearts(10);
 
 let LB_DATA = null;
@@ -29,7 +29,7 @@ function renderTab() {
     const list = LB_DATA.topCouples || [];
     el.innerHTML = list.length ? list.map((c, i) =>
       '<div class="lb-row"><div class="rank">' + rankIcon(i) + '</div>' +
-      '<div class="lb-name">' + esc(c.n1) + ' ❤️ ' + esc(c.n2) + '</div>' +
+      '<div class="lb-name">' + esc(c.n1) + ' 💔 ' + esc(c.n2) + '</div>' +
       '<div class="lb-val"><b>' + (c.loveXp || 0).toLocaleString('de-DE') + '</b> Love-XP · Lv.' + c.level + '</div></div>'
     ).join('') : '<div class="lb-empty">Noch keine Paare vorhanden.</div>';
   }

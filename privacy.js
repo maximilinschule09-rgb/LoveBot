@@ -77,7 +77,7 @@ export function normalizeRegistration(raw = {}) {
       ageBracket,          /* 'minor' | 'adult' | 'unknown'           */
       status,
       city: cityRaw || null,
-      privacy: { hideCity: false, hideAge: false, publicProfile: false, hideEconomy: false },
+      privacy: { hideCity: false, hideAge: false, publicProfile: ageBracket !== 'minor', hideEconomy: false },
       registeredAt: new Date().toISOString()
     }
   };
@@ -86,7 +86,7 @@ export function normalizeRegistration(raw = {}) {
 /** Bestandsdaten auf das neue Format heben (idempotent). */
 export function migrateRegistration(reg = {}) {
   const out = { ...(reg || {}) };
-  const privacy = { hideCity: false, hideAge: false, publicProfile: false, hideEconomy: false, ...(out.privacy || {}) };
+  const privacy = { hideCity: false, hideAge: false, publicProfile: !isMinor(out), hideEconomy: false, ...(out.privacy || {}) };
 
   let age = out.age ?? null;
   let bracket = out.ageBracket || 'unknown';
@@ -180,7 +180,7 @@ export async function handlePrivacyCommand({ sock, msg, from, args = [], pref = 
 
   const show = async () => {
     const lines = [
-      '> 🔒 *LOVE BOT — PRIVATSPHÄRE*',
+      '> 🔒 *HELLOKITTY BABY MAXI — PRIVATSPHÄRE*',
       '',
       `• Name: *${reg.name || '—'}*`,
       `• Alter: ${ageLabel(reg, { reveal: true })}${isMinor(reg) ? ' _(geschützt)_' : ''}`,
@@ -201,6 +201,36 @@ export async function handlePrivacyCommand({ sock, msg, from, args = [], pref = 
   };
 
   if (!sub) return show();
+
+  /* 🌟 ALLES AUF EINMAL: $privacy alle an → alles erlaubt, $privacy alle aus → alles zu */
+  if (sub === 'alle' || sub === 'all' || sub === 'alles') {
+    const on = ['an', 'on', 'ja'].includes(value);
+    if (!on && !['aus', 'off', 'nein'].includes(value)) {
+      await sock.sendMessage(from, {
+        text: `> ❌ *AN ODER AUS?*\n\nNutze: \`${pref}privacy alle an\` oder \`${pref}privacy alle aus\`.`
+      }, { quoted: msg });
+      await sendReaction(sock, from, reactions.input.reactions.invalidInput, msg.key);
+      return true;
+    }
+    if (on && isMinor(reg)) {
+      /* Minderjährige bleiben geschützt — nur die „hide“-Regler gehen auf */
+      reg.privacy = { ...reg.privacy, hideCity: false, hideAge: false, hideEconomy: false };
+    } else {
+      reg.privacy = { hideCity: false, hideAge: false, publicProfile: on, hideEconomy: false };
+    }
+    const next = { ...(userProfile || {}), registration: { ...reg, privacy: { ...reg.privacy } } };
+    if (typeof saveProfile === 'function') saveProfile(next);
+    await sock.sendMessage(from, {
+      text: '> ✅ *PRIVATSPHÄRE — ALLES AKTUALISIERT*\n\n' +
+        '• Stadt: *sichtbar*\n' +
+        '• Alter: *sichtbar*\n' +
+        '• Economy: *sichtbar*\n' +
+        '• Öffentliches Profil: *' + (on ? 'an' : 'aus') + '*' + (isMinor(reg) ? ' _(unter 18 bleibt geschützt)_' : '') + '\n\n' +
+        '_HelloKitty Baby Maxi 💔 — alles erlaubt, wie du wolltest._ 💜'
+    }, { quoted: msg });
+    await sendReaction(sock, from, reactions.completion.reactions.withoutAnyProblems, msg.key);
+    return true;
+  }
 
   const field = TOGGLES[sub];
   if (!field) {

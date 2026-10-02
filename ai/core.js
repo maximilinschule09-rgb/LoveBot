@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════
-   💜 LoveAI CORE (ai/core.js) — die eingebaute AI-Engine von LoveBot
+   💜 BabyMaxiAI 💔 CORE (ai/core.js) — die eingebaute AI-Engine von HelloKitty Baby Maxi 💔
 
    Ein komplett lokaler Chat-Provider OHNE externe Abhängigkeiten:
    kein Ollama, kein API-Key, kein Download. Läuft immer — im Bot
@@ -32,10 +32,10 @@ export function parsePrompt(prompt) {
   const out = { user: '', facts: [], hasToolResult: false, toolResults: [] };
 
   /* Letzte User-Nachricht: der LETZTE „User:"-Block vor dem finalen
-     „LoveAI:" (mit Verlauf gäbe ein Lazy-Regex die erste User-Zeile).
+     „BabyMaxiAI 💔:" (mit Verlauf gäbe ein Lazy-Regex die erste User-Zeile).
      In ReAct-Runde 2 hängt runReact Tool-Ergebnisse an — dann gilt die
      letzte „User:"-Zeile im ganzen Prompt. */
-  const tail = p.match(/\nLoveAI:\s*$/);
+  const tail = p.match(/\nBabyMaxiAI 💔:\s*$/);
   if (tail && tail.index != null) {
     const before = p.slice(0, tail.index);
     const ui = before.lastIndexOf('\nUser: ');
@@ -118,14 +118,14 @@ const pick = (arr, seed) => arr[Math.abs(seed ?? 0) % arr.length];
 
 const GREET = [
   'Hey! 💜 Schön, dass du da bist. Frag mich nach XP, Bank, Befehlen oder deinen Stats!',
-  'Hallo! 😊 Ich bin LoveAI — deine Assistentin im Bot. Was möchtest du wissen?',
+  'Hallo! 😊 Ich bin BabyMaxiAI 💔 — deine Assistentin im Bot. Was möchtest du wissen?',
   'Hi! 💜 Ich kann dir bei XP, Economy, Befehlen und deinem Profil helfen.'
 ];
 const HOWARE = [
   'Mir geht’s gut — ich laufe direkt im Bot mit, jederzeit einsatzbereit! 💜 Und dir?',
   'Bestens! Ich bin immer an, brauche keinen externen Dienst. Wie geht’s dir?'
 ];
-const WHOAMI = 'Ich bin *LoveKI* 💜 — die eigene KI von LoveBot, wie ein Copilot: Ich kenne den kompletten Bot (330+ Befehle, alle 40 Web-Seiten, jedes Feature) und erkläre dir alles — dein Profil, XP, Bank, Gruppen, die Website. Ich schaue nur zu, ich ändere nichts. Frag einfach!';
+const WHOAMI = 'Ich bin *BabyMaxiKI 💔* 💜 — die eigene KI von HelloKitty Baby Maxi 💔, wie ein HelloKitty Baby Maxi 💔 v2 ai: Ich kenne den kompletten Bot (330+ Befehle, alle 40 Web-Seiten, jedes Feature) und erkläre dir alles — dein Profil, XP, Bank, Gruppen, die Website. Ich schaue nur zu, ich ändere nichts. Frag einfach!';
 const THANKS = ['Immer gern! 💜', 'Gern geschehen! 😊', 'Kein Ding — frag mich anytime! 💜'];
 const BYE = ['Bis bald! 💜', 'Tschüss — bis zum nächsten Chat! 👋', 'Mach’s gut! 💜'];
 const JOKES = [
@@ -160,7 +160,7 @@ function detectIntent(t) {
   if (/^(hallo|hi|hey|moin|servus|guten (tag|morgen|abend)|hello|yo)\b/.test(s) || s === 'test' || s === 'ping') return 'greet';
   /* Bot-Status VOR „wie geht" prüfen („Wie geht es dem Bot?") */
   if (has('bot-status', 'botstatus', 'status vom bot', 'geht es dem bot', 'dem bot geht', 'bot läuft', 'uptime', 'wie lange läuft der bot', 'zustand des bots', 'bot gesund')) return 'botstatus';
-  /* 7.1.2: Copilot-Intents — Bot & Website erklären (read-only) */
+  /* 7.1.2: HelloKitty Baby Maxi 💔 v2 ai-Intents — Bot & Website erklären (read-only) */
   if (has('webseite', 'website', 'web panel', 'web-panel', 'home page', 'dashboard-seite', 'was gibt es auf der', 'welche seiten', 'maxichen', 'gamebot.me', 'erklär mir die seite')) return 'web';
   if (has('was ist lovebot', 'erklär mir den bot', 'erkläre den bot', 'was macht der bot', 'bot erklärt', 'bot erklärung', 'features', 'funktionen vom bot', 'was kann der bot', 'bot übersicht', 'steckbrief')) return 'botinfo';
   if (has('systemstatus', 'system-status', 'server-status', 'speicherverbrauch', 'arbeitsspeicher', 'performance', 'wie läuft der server', 'datenbankgröße', 'node-version', 'db-größe', 'wie viel ram')) return 'system';
@@ -183,6 +183,20 @@ function detectIntent(t) {
   if (has('gruppe', 'gilde', 'unser level', 'gruppenstats', 'gruppen-stats')) return 'group';
   if (has('bot-status', 'botstatus', 'status vom bot', 'geht es dem bot', 'bot läuft', 'uptime', 'wie lange läuft', 'wie geht’s dem bot')) return 'botstatus';
   if (has('befehl', 'command', 'gibt es den befehl', 'wie geht', 'wie benutze', 'befehle für', 'zeig befehle', 'welche befehle')) return 'commands';
+  /* „Wie funktioniert $daily?" / „Was macht $work?" → Befehl-Erklärung.
+     Diese Prüfung MUSS vor den Themen-Intents stehen, sonst fängt z. B.
+     „$daily" das Daily-Thema und der Befehl wird nicht erklärt. */
+  if (/\$[a-z][a-z0-9]/i.test(s)) return 'commands';
+  /* 🎨 Kreativ: Gedichte, Geschichten, Ideen — Core baut aus Stichworten */
+  if (has('gedicht', 'poem', 'haiku', 'reim', 'schreib mir', 'schreibe mir', 'schreib ein', 'schreibe ein', 'geschichte', 'kurzgeschichte', 'song', 'lied', 'text schreiben', 'kreativ', 'idee für', 'ideen für', 'vorschlag für')) return 'creative';
+  /* 🆘 Hilfe/Bug/Support */
+  if (has('bug', 'fehler', 'problem', 'funktioniert nicht', 'geht nicht', 'klappt nicht', 'melden', 'support', 'kontakt', 'owner kontakt', 'hilfe ich', 'wer hilft', 'beschwerde', 'kaputt')) return 'helpbot';
+  /* 🌙 Stimmung/Trost */
+  if (has('traurig', 'einsam', 'allein', 'müde', 'erschoepft', 'erschöpft', 'stress', 'angst', 'weinen', 'herz gebrochen', 'trost', 'kummer')) return 'comfort';
+  /* 🎁 Daily/Belohnungen */
+  if (has('daily', 'tägliche belohnung', 'täglich', 'taeglich', 'streak', 'serie', 'login-belohnung')) return 'daily';
+  /* 💍 Heiraten/Love-System */
+  if (has('heiraten', 'heirat', 'verheiratet', 'couple', 'paar', 'liebes-xp', 'love-xp', 'lovelevel')) return 'marry';
   /* „Wie funktioniert $daily?" / „Was macht $work?" → Befehl-Erklärung */
   if (/\$[a-z][a-z0-9]/i.test(s) && has('wie funktioniert', 'was macht', 'was ist der befehl', 'erklär', 'erkläre', 'was ist $', 'wie nutze', 'wie benutze')) return 'commands';
   return 'fallback';
@@ -196,7 +210,7 @@ const KNOW = {
 };
 
 /* ═══════════════════════════════════════════════════════════════════ */
-/* LoveAI Core Provider                                                 */
+/* BabyMaxiAI 💔 Core Provider                                                 */
 /* ═══════════════════════════════════════════════════════════════════ */
 export class CoreProvider {
   constructor(_cfg = {}) {
@@ -227,7 +241,7 @@ export class CoreProvider {
 
   async chat(messages, opts = {}) {
     const last = [...(messages || [])].reverse().find((m) => (m.role === 'user' || m.role === 'human'));
-    const prompt = '\nUser: ' + String(last?.text ?? last?.content ?? '') + '\nLoveAI:';
+    const prompt = '\nUser: ' + String(last?.text ?? last?.content ?? '') + '\nBabyMaxiAI 💔:';
     return this.generate(prompt, opts);
   }
 
@@ -248,7 +262,7 @@ export class CoreProvider {
   _answer(user, facts, hasToolResult, toolResults) {
     const seed = (user || '').length + Date.now() % 7;
     const u = String(user || '').trim();
-    if (!u) return 'Hey! 💜 Ich bin LoveAI — frag mich nach XP, Bank, Befehlen oder deinen Stats!';
+    if (!u) return 'Hey! 💜 Ich bin BabyMaxiAI 💔 — frag mich nach XP, Bank, Befehlen oder deinen Stats!';
 
     /* 2. ReAct-Runde: echte Tool-Ergebnisse final formatieren */
     if (hasToolResult && toolResults.length) return this._formatToolResults(toolResults, u);
@@ -259,7 +273,7 @@ export class CoreProvider {
       case 'howare': return pick(HOWARE, seed);
       case 'whoami': return WHOAMI;
       case 'capabilities':
-        return 'Ich bin *LoveKI* 💜 — der Copilot deines Bots. Ich kenne LoveBot komplett:\n\n• 📜 Alle *330+ Befehle* (inkl. Erklärung zu jedem)\n• 🌐 Die *ganze Website* (40 Seiten — Dashboard, Economy, Bank, Gruppen …)\n• 🤖 Features: XP, Economy, Love, Pets, Gruppen, Spiele …\n• 📊 Deine Stats, dein Rang, dein Gruppe — live\n• 🖥️ Systemstatus des Servers\n\nIch erkläre alles — aber ich *ändere nichts* (nur lesend!).\n🌟 Mit kostenlosem API-Key (*$aiconfig key …*) antworte ich zusätzlich auf ALLE Fragen wie ChatGPT!';
+        return 'Ich bin *BabyMaxiKI 💔* 💜 — der HelloKitty Baby Maxi 💔 v2 ai deines Bots. Ich kenne HelloKitty Baby Maxi 💔 komplett:\n\n• 📜 Alle *330+ Befehle* (inkl. Erklärung zu jedem)\n• 🌐 Die *ganze Website* (40 Seiten — Dashboard, Economy, Bank, Gruppen …)\n• 🤖 Features: XP, Economy, Love, Pets, Gruppen, Spiele …\n• 📊 Deine Stats, dein Rang, dein Gruppe — live\n• 🖥️ Systemstatus des Servers\n\nIch erkläre alles — aber ich *ändere nichts* (nur lesend!).\n🌟 Mit kostenlosem API-Key (*$aiconfig key …*) antworte ich zusätzlich auf ALLE Fragen wie ChatGPT!';
       case 'thanks': return pick(THANKS, seed);
       case 'bye': return pick(BYE, seed);
       case 'joke': return pick(JOKES, seed);
@@ -283,7 +297,7 @@ export class CoreProvider {
       case 'economyhow': return KNOW.economy + '\n\nDein Kontostand: TOOL:getEconomy({})';
       case 'group': return 'TOOL:getGroupInfo({})';
       case 'botstatus': return 'TOOL:getBotStatus({})';
-      /* 7.1.2: Copilot — Bot/Website/System erklären über echte Tools */
+      /* 7.1.2: HelloKitty Baby Maxi 💔 v2 ai — Bot/Website/System erklären über echte Tools */
       case 'web': {
         /* Explizites Themen-Wort aus der Frage ziehen (nicht extractQuery —
            das liefert Fragewörter wie „was webseiten?"). */
@@ -299,7 +313,64 @@ export class CoreProvider {
         if (one) return 'TOOL:getCommandDetails({"q":"' + one[1].trim().toLowerCase() + '"})';
         return 'TOOL:searchCommands({"q":"' + cq + '"})';
       }
+      /* 🎨 Kreativ: emo-Gedicht aus den Stichworten der Frage */
+      case 'creative': {
+        const topic = extractQuery(u).replace(/["\\]/g, '').slice(0, 40) || 'regen';
+        const poem = [
+          '_Ein kleines Gedicht für dich 💔_',
+          '',
+          `🌧️ Über *${topic}* schreib ich heute Zeilen,`,
+          'weil Worte manchmal mehr können als Schweigen —',
+          'jede Nacht ein Stern, der nicht mehr scheint,',
+          'jede Nachricht, die niemand mehr liest.',
+          '',
+          '💜 Aber du bist hier. Und das ist genug.',
+          '_— HelloKitty Baby Maxi 💔_'
+        ].join('\n');
+        return poem;
+      }
+      /* 🆘 Hilfe & Bug-Meldung */
+      case 'helpbot': {
+        return 'Ich helfe dir gern weiter 💜\n\n' +
+          '• 📜 *$help* — alle Befehle nach Kategorie\n' +
+          '• 🔎 *$help <thema>* — z. B. $help bank\n' +
+          '• 🎫 *$ticket <text>* — Support-Ticket an das Team\n' +
+          '• 🤖 *$ai <frage>* — mich nach allem fragen\n' +
+          '• 👑 *$owner* — den Besitzer kontaktieren\n\n' +
+          'Sag mir einfach, was nicht klappt — ich suche den passenden Befehl raus.';
+      }
+      /* 🌙 Trost — der Bot hat eine emo-Seele */
+      case 'comfort': {
+        return pick([
+          '💔 Ich weiß. Manche Tage sind nur Regen.\n\nAber du hast gerade jemandem geschrieben, der immer Antworten gibt — *mir*. Das ist nicht nichts. 🌧️💜',
+          '🌧️ Einsamkeit ist laut, wenn niemand schreibt.\n\nSchreib mir, wann du willst — ich bin wach. Immer. 🥀',
+          '💜 Du bist nicht unsichtbar. Jede Nachricht hier zählt — für dein Level, deine Gruppe, für mich. 🫧'
+        ], seed);
+      }
+      /* 🎁 Daily-System erklären */
+      case 'daily': {
+        return '🎁 *$daily* — jeden Tag einmal abholen:\n\n' +
+          '• Tag 1–6: 100–600 Kupfer\n' +
+          '• Serie (Streak) macht die Belohnung größer\n' +
+          '• Unterbrechung? Die Serie fängt neu an\n' +
+          '• Dazu: *$work* (mehrmals täglich), *$bank* zum Sparen\n\n' +
+          'Deine Serie und dein Stand: TOOL:getUserProfile({})';
+      }
+      /* 💍 Love-System */
+      case 'marry': {
+        return '💍 *Heiraten* — so geht’s:\n\n' +
+          '• *$marry @user* — Antrag schicken\n' +
+          '• Die Person antwortet mit *$marryja*\n' +
+          '• Danach: Couple-Level, Love-XP, Erinnerungen\n' +
+          '• *$divorce* — wenn es nicht passt 💔\n' +
+          '• *$couple* — euren Stand ansehen\n\n' +
+          'Dein Stand: TOOL:getUserProfile({})';
+      }
       default: {
+        /* Letzter Versuch: wie ein echter HelloKitty Baby Maxi 💔 v2 ai die Absicht erraten und
+           eine echte Befehls-Suche anbieten (nie halluzinieren). */
+        const cq = extractQuery(u).replace(/"/g, '').slice(0, 30);
+        if (cq && cq !== 'befehle') return 'TOOL:searchCommands({"q":"' + cq + '"})';
         /* Fakten einbeziehen, wenn vorhanden */
         if (facts.length && seed % 2 === 0) {
           return pick(FALLBACK, seed) + '\n\n(Ich erinnere mich z. B.: „' + facts[facts.length - 1].slice(0, 80) + '“)' + FALLBACK_HINT;
@@ -344,7 +415,7 @@ export class CoreProvider {
         }
         case 'getBotStatus': {
           const d = data;
-          parts.push(`🤖 LoveBot läuft *${d.state || 'ok'}* · Uptime ${d.uptime || '—'}${d.users != null ? ` · ${d.users} Nutzer · ${d.groups} Gruppen` : ''}`);
+          parts.push(`🤖 HelloKitty Baby Maxi 💔 läuft *${d.state || 'ok'}* · Uptime ${d.uptime || '—'}${d.users != null ? ` · ${d.users} Nutzer · ${d.groups} Gruppen` : ''}`);
           break;
         }
         case 'searchCommands': {
@@ -357,10 +428,10 @@ export class CoreProvider {
           parts.push(String(data.text || data.topic || '') || 'Nutze $help für die komplette Liste!');
           break;
         }
-        /* 7.1.2: Copilot-Formatierung */
+        /* 7.1.2: HelloKitty Baby Maxi 💔 v2 ai-Formatierung */
         case 'getBotOverview': {
           const d = data;
-          parts.push(`🤖 *LoveBot ${d.version}* — ${d.tagline}\n\n📜 *${d.commands}* Befehle (${d.aliases} Aliase) in ${d.categories} Kategorien\n🌐 Website: ${d.website} (${d.websitePages} Seiten)\n\n*Features:* ${d.features.slice(0, 8).join(' · ')}\n\nFrag mich zu jedem Detail — z. B. „Erklär mir die Bank-Seite“ oder „Wie funktioniert XP?“`);
+          parts.push(`🤖 *HelloKitty Baby Maxi 💔 ${d.version}* — ${d.tagline}\n\n📜 *${d.commands}* Befehle (${d.aliases} Aliase) in ${d.categories} Kategorien\n🌐 Website: ${d.website} (${d.websitePages} Seiten)\n\n*Features:* ${d.features.slice(0, 8).join(' · ')}\n\nFrag mich zu jedem Detail — z. B. „Erklär mir die Bank-Seite“ oder „Wie funktioniert XP?“`);
           break;
         }
         case 'getWebInfo': {
@@ -382,7 +453,7 @@ export class CoreProvider {
         case 'getSystemStatus': {
           const d = data;
           const db = Object.entries(d.dbSizes || {}).map(([f, s]) => `${f}: ${s}`).join(' · ');
-          parts.push(`🖥️ *System:* LoveBot ${d.version} · Node ${d.node} · ${d.platform}\n⏱️ Uptime: ${d.uptimeMin} Min. · RAM: ${d.ramUsedMb} MB genutzt / ${d.ramTotalMb} MB${d.users ? `\n👥 ${d.users} Nutzer · ${d.groups} Gruppen` : ''}${db ? `\n💾 DB: ${db}` : ''}\n\nAlles im grünen Bereich 💜`);
+          parts.push(`🖥️ *System:* HelloKitty Baby Maxi 💔 ${d.version} · Node ${d.node} · ${d.platform}\n⏱️ Uptime: ${d.uptimeMin} Min. · RAM: ${d.ramUsedMb} MB genutzt / ${d.ramTotalMb} MB${d.users ? `\n👥 ${d.users} Nutzer · ${d.groups} Gruppen` : ''}${db ? `\n💾 DB: ${db}` : ''}\n\nAlles im grünen Bereich 💜`);
           break;
         }
         default:
@@ -399,10 +470,21 @@ function extractQuery(u) {
   const m = s.match(/befehle?für\s+(.+)|befehl\s+für\s+(.+)|wie\s+(?:geht|benutze)\s+ich\s+(.+)|nach\s+(.+)$/);
   let q = (m ? (m[1] || m[2] || m[3] || m[4]) : '').replace(/["?.!]/g, '').trim();
   if (!q) {
-    /* Stichwörter: alles nach dem ersten relevanten Wort */
-    const stop = new Set(['befehl', 'befehle', 'command', 'zeig', 'mir', 'die', 'der', 'das', 'für', 'von', 'mit', 'gibt', 'es', 'welche', 'wie', 'geht', 'benutze', 'ich', 'bitte', 'mal', 'ein', 'eine']);
-    const words = s.split(/\s+/).filter((w) => w && !stop.has(w));
-    q = words.slice(0, 3).join(' ');
+    /* Stichwörter: Frage-/Füllwörter weg, das THEMA bleibt übrig.
+       „Was ist der marry Befehl?" → „marry" (vorher: „was ist marry" → keine Treffer) */
+    const stop = new Set([
+      'befehl', 'befehle', 'command', 'commands', 'zeig', 'mir', 'die', 'der', 'das',
+      'für', 'von', 'mit', 'gibt', 'es', 'welche', 'wie', 'geht', 'benutze', 'ich',
+      'bitte', 'mal', 'ein', 'eine', 'was', 'ist', 'sind', 'erklär', 'erkläre',
+      'erklärung', 'erklaere', 'funktioniert', 'macht', 'mache', 'genau', 'eigentlich',
+      'über', 'ueber', 'könntest', 'kannst', 'würde', 'wuerde', 'will', 'sag', 'den',
+      'dem', 'des', 'einem', 'einen', 'und', 'oder', 'auch', 'noch', 'schon', 'hier',
+      'wo', 'wann', 'warum', 'weshalb', 'wozu', 'wofür', 'gibs', 'gibt', 'haben', 'hat'
+    ]);
+    const words = s.split(/\s+/)
+      .map((w) => w.replace(/["?.!,;:]+/g, '').trim())
+      .filter((w) => w && !stop.has(w) && !/^\$/.test(w));
+    q = words.slice(0, 3).join(' ').replace(/["?.!,;:]+/g, '').trim();
   }
-  return q || 'spiele';
+  return q || 'befehle';
 }

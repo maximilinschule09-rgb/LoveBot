@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════
-   💜 LoveBot 7.0 — GROUP ENGINE (groups.js)
+   💜 HelloKitty Baby Maxi 💔 7.0 — GROUP ENGINE (groups.js)
 
    Eigenes Gruppen-System auf dem BESTEHENDEN Gruppenprofil
    (`db.groups[cleanG]` + LoveGroups-Mirror via waApi.saveGroupProfile).

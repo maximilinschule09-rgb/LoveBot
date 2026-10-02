@@ -1,5 +1,5 @@
 /* ============================================================================
-   LoveBot — Minimaler ZIP-Schreiber (Zero-Dependency)
+   HelloKitty Baby Maxi 💔 — Minimaler ZIP-Schreiber (Zero-Dependency)
    Nutzt dieselbe Technik wie xlsxwriter.js (node:zlib deflate + CRC32),
    baut aber eine beliebige ZIP-Datei aus Einträgen: makeZip([{name, data}]) → Buffer
    ==========================================================================*/

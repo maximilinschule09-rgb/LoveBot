@@ -469,7 +469,7 @@ function publicView(s) {
   const up = uptimeFrom(s);
   return {
     id: s.id,
-    name: (s.id === 'main' && (!s.name || s.name === 'MainBot')) ? 'LoveBot_Maxichen !' : s.name,
+    name: (s.id === 'main' && (!s.name || s.name === 'MainBot')) ? 'HelloKitty Baby Maxi 💔_Maxichen !' : s.name,
     status: s.status,
     health: healthOf(s),
     maintenance: !!s.maintenance,

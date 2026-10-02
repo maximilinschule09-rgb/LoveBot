@@ -1,8 +1,8 @@
 /* ═══════════════════════════════════════════════════════════════════
-   🧠 LoveBot 7.1 — BOT-WISSEN / COPILOT-GEDÄCHTNIS (ai/knowledge.js)
+   🧠 HelloKitty Baby Maxi 💔 7.1 — BOT-WISSEN / HelloKitty Baby Maxi 💔 v2 ai-GEDÄCHTNIS (ai/knowledge.js)
 
-   LoveKI ist der Copilot des Bots: Sie kennt LoveBot wie GitHub
-   Copilot ein Repository kennt — Befehle, Website, Features, System.
+   BabyMaxiKI 💔 ist der HelloKitty Baby Maxi 💔 v2 ai des Bots: Sie kennt HelloKitty Baby Maxi 💔 wie GitHub
+   HelloKitty Baby Maxi 💔 v2 ai ein Repository kennt — Befehle, Website, Features, System.
 
    · WEB_PAGES    — alle Web-Panel-Seiten mit Zweck
    · BOT_FEATURES — Feature-Bereiche des Bots (für Erklärungen)
@@ -24,7 +24,7 @@ export const WEB_PAGES = {
   'app': { title: 'App', cat: 'Einstieg', desc: 'Die Haupt-App-Ansicht nach dem Login.' },
   'home': { title: 'Home', cat: 'Einstieg', desc: 'Startseite des Bereichs mit Schnellzugriffen.' },
   'dashboard': { title: 'Dashboard', cat: 'Zentrale', desc: 'Zentrale Übersicht: Status, Kennzahlen, Schnellaktionen.' },
-  'status': { title: 'Status', cat: 'Zentrale', desc: 'Live-Status von Bot, Server und LoveAI-Engine.' },
+  'status': { title: 'Status', cat: 'Zentrale', desc: 'Live-Status von Bot, Server und BabyMaxiAI 💔-Engine.' },
   'statistics': { title: 'Statistiken', cat: 'Zentrale', desc: 'Nutzungs- und Spielstatistiken des Bots.' },
   'year': { title: 'Jahresrückblick', cat: 'Zentrale', desc: 'Dein Bot-Jahr: Highlights und Erfolge.' },
   'level': { title: 'Level & XP', cat: 'Spiel-Systeme', desc: 'Level-System, XP-Verlauf, Prestige-Fortschritt.' },
@@ -35,7 +35,7 @@ export const WEB_PAGES = {
   'spiele': { title: 'Spiele', cat: 'Spiel-Systeme', desc: 'Minispiele des Bots mit Anleitung und Highscores.' },
   'group': { title: 'Gruppe', cat: 'Gruppen', desc: 'Ansicht einer Gruppe: Level, XP, Ziele, Mitglieder.' },
   'groups': { title: 'Gruppen', cat: 'Gruppen', desc: 'Alle Gruppen des Bots mit Statistiken und Einstellungen.' },
-  'ai': { title: 'LoveAI', cat: 'KI', desc: 'Der LoveKI-Chat: Fragen an die Bot-KI, Status der Engine, Memory.' },
+  'ai': { title: 'BabyMaxiAI 💔', cat: 'KI', desc: 'Der BabyMaxiKI 💔-Chat: Fragen an die Bot-KI, Status der Engine, Memory.' },
   'tickets': { title: 'Ticket-Center', cat: 'Team', desc: 'Team-Dashboard für Support-Tickets: lesen, beantworten (DM an Nutzer), schließen. Supporter/Stellv. Inhaber:in/Inhaber.' },
   'commands': { title: 'Befehle', cat: 'Befehle', desc: 'Befehlsübersicht des Bots nach Kategorien.' },
   'cmd': { title: 'Befehle-Suche', cat: 'Befehle', desc: 'Moderne Befehle-Seite: suchen, filtern, 332 Befehle, 242 Aliase.' },
@@ -69,7 +69,7 @@ export const BOT_FEATURES = [
   { id: 'games', name: 'Spiele', desc: 'Minispiele (u. a. Games-Kategorie) mit Einsätzen und Highscores.' },
   { id: 'groups', name: 'Gruppen-System', desc: 'Gruppen-Level/XP, Ziele ($ggoal), Events, Anti-Admin, Top-Listen, Admin-Center ($am).' },
   { id: 'progression', name: 'Progression', desc: 'Prestige, Streaks, Meilensteine (7/30/100/365), Achievements, Jahresrückblick.' },
-  { id: 'ai', name: 'LoveKI (AI)', desc: 'Die eigene Bot-KI: $ai im Chat + Web-Chat. Kennt Bot & Website, nur lesend, antwortet immer (3-Stufen-Kette).' },
+  { id: 'ai', name: 'BabyMaxiKI 💔 (AI)', desc: 'Die eigene Bot-KI: $ai im Chat + Web-Chat. Kennt Bot & Website, nur lesend, antwortet immer (3-Stufen-Kette).' },
   { id: 'moderation', name: 'Moderation', desc: 'Badword-Filter, Bans, Reports, Anti-Spam, Rate-Limits.' },
   { id: 'team', name: 'Team & Ränge', desc: 'Ränge: Inhaber (Owner, alles) · Stellv. Inhaber:in (deputy — viel, aber KEINE Ränge vergeben) · Admin · Supporter (NUR Tickets). Ränge vergibt nur der Owner mit $setteam.' },
   { id: 'mute', name: 'Mute-System', desc: 'Owner-only: $mute @user [zeit] stummt User (Nachrichten werden gelöscht), ohne Zeit permanent bis $unmute @user. $mutelist zeigt alle.' },
@@ -83,7 +83,7 @@ export const BOT_FEATURES = [
 export const ARCHITECTURE = [
   'Love.js — WhatsApp-Bot-Herz (Baileys): Befehle, Spiele, Love, Pets, Gruppen',
   'server.js — Web-Panel-Server (Port 7777): Login (2FA), 40 Seiten, /api/*',
-  'ai/ — LoveKI: engine (Kette), providers (Ollama/Cloud/Core), tools (nur lesend), memory, boot',
+  'ai/ — BabyMaxiKI 💔: engine (Kette), providers (Ollama/Cloud/Core), tools (nur lesend), memory, boot',
   'registry/commands.json — alle 332 Befehle + 242 Aliase in 17 Kategorien',
   'Database/ — JSON-Datenbanken (users, ai.json, access.jsonl, sessions)',
   'night/terminal — hübsche Boot-Banner & Logs',
@@ -106,9 +106,9 @@ export function registryFacts() {
 export function botOverview() {
   const reg = registryFacts();
   return {
-    name: 'LoveBot',
+    name: 'HelloKitty Baby Maxi 💔',
     version: '7.1',
-    tagline: 'WhatsApp-Bot mit XP, Economy, Love-System, Pets, Gruppen & eigener KI (LoveKI)',
+    tagline: 'WhatsApp-Bot mit XP, Economy, Love-System, Pets, Gruppen & eigener KI (BabyMaxiKI 💔)',
     commands: reg.total, aliases: reg.aliases, categories: reg.cats,
     websitePages: Object.keys(WEB_PAGES).length,
     website: 'maxichen.gamebot.me (Web-Panel, Login per WhatsApp-Code + Passwort)',
@@ -139,7 +139,7 @@ export function pagesByCategory() {
   return cats;
 }
 
-/* ── Wissens-Block für den System-Prompt (Copilot-Kontext) ────────── */
+/* ── Wissens-Block für den System-Prompt (HelloKitty Baby Maxi 💔 v2 ai-Kontext) ────────── */
 export function buildBotKnowledge({ maxChars = 1600 } = {}) {
   const reg = registryFacts();
   const topCats = (reg.categories || [])
@@ -148,8 +148,8 @@ export function buildBotKnowledge({ maxChars = 1600 } = {}) {
     .map((c) => c.id + ' (' + c.count + ')')
     .join(', ');
   const txt =
-    '### Dein Bot-Wissen (Du bist der Copilot von LoveBot 7.1):\n' +
-    `- LoveBot = WhatsApp-Bot (${reg.total} Befehle, ${reg.aliases} Aliase, ${reg.cats} Kategorien; Top: ${topCats}).\n` +
+    '### Dein Bot-Wissen (Du bist der HelloKitty Baby Maxi 💔 v2 ai von HelloKitty Baby Maxi 💔 7.1):\n' +
+    `- HelloKitty Baby Maxi 💔 = WhatsApp-Bot (${reg.total} Befehle, ${reg.aliases} Aliase, ${reg.cats} Kategorien; Top: ${topCats}).\n` +
     '- Website: maxichen.gamebot.me — 40 Seiten im Web-Panel. Login: WhatsApp-Code (2FA) + Passwort. Wichtige Seiten: dashboard (Übersicht), economy/bank (Kupfer), level/progression (XP), cmd (Befehlssuche), groups, ai (dieser Chat), logs/control (Owner).\n' +
     '- Features: XP & Level & Prestige, Economy (Daily, $work, Bank-Zinsen 1 %/24 h), Love-System (Marry, Lovematch, Geschenke), Pets, Spiele, Gruppen-Level & Ziele, Achievements, Moderation, Broadcast, Alltags-Tools, Team-Ränge & Ticket-Support ($ticket).\n' +
     '- Für Details nutze IMMER die Tools: getBotOverview, getWebInfo, getCommandDetails, getSystemStatus, searchCommands, getHelp.\n' +

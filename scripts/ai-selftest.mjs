@@ -114,11 +114,11 @@ try {
   const coreOnly = await chain.health();
   check('Chain bleibt ok (Core aktiv)', coreOnly.ok === true && coreOnly.engine === 'core');
 
-  console.log('\n═══ 6 · Copilot: Bot & Website erklären (read-only Tools) ═══');
+  console.log('\n═══ 6 · HelloKitty Baby Maxi 💔 v2 ai: Bot & Website erklären (read-only Tools) ═══');
   const { runTool, toolSpec } = await import('../ai/tools.js');
   const { buildBotKnowledge } = await import('../ai/knowledge.js');
   const spec = toolSpec().map((t) => t.name);
-  check('4 neue Copilot-Tools registriert', ['getBotOverview', 'getWebInfo', 'getCommandDetails', 'getSystemStatus'].every((t) => spec.includes(t)), '· ' + spec.length + ' Tools');
+  check('4 neue HelloKitty Baby Maxi 💔 v2 ai-Tools registriert', ['getBotOverview', 'getWebInfo', 'getCommandDetails', 'getSystemStatus'].every((t) => spec.includes(t)), '· ' + spec.length + ' Tools');
   const ov = runTool('getBotOverview', {}, {});
   check('getBotOverview: 335 Befehle + 41 Seiten + Features', ov.ok && ov.data.commands >= 300 && ov.data.websitePages === 41 && ov.data.features.length >= 10, `· ${ov.data.commands} Befehle`);
   const wi = runTool('getWebInfo', { q: 'bank' }, {});
@@ -130,8 +130,8 @@ try {
   const ss = runTool('getSystemStatus', {}, { uptimeMs: 5 * 60000, counts: { users: 3, groups: 2 } });
   check('getSystemStatus: RAM, Node, DB-Größen', ss.ok && ss.data.ramTotalMb > 0 && !!ss.data.node && !!ss.data.dbSizes['Database.json']);
   const knowledge = buildBotKnowledge();
-  check('Copilot-Wissen für System-Prompt (Befehle + Seiten + Read-only)', knowledge.includes('Befehle') && knowledge.includes('40 Seiten') && knowledge.includes('NICHTS ändern'));
-  /* Offline-Copilot: Core beantwortet Bot-/Web-Fragen über die Tools */
+  check('HelloKitty Baby Maxi 💔 v2 ai-Wissen für System-Prompt (Befehle + Seiten + Read-only)', knowledge.includes('Befehle') && knowledge.includes('40 Seiten') && knowledge.includes('NICHTS ändern'));
+  /* Offline-HelloKitty Baby Maxi 💔 v2 ai: Core beantwortet Bot-/Web-Fragen über die Tools */
   const coreWeb = await core.generate('\nUser: Was gibt es für Webseiten?\nLoveAI:');
   check('Core-Intent web → TOOL:getWebInfo', /^TOOL:getWebInfo/.test(coreWeb.text));
   const coreInfo = await core.generate('\nUser: Was ist LoveBot? Erklär mir den Bot\nLoveAI:');

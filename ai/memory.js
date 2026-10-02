@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════
-   💜 LoveBot 7.0 — AI MEMORY (ai/memory.js)
+   💜 HelloKitty Baby Maxi 💔 7.0 — AI MEMORY (ai/memory.js)
 
    Echte Memory-Schicht in Database/ai.json, strikt getrennt:
    · conversations: dm:<bid> / group:<gid>:<bid> (je 20 Nachrichten, rotierend)
@@ -91,7 +91,7 @@ export function setAiConfig(patch = {}, actor = '') {
   for (const k of allow) {
     if (patch[k] === undefined) continue;
     /* 7.1.0: 'provider' wird ignoriert — die Engine nutzt fest die Chain
-       (Ollama 🦙 → Cloud-KI ☁️ → LoveAI Core 💜). 'mock' bleibt nie speicherbar. */
+       (Ollama 🦙 → Cloud-KI ☁️ → BabyMaxiAI 💔 Core 💜). 'mock' bleibt nie speicherbar. */
     if (k === 'provider') {
       if (String(patch[k]).toLowerCase() === 'local') st.config[k] = 'local';
       continue;

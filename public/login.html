@@ -3,12 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login 💜 — LoveBot</title>
+<title>Login  — HelloKitty Baby Maxi 💔</title>
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png">
 <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
 <meta name="theme-color" content="#07050f">
 <link rel="stylesheet" href="/css/style.css">
-<link rel="stylesheet" href="/css/consent.css">
 </head>
 <body>
 <div class="aurora"></div>
@@ -16,7 +15,7 @@
 <div class="hearts" id="hearts"></div>
 
 <header class="topnav">
-  <a class="brand" href="/"><span class="h">💜</span><b>LOVEBOT</b></a>
+  <a class="brand" href="/"><img class="h" src="/assets/img/Menu.png" alt="🥀 HelloKitty Baby Maxi"><b>HELLOKITTY BABY MAXI</b></a>
   <button class="nav-burger" onclick="this.nextElementSibling.classList.toggle('open')" aria-label="Menü">☰</button>
   <nav class="nav-links">
     <a href="/">Start</a>
@@ -31,8 +30,8 @@
 
 <div class="auth-wrap">
   <div class="auth-card">
-    <div class="logo"><img src="/assets/img/logo.png" alt="LoveBot"></div>
-    <h1>LOVEBOT</h1>
+    <div class="logo"><img src="/assets/img/logo.png" alt="HelloKitty Baby Maxi 💔"></div>
+    <h1>HELLOKITTY BABY MAXI</h1>
     <p class="tagline">nobody is awake anymore… but you.</p>
 
     <!-- Schritte: 1 Nummer · 2 Code (2FA) · 3 Passwort -->
@@ -48,7 +47,7 @@
       <label class="fld" for="loginNumber">Deine Nummer oder JID</label>
       <input id="loginNumber" placeholder="49151… oder 49151…@s.whatsapp.net"
              onkeydown="if(event.key==='Enter')step1Go()">
-      <div class="row mt"><button class="btn full" id="btn1" onclick="step1Go()">💜 Weiter</button></div>
+      <div class="row mt"><button class="btn full" id="btn1" onclick="step1Go()"> Weiter</button></div>
       <div class="msg" id="msg1"></div>
     </div>
 
@@ -68,12 +67,21 @@
       <div class="msg" id="msg2"></div>
     </div>
 
-    <!-- SCHRITT 3: Passwort -->
+    <!-- SCHRITT 3: Passwort (+ Benutzername & Geburtsdatum für den Owner) -->
     <div id="step3" style="display:none">
       <label class="fld" id="pwLabel" for="loginPassword">Passwort</label>
       <input id="loginPassword" type="password" placeholder="••••••••"
              onkeydown="if(event.key==='Enter')step3Go()">
-      <div class="row mt"><button class="btn full" id="btn3" onclick="step3Go()">💜 Einloggen</button></div>
+      <div id="ownerExtra" style="display:none">
+        <label class="fld mt" for="loginUser">👑 Benutzername</label>
+        <input id="loginUser" placeholder="Maxichen" autocomplete="off"
+               onkeydown="if(event.key==='Enter')step3Go()">
+        <label class="fld mt" for="loginBirthday">👑 Geburtsdatum</label>
+        <input id="loginBirthday" placeholder="03.10.2009" inputmode="numeric" autocomplete="off"
+               onkeydown="if(event.key==='Enter')step3Go()">
+        <p class="hint">Owner-Zugang braucht alle vier Angaben: Nummer · Passwort · Benutzername · Geburtsdatum.</p>
+      </div>
+      <div class="row mt"><button class="btn full" id="btn3" onclick="step3Go()"> Einloggen</button></div>
       <div class="row mt-s"><button class="btn ghost sm" onclick="backTo(2)">← Zurück zum Code</button></div>
       <div class="msg" id="msg3"></div>
     </div>
@@ -99,7 +107,7 @@
           <input type="checkbox" id="regPrivacyOk" style="margin-top:3px;width:17px;height:17px;accent-color:#f472b6;flex-shrink:0">
           <span>Ich habe die <a href="/datenschutz.html" target="_blank" rel="noopener" style="color:#f472b6;text-decoration:underline">Datenschutzerklärung</a> gelesen und stimme der Verarbeitung meiner Daten zu. <b>*</b></span>
         </label>
-        <div class="row mt"><button class="btn full" onclick="regFinish()">♡ Konto erstellen</button></div>
+        <div class="row mt"><button class="btn full" onclick="regFinish()">💔 Konto erstellen</button></div>
       </div>
       <div class="msg" id="regMsg"></div>
     </div>

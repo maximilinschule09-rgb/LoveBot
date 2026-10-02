@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════════
    SOUL ECHO — 🧮 RECHTE-MATRIX + 🌳 RECHTEBAUM + 🧩 FEATURE-REGISTRY
-   (LoveBot 5.0: Thinkproject-Muster „Rolle × Ressource" als echte Matrix,
+   (HelloKitty Baby Maxi 💔 5.0: Thinkproject-Muster „Rolle × Ressource" als echte Matrix,
    Ressourcen-Struktur als Baum, Module als „App Store")
    ═══════════════════════════════════════════════════════════════ */
 

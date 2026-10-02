@@ -1,9 +1,9 @@
-/* LoveBot — gemeinsame Funktionen (alle Seiten) */
+/* HelloKitty Baby Maxi 💔 — gemeinsame Funktionen (alle Seiten) */
 
 function makeHearts(count = 14) {
   const holder = document.getElementById('hearts');
   if (!holder) return;
-  const emojis = ['💜', '🌹', '💍', '❤️', '✨', '💙'];
+  const emojis = ['', '🥀', '💍', '💔', '🌧️', '💙'];
   for (let i = 0; i < count; i++) {
     const s = document.createElement('span');
     s.textContent = emojis[i % emojis.length];
@@ -73,7 +73,7 @@ function showSecurityBlock(security, reason) {
   gate.id = 'securityBlockGate';
   gate.innerHTML = '<div class="security-block-card">' +
     '<div class="security-block-icon">🛡️</div>' +
-    '<span class="security-block-kicker">LOVEBOT SECURITY</span>' +
+    '<span class="security-block-kicker">HELLOKITTY BABY MAXI SECURITY</span>' +
     '<h1>' + esc(security?.title || 'Zugriff gesperrt') + '</h1>' +
     '<p>' + esc(reason || security?.detail || 'Diese Anfrage wurde vom Schutzsystem blockiert.') + '</p>' +
     '<div class="security-block-meta"><span>Code</span><b>' + esc(security?.code || 'SECURITY_BLOCK') + '</b><span>Zeit</span><b>' + esc(security?.at || new Date().toISOString()) + '</b></div>' +
@@ -85,7 +85,7 @@ function showSecurityBlock(security, reason) {
 
 /* ── Design-2026-Helfer: Toast, Scroll-Reveal, Copy ─────────────── */
 
-/* Kleine Einblend-Meldung unten (z. B. „Befehl kopiert 💜“) */
+/* Kleine Einblend-Meldung unten (z. B. „Befehl kopiert “) */
 function toast(text) {
   let t = document.querySelector('.toast');
   if (!t) {
@@ -144,7 +144,7 @@ function renderBanBox(el, banned) {
     '• <b>Von:</b> ' + esc(banned.by) + (banned.byJid ? ' (' + esc(banned.byJid) + ')' : '') + '<br>' +
     '• <b>Grund:</b> ' + esc(banned.reason) + '<br>' +
     (banned.bannedAt ? '• <b>Am:</b> ' + esc(new Date(banned.bannedAt).toLocaleString('de-DE')) + '<br>' : '') +
-    '<div class="owners">💜 <b>Wende dich an diese Owner und bitte um Hilfe:</b><br>' +
+    '<div class="owners"> <b>Wende dich an diese Owner und bitte um Hilfe:</b><br>' +
     (banned.owners || []).map((o) => '👑 ' + esc(o.name) + ' — <span style="font-family:monospace">' + esc(o.jid) + (o.lid ? ' / ' + esc(o.lid) : '') + '</span>').join('<br>') +
     '</div>';
 }
@@ -168,7 +168,7 @@ const NAV = {
     ['profiles', '👤', 'Profile'],
     ['logs', '📜', 'Logs']
   ],
-  /* 💜 7.0: persönlicher Bereich (alle Rollen) */
+  /*  7.0: persönlicher Bereich (alle Rollen) */
   mein: [
     ['home', '🏠', 'Dashboard'],
     ['account', '👤', 'Mein Account'],
@@ -207,7 +207,7 @@ function buildSidebar(activePage) {
     sections.push(['DATEN', [['profiles', '👤', 'Mein Profil']]]);
   }
   let html =
-    '<div class="brand"><span class="h">💜</span><b>LOVE&nbsp;BOT</b></div>' +
+    '<div class="brand"><span class="h"></span><b>LOVE&nbsp;BOT</b></div>' +
     '<div class="userchip"><div class="nm">' + esc(getName() || 'Nutzer') + '</div>' +
     '<div class="rl">' + (ROLE_LABELS[role] || '👤 Nutzer') + '</div></div>';
   for (const [label, items] of sections) {
@@ -225,7 +225,7 @@ function buildSidebar(activePage) {
     '<a class="nav-btn" href="/datenschutz.html">🔐 Datenschutz</a>';
   html += '<div class="spacer"></div>' +
     '<a class="nav-btn logout" href="#" onclick="doLogout();return false;">🚪 Abmelden</a>' +
-    '<div class="footline">💜 LoveBot by Maxichen 2026</div>';
+    '<div class="footline"> HelloKitty Baby Maxi 💔 by Maxichen 2026</div>';
   const el = document.getElementById('sidebar');
   if (el) el.innerHTML = html;
 }
@@ -305,9 +305,9 @@ function renderConsentGate() {
   wrap.id = 'consentGate';
   wrap.innerHTML =
     '<div class="consent-card">' +
-      '<div class="consent-icon">🍪💜</div>' +
+      '<div class="consent-icon">🍪</div>' +
       '<h2>Deine Privatsphäre ist uns wichtig</h2>' +
-      '<p>Willkommen bei <b>LoveBot</b>! Bevor es losgeht, möchten wir dir transparent erklären, ' +
+      '<p>Willkommen bei <b>HelloKitty Baby Maxi 💔</b>! Bevor es losgeht, möchten wir dir transparent erklären, ' +
       'welche Daten auf dieser Website gespeichert werden und dich um deine Zustimmung bitten — ' +
       'ganz im Sinne der <b>DSGVO</b> (Datenschutz-Grundverordnung).</p>' +
       '<p>Wir unterscheiden drei Kategorien von Speicherzugriffen. Du entscheidest selbst, welche ' +
@@ -348,7 +348,7 @@ function renderConsentGate() {
       '</details>' +
       '<div class="consent-actions">' +
         '<button class="btn ghost" id="consentNecessaryBtn">Nur Notwendige</button>' +
-        '<button class="btn" id="consentAllBtn">💜 Alle akzeptieren</button>' +
+        '<button class="btn" id="consentAllBtn"> Alle akzeptieren</button>' +
       '</div>' +
       '<div class="consent-actions" style="margin-top:6px">' +
         '<button class="btn ghost sm full" id="consentSaveBtn">✓ Auswahl speichern</button>' +
@@ -410,11 +410,9 @@ function ensureConsentRelaunch() {
    bleibt das Gate auf allen weiteren Seiten (z. B. login.html) zu und
    nur der kleine 🍪-Wiedereinstiegsknopf erscheint. */
 function initConsentGate() {
-  if (getConsent()) {
-    ensureConsentRelaunch();
-  } else {
-    renderConsentGate();
-  }
+  /* 🍪➡️🚫 DSGVO-/Cookie-Abfrage ENTFERNT (Owner-Wunsch):
+     kein Gate, kein 🍪-Button, keine Blockade. Seiten laden sofort. */
+  return;
 }
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initConsentGate);
@@ -425,3 +423,46 @@ if (document.readyState === 'loading') {
 /* ⚠️ Das frühere „📍 Standort- & Geräte-Gate" wurde auf Wunsch des Owners
    vollständig entfernt: kein Geolocation-Popup, keine Standort-Erfassung,
    keine „Zugriff nur nach Freigabe"-Sperre mehr. */
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ✨ DESIGN 2026.2 — Spotlight & Auto-Reveal (alle Seiten)
+   · Karten folgen der Maus mit einem sanften Lichtfleck (--mx/--my)
+   · Karten blenden sich sanft ein, wenn sie sichtbar werden
+   Alles optional: ohne JS bleibt die Seite vollständig nutzbar.
+   ═══════════════════════════════════════════════════════════════════════ */
+function initCardSpotlight() {
+  try {
+    /* 1) Lichtfleck: Mausposition relativ zur Karte */
+    const spot = (el) => (ev) => {
+      const r = el.getBoundingClientRect();
+      el.style.setProperty('--mx', ((ev.clientX - r.left) / r.width * 100).toFixed(1) + '%');
+      el.style.setProperty('--my', ((ev.clientY - r.top) / r.height * 100).toFixed(1) + '%');
+    };
+    const cards = document.querySelectorAll('.card, .step-card, .livebar .cell, .cmdbox, .panel, .glass, .glass-card, .login-card, .auth-card');
+    cards.forEach((el) => {
+      if (el.dataset.spot) return;
+      el.dataset.spot = '1';
+      el.addEventListener('pointermove', spot(el), { passive: true });
+      el.addEventListener('pointerleave', () => {
+        el.style.setProperty('--mx', '50%');
+        el.style.setProperty('--my', '0%');
+      }, { passive: true });
+    });
+
+    /* 2) Auto-Reveal: Karten bekommen .reveal, wenn sie es noch nicht haben */
+    if ('IntersectionObserver' in window) {
+      const auto = document.querySelectorAll('.card, .step-card, .livebar .cell, .cmdbox, .panel');
+      auto.forEach((el) => {
+        if (el.classList.contains('reveal') || el.dataset.revealed) return;
+        el.dataset.revealed = '1';
+        el.classList.add('reveal');
+      });
+      if (typeof initReveal === 'function') initReveal();
+    }
+  } catch (spotErr) { /* Deko darf nie brechen */ }
+}
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initCardSpotlight);
+} else {
+  initCardSpotlight();
+}

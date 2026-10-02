@@ -1,16 +1,16 @@
 /* ═══════════════════════════════════════════════════════════════
-   SOUL ECHO — ⭐ XP & LEVEL · 💰 ECONOMY · 🎮 GAMES · ❤️ HEALTH
+   SOUL ECHO — ⭐ XP & LEVEL · 💰 ECONOMY · 🎮 GAMES · 💔 HEALTH
    LoveCore-Ansichten: Statistik, Level-Tabelle, XP-Admin,
    Economy-Übersicht, Games, System-Health.
    ═══════════════════════════════════════════════════════════════ */
 
 /* ── Helfer ──────────────────────────────────────────────────── */
 const XP_SRC_LABEL = {
-  messages: '💬 Nachrichten', commands: '⚡ Befehle', love: '💜 Love-Actions',
+  messages: '💬 Nachrichten', commands: '⚡ Befehle', love: ' Love-Actions',
   dailies: '📅 $daily / $dailylove', work: '💼 $work',
   games: '🎮 Spiele (Sieg +15 / Niederlage +2)', admin: '👑 Owner-Manipulation',
   gifts: '🎁 Geschenke', achievements: '🏆 Achievements', monthlybonus: '📅 Monatsziel-Bonus',
-  compliments: '💜 Komplimente', media: '📺 Media',
+  compliments: ' Komplimente', media: '📺 Media',
   terminal: '🖥️ Terminal', other: 'Sonstiges'
 };
 
@@ -21,7 +21,7 @@ function buildRulesSection(rules, canAdjust) {
   const catMeta = {
     message: ['💬 Nachrichten', 'Basis-XP pro Nachricht (Gruppe), 1:1, Nett-Multiplikator, Love-Multiplikator, Kompliment-Bonus'],
     command: ['⚡ Befehle', 'Basis-XP pro Command, Bonus für Love-Actions'],
-    compliment: ['💜 Komplimente', 'Sender-XP, Empfänger-XP, Cooldown (s), Tages-Cap — Social XP Layer'],
+    compliment: [' Komplimente', 'Sender-XP, Empfänger-XP, Cooldown (s), Tages-Cap — Social XP Layer'],
     game: ['🎮 Spiele', 'Sieg-XP, Niederlage-XP'],
     daily: ['📅 Dailies', '$daily, $dailylove, $work'],
     media: ['📺 Media', 'Erster Download, neuer Provider, Events/Tag']
@@ -252,8 +252,8 @@ CC.reg('economy', async () => {
       (eh ? '<div class="cc-stat"><div class="ic">🏦</div><div class="num">' + Number(eh.totalBank || 0).toLocaleString('de-DE') + '</div><div class="lab">Kupfer auf Banken</div></div>' +
       '<div class="cc-stat"><div class="ic">📈</div><div class="num st-ok">+' + Number(eh.generated || 0).toLocaleString('de-DE') + '</div><div class="lab">Erzeugt (Lifetime)</div></div>' +
       '<div class="cc-stat"><div class="ic">📉</div><div class="num">' + Number(eh.spent || 0).toLocaleString('de-DE') + '</div><div class="lab">Ausgegeben (Lifetime)</div></div>' : '') +
-      '<div class="cc-stat"><div class="ic">💞</div><div class="num">' + (t.couples ?? 0) + '</div><div class="lab">Paare aktiv</div></div>' +
-      '<div class="cc-stat"><div class="ic">❤️</div><div class="num">' + Number(t.loveXp || 0).toLocaleString('de-DE') + '</div><div class="lab">Paar-XP gesamt</div></div>' +
+      '<div class="cc-stat"><div class="ic">💔</div><div class="num">' + (t.couples ?? 0) + '</div><div class="lab">Paare aktiv</div></div>' +
+      '<div class="cc-stat"><div class="ic">💔</div><div class="num">' + Number(t.loveXp || 0).toLocaleString('de-DE') + '</div><div class="lab">Paar-XP gesamt</div></div>' +
       '<div class="cc-stat"><div class="ic">🐾</div><div class="num">' + (t.pets ?? 0) + '</div><div class="lab">Pets in Besitz</div></div>' +
     '</div>' + (eh ? '<div class="cc-tip" style="margin:10px 0">Netto-Bilanz: <b>' + (Number(eh.net || 0) >= 0 ? '+' : '') + Number(eh.net || 0).toLocaleString('de-DE') + ' 🪙</b> · Quellen aus den letzten ' + (eh.txSampled || 0) + ' Buchungen (Stichprobe).</div>' : '') + '<br>' +
     '<div class="cc-grid2">' +
@@ -263,7 +263,7 @@ CC.reg('economy', async () => {
         { t: 'Kupfer', f: (r) => '🪙 ' + Number(r.copper || 0).toLocaleString('de-DE') },
         { t: 'Level', f: (r) => 'Lv ' + (r.level || 0) }
       ], rich) : '<div class="cc-empty">Noch keine Wallets.</div>') + '</div>' +
-      '<div class="cc-section"><h3>💞 Top-Paare (Paar-XP)</h3>' +
+      '<div class="cc-section"><h3>💔 Top-Paare (Paar-XP)</h3>' +
       (couples.length ? CC.table([
         { t: 'Paar', f: (r) => esc(r.n1) + ' 💍 ' + esc(r.n2) },
         { t: 'Paar-XP', f: (r) => Number(r.loveXp || 0).toLocaleString('de-DE') }
@@ -309,13 +309,13 @@ CC.reg('games', async () => {
   );
 }, { perms: ['games.view'] });
 
-/* ═══ ❤️ SYSTEM HEALTH ═══ */
+/* ═══ 💔 SYSTEM HEALTH ═══ */
 CC.reg('health', async () => {
   const d = await api('/api/health').catch(() => null);
   if (!d || !d.ok) { CC.viewErr('System Health nicht verfügbar.'); return; }
   const rows = d.components.map((c) =>
     '<tr><td>' + (c.ok ? '🟢' : '🔴') + '</td><td><b>' + esc(c.label) + '</b></td><td>' + esc(c.detail || '—') + '</td><td>' + (c.ok ? '<span class="cc-tag ok">OK</span>' : '<span class="cc-tag bad">PROBLEM</span>') + '</td></tr>').join('');
-  CC.page('❤️ System Health', 'Komponenten-Check auf einen Blick — Stand: ' + new Date(d.checkedAt).toLocaleString('de-DE') + '.',
+  CC.page('💔 System Health', 'Komponenten-Check auf einen Blick — Stand: ' + new Date(d.checkedAt).toLocaleString('de-DE') + '.',
     '<div class="cc-tablewrap" style="overflow-x:auto"><table class="cc-table"><thead><tr><th></th><th>Komponente</th><th>Detail</th><th>Status</th></tr></thead><tbody>' + rows + '</tbody></table></div>' +
     '<div class="cc-btnrow" style="margin-top:12px"><button class="cc-btn sm" onclick="CC.reload()">↻ Neu prüfen</button></div>'
   );
@@ -338,7 +338,7 @@ CC.reg('health', async () => {
   }
   const sysSec = CC.menu.find((m) => m.sec && m.sec.startsWith('⚙ SYSTEM'));
   if (sysSec && !sysSec.items.find((i) => i.id === 'health')) {
-    sysSec.items.push({ id: 'health', ico: '❤️', label: 'System Health', perms: ['system.view'] });
+    sysSec.items.push({ id: 'health', ico: '💔', label: 'System Health', perms: ['system.view'] });
   }
 })();
 

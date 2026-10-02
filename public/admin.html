@@ -4,11 +4,10 @@
 <script src="/js/maintgate.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>👑 Owner Panel — LoveBot</title>
+<title>👑 Owner Panel — HelloKitty Baby Maxi 💔</title>
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png">
 <meta name="theme-color" content="#07050f">
 <link rel="stylesheet" href="/css/style.css">
-<link rel="stylesheet" href="/css/consent.css">
 <style>
 /* 👑 Owner Panel — Glass Control Center (nur diese Seite) */
 body { background: radial-gradient(1200px 600px at 80% -10%, rgba(167,139,250,.14), transparent 60%), radial-gradient(900px 500px at -10% 110%, rgba(244,114,182,.10), transparent 55%); }
@@ -52,7 +51,7 @@ body { background: radial-gradient(1200px 600px at 80% -10%, rgba(167,139,250,.1
   <main class="main">
     <div id="hero">
     <div>
-      <div class="hero-brand">❤️ LoveBot <span class="pill on" id="heroStatus">🟢 …</span></div>
+      <div class="hero-brand">💔 HelloKitty Baby Maxi 💔 <span class="pill on" id="heroStatus">🟢 …</span></div>
       <div class="hero-hi" id="heroHi">Willkommen 👋</div>
       <div class="hero-sub">Hier ist, was in deiner Bot-Fleet passiert.</div>
     </div>
@@ -60,7 +59,7 @@ body { background: radial-gradient(1200px 600px at 80% -10%, rgba(167,139,250,.1
     <a href="/control.html" class="pill on" style="text-decoration:none;white-space:nowrap" title="Neue zentrale Kommandozentrale für Bot, Website, Benutzer &amp; Sicherheit">🛸 Soul Echo Control Center ↗</a>
   </div>
 
-  <div class="crumb">LoveBot / Owner</div>
+  <div class="crumb">HelloKitty Baby Maxi 💔 / Owner</div>
     <h1>👑 Control Center</h1>
     <p class="subline">Zentrale Verwaltung: Sessions, Nutzer, Gruppen, Moderation, Audit — alles live aus den echten Daten.</p>
 
@@ -74,7 +73,7 @@ body { background: radial-gradient(1200px 600px at 80% -10%, rgba(167,139,250,.1
 
 <script src="/js/common.js"></script>
 <script>
-/* ═══ 👑 LoveBot Owner Panel v1 — client-seitige Single-Page-App ═══ */
+/* ═══ 👑 HelloKitty Baby Maxi 💔 Owner Panel v1 — client-seitige Single-Page-App ═══ */
 let ROLE = null;
 let NAME = '';
 let VIEW = 'overview';
@@ -98,7 +97,7 @@ function fmtN(n){ return Number(n||0).toLocaleString('de-DE'); }
 
 function buildSidebar() {
   document.getElementById('sidebar').innerHTML =
-    '<div class="brand"><span class="h">💜</span><b>LOVEBOT</b></div>' +
+    '<div class="brand"><span class="h"></span><b>HELLOKITTY BABY MAXI</b></div>' +
     '<div class="userchip"><div class="nm">👑 ' + esc2(NAME || 'Owner') + '</div><div class="rl">Owner Panel · volle Kontrolle</div></div>' +
     '<div class="side-label">Owner</div>' +
     PNAV.map(([id, ico, label]) =>
@@ -222,13 +221,13 @@ async function renderOverview(v) {
     stat('🐞', fmtN(t.errors), 'Fehler') +
     stat('📈', f.avgUptimePct == null ? '—' : f.avgUptimePct + '%', 'Ø Uptime') +
     stat('💎', fmtN(t.copper), 'Kupfer gesamt') +
-    stat('💞', fmtN(t.couples), 'Paare') +
+    stat('💔', fmtN(t.couples), 'Paare') +
     stat('💗', fmtN(t.loveXp), 'Love-XP gesamt') +
     stat('🐶', fmtN(t.pets), 'Haustiere') +
     '</div>' +
     '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px">' +
     '<div class="box"><h3>🏆 Top Paare</h3>' + (d.topCouples.length ? '<table><tr><th>#</th><th>Paar</th><th>Love-XP</th></tr>' +
-      d.topCouples.map((x, i) => '<tr><td>' + (i + 1) + '</td><td>' + esc2(x.n1) + ' 💞 ' + esc2(x.n2) + '</td><td class="mono">' + fmtN(x.loveXp) + '</td></tr>').join('') + '</table>' : '<p class="desc">Noch keine Paare.</p>') + '</div>' +
+      d.topCouples.map((x, i) => '<tr><td>' + (i + 1) + '</td><td>' + esc2(x.n1) + ' 💔 ' + esc2(x.n2) + '</td><td class="mono">' + fmtN(x.loveXp) + '</td></tr>').join('') + '</table>' : '<p class="desc">Noch keine Paare.</p>') + '</div>' +
     '<div class="box"><h3>💎 Reichste Nutzer</h3>' + (d.topRich.length ? '<table><tr><th>#</th><th>Name</th><th>Kupfer</th><th>Level</th></tr>' +
       d.topRich.map((x, i) => '<tr><td>' + (i + 1) + '</td><td>' + esc2(x.name) + '</td><td class="mono">' + fmtN(x.copper) + '</td><td>' + (x.prestige > 0 ? 'P' + x.prestige + ' · ' : '') + x.level + '</td></tr>').join('') + '</table>' : '<p class="desc">Noch keine Wallets.</p>') + '</div>' +
     '<div class="box" id="legalBox"><h3>⚖️ Impressum-Produktionscheck</h3><p class="desc">Wird geladen …</p></div>' +
@@ -338,7 +337,7 @@ function showUser(i) {
     '<p class="desc" style="margin-top:8px">Registriert: ' + (u.registeredAt ? new Date(u.registeredAt).toLocaleDateString('de-DE') : '—') + ' · Dieselben Daten wie im Bot-Profil ($profile) — Alter & IDs nie öffentlich.</p></div>' +
     sec('⭐ Level & XP', [['Level', u.level], ['XP', fmtN(u.xp || 0) + ' / ' + fmtN(u.neededXp || 0)], ['Prestige', u.prestige ?? 0]]) +
     sec('💎 Economy', [['Kupfer', fmtN(u.copper)], ['Silber', fmtN(u.silver || 0)], ['Gold', fmtN(u.gold || 0)], ['Platin', fmtN(u.platin || 0)]]) +
-    sec('❤️ Love & Pet', [['Verheiratet', u.married ? '💍 ja' : 'nein'], ['Partner', u.spouse ? esc2(u.spouse) : '—'], ['Verheiratet seit', u.marriedAt ? new Date(u.marriedAt).toLocaleDateString('de-DE') : '—'], ['Pet', u.pet ? esc2(u.pet) : '—'], ['Streak', u.streak + ' Tag(e)']]) +
+    sec('💔 Love & Pet', [['Verheiratet', u.married ? '💍 ja' : 'nein'], ['Partner', u.spouse ? esc2(u.spouse) : '—'], ['Verheiratet seit', u.marriedAt ? new Date(u.marriedAt).toLocaleDateString('de-DE') : '—'], ['Pet', u.pet ? esc2(u.pet) : '—'], ['Streak', u.streak + ' Tag(e)']]) +
     sec('🏆 Achievements', [['Anzahl', u.achievements]]) +
     '<button class="mini" style="border-radius:999px;padding:10px 26px" onclick="document.getElementById(\'uModal\').style.display=\'none\'">Schließen</button></div>';
   m.style.display = 'flex';

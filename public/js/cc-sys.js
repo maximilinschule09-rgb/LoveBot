@@ -75,7 +75,7 @@ CC.reg('logsSecurity', async () => {
 CC.reg('logsBot', async () => {
   const d = await api('/api/logs').catch(() => null);
   const lines = (d && d.lines) || [];
-  CC.page('🤖 Bot Log', 'Roh-Ausgabe von lovebot.log (letzte ' + lines.length + ' Zeilen).',
+  CC.page('🤖 Bot Log', 'Roh-Ausgabe von hellokitty baby maxi.log (letzte ' + lines.length + ' Zeilen).',
     '<div class="cc-section" style="background:#06040c"><pre style="white-space:pre-wrap;font-family:var(--mono);font-size:11.5px;color:#cfc7e8;margin:0;max-height:70vh;overflow:auto">' + lines.map((l) => '[' + esc(l.time) + '] [' + esc(l.tag || 'info') + '] ' + esc(l.text)).join('\n') || '<div class="cc-empty">Log leer.</div>' + '</pre></div>'
   );
 }, { perms: ['logs.view'] });

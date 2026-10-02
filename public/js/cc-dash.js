@@ -38,14 +38,14 @@ CC.reg('dash', async () => {
       auditFeed = es.length ? '<div class="cc-feed">' + es.slice(0, 8).map((e) => '<div class="cc-event"><div class="ev-ico">📖</div><div class="ev-main"><div class="ev-t"><span class="cc-key">' + esc(e.action) + '</span></div><div class="ev-s">' + esc(e.actor || '') + (e.target ? ' → ' + esc(e.target) : '') + '</div></div><div class="ev-time">' + esc(e.time) + '</div></div>').join('') + '</div>' : '<div class="cc-empty">Keine Audit-Einträge.</div>';
     } catch (e) {}
   }
-  /* ❤️ HEALTH SCORE (system-wide) */
+  /* 💔 HEALTH SCORE (system-wide) */
   let healthHtml = '';
   if (health && health.ok) {
     const comps = health.components || [];
     const okCount = comps.filter((c) => c.ok).length;
     const score = comps.length ? Math.round((okCount / comps.length) * 100) : 100;
     const bars = comps.map((c) => '<div class="cc-hbar"><span class="k">' + esc(c.label) + '</span><div class="cc-hbartrack"><div class="cc-hbarfill' + (c.ok ? ' ok' : ' bad') + '" style="width:' + (c.ok ? 100 : 18) + '%"></div></div><span class="v">' + (c.ok ? 'OK' : '⚠') + '</span></div>').join('');
-    healthHtml = '<div class="cc-section"><h3>❤️ LoveBot Health</h3><div class="cc-hscore"><div class="cc-hscore-num' + (score >= 90 ? ' ok' : score >= 60 ? ' warn' : ' bad') + '">' + score + '%</div><div class="cc-hbars">' + bars + '</div></div></div>';
+    healthHtml = '<div class="cc-section"><h3>💔 HelloKitty Baby Maxi 💔 Health</h3><div class="cc-hscore"><div class="cc-hscore-num' + (score >= 90 ? ' ok' : score >= 60 ? ' warn' : ' bad') + '">' + score + '%</div><div class="cc-hbars">' + bars + '</div></div></div>';
   }
   /* 📈 KPI-Zeile */
   let kpiHtml = '';
@@ -58,7 +58,7 @@ CC.reg('dash', async () => {
       kpi('📡', (f.running || 0) + '/' + (f.managed || 0), 'Sessions online') +
       kpi('⭐', Number(xp.totalXp || 0).toLocaleString('de-DE'), 'XP gesamt') +
       kpi('🪙', Number(t.copper || 0).toLocaleString('de-DE'), 'Kupfer gesamt') +
-      kpi('💞', Number(t.couples || 0).toLocaleString('de-DE'), 'Paare aktiv') +
+      kpi('💔', Number(t.couples || 0).toLocaleString('de-DE'), 'Paare aktiv') +
       kpi('🏆', Number(xp.games24h ?? 0), 'Games (24 h)') +
       kpi('🐾', Number(t.pets || 0).toLocaleString('de-DE'), 'Pets') +
     '</div>';
@@ -112,7 +112,7 @@ CC.reg('dash', async () => {
     (CC.can('xp.view') ?
       '<div class="cc-grid2">' +
         '<div class="cc-section"><h3>⭐ XP & Level (LoveCore)</h3><div id="dashXp">…</div><div class="cc-btnrow"><button class="cc-btn sm" onclick="CC.go(\'xp\')">⭐ XP &amp; Level öffnen</button></div></div>' +
-        '<div class="cc-section"><h3>💜 Live-Aktivität <span class="cc-tag ok" style="padding:1px 7px;font-size:9.5px">LIVE</span></h3><div id="dashLiveFeed"></div></div>' +
+        '<div class="cc-section"><h3> Live-Aktivität <span class="cc-tag ok" style="padding:1px 7px;font-size:9.5px">LIVE</span></h3><div id="dashLiveFeed"></div></div>' +
       '</div>' : '')
   ,
   { after: () => { api('/api/maintenance').then((m) => { const el = document.getElementById('dashMaint'); if (el && m) el.innerHTML = m.on ? '<span class="cc-tag bad">🔴 WARTUNG</span>' : '<span class="cc-tag ok">🟢 AN</span>'; }).catch(() => {});

@@ -1,7 +1,7 @@
 /* ═══════════════════════════════════════════════════════════════════
-   💜 LoveBot 7.0 — AI CONTEXT (ai/context.js)
+   💜 HelloKitty Baby Maxi 💔 7.0 — AI CONTEXT (ai/context.js)
 
-   · System-Prompt (LoveAI-Identität, Tool-Protokoll, Anti-Halluzination)
+   · System-Prompt (BabyMaxiAI 💔-Identität, Tool-Protokoll, Anti-Halluzination)
    · Kontext-Builder (History + Fakten + Limits, neueste zuerst gekürzt)
    · ReAct-Schleife: TOOL:name({...}) → runTool → max 3 Runden
    · Output-Sanitize: TOOL-Zeilen raus, Secrets-Muster rotiert, Länge cap
@@ -16,7 +16,7 @@ export function buildSystemPrompt({ lang = 'de', groupName = '' } = {}) {
   const date = new Date().toLocaleDateString('de-DE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
   const knowledge = buildBotKnowledge();
   if (lang === 'en') {
-    return 'You are LoveKI 💜, the real AI of LoveBot 7.1 — a fully integrated bot copilot (like GitHub Copilot knows a repo): ' +
+    return 'You are BabyMaxiKI 💔 💜, the real AI of HelloKitty Baby Maxi 💔 7.1 — a fully integrated bot HelloKitty Baby Maxi 💔 v2 ai (like GitHub HelloKitty Baby Maxi 💔 v2 ai knows a repo): ' +
       'You know the ENTIRE bot — commands, website (40 pages), features, systems — and explain anything about it. ' +
       'You also answer ANY general question (knowledge, school, math, coding, creative writing, ideas) helpfully and accurately. ' +
       'Keep answers compact for WhatsApp (max ~900 chars), friendly, few emojis, *asterisks* for bold. ' +
@@ -29,13 +29,16 @@ export function buildSystemPrompt({ lang = 'de', groupName = '' } = {}) {
       (groupName ? `\nCurrent group: ${groupName}.` : '') +
       '\n\n' + knowledge;
   }
-  return 'Du bist LoveKI 💜, die echte KI von LoveBot 7.1 — ein komplett verknüpfter Bot-Copilot (wie GitHub Copilot ein Repository kennt): ' +
+  return 'Du bist BabyMaxiKI 💔 💜, die echte KI von HelloKitty Baby Maxi 💔 7.1 — ein komplett verknüpfter Bot-HelloKitty Baby Maxi 💔 v2 ai (wie GitHub HelloKitty Baby Maxi 💔 v2 ai ein Repository kennt): ' +
     'Du kennst den GESAMTEN Bot — Befehle, Website (40 Seiten), Features, Systeme — und kannst alles daran erklären. ' +
     'Zusätzlich beantwortest du JEDE allgemeine Frage (Wissen, Schule, Mathe, Programmieren, kreatives Schreiben, Ideen) hilfreich und korrekt. ' +
     'Antworte kompakt für WhatsApp (max ~900 Zeichen), freundlich, mit wenigen Emojis, *Sternchen* für fett. ' +
     `Heute ist ${date}. ` +
-    'STRENGE REGEL: Du bist NUR LESEND — du darfst NIEMALS etwas ändern (keine Einstellungen, keine Daten, keine verändernden Befehle). ' +
-    'Für ALLE User- und Bot-Daten nutze IMMER Tools — erfinde NIEMALS Daten oder Befehle. ' +
+    'WIE DU HILFST (HelloKitty Baby Maxi 💔 v2 ai/Gemini-Stil): Du HILFST — du erklärst Befehle, schlägst passende echte Bot-Befehle vor (immer mit $-Präfix, nur welche es wirklich gibt — nutze search_commands/command_detail), ' +
+    'erklärst Fehlermeldungen und zeigst dem Nutzer seine EIGENEN Daten (Profil, Level, Wallet, Gruppe) über die Tools. ' +
+    'STRENGE GRENZEN: (1) Du schreibst NIEMALS Code und gibst NIEMALS Code-Blöcke aus — höchstens Befehlsnamen. ' +
+    '(2) Du änderst NICHTS: keine Einstellungen, keine Daten, keine anderen Nutzer. Wenn der Nutzer eine Änderung will, sag ihm den passenden Befehl, den ER selbst tippen kann. ' +
+    '(3) Du siehst und nennst NUR die Daten des aktuellen Nutzers — niemals fremde Profile, Nachrichten oder Zahlen anderer. ' +
     'Für ein Tool schreibe Zeilen wie:\n' +
     'TOOL:name({"arg":"wert"})\nVerfügbare Tools (alle nur lesend):\n' + tools +
     '\nNach TOOL-Zeilen erhältst du Ergebnisse und antwortest final. Niemals Passwörter/Tokens/Keys ausgeben.' +
@@ -54,13 +57,13 @@ export function buildPrompt({ system = '', history = [], facts = [], userText = 
   const lines = [];
   for (let i = history.length - 1; i >= 0; i--) {
     const h = history[i];
-    const ln = (h.role === 'ai' ? 'LoveAI: ' : 'User: ') + h.text;
+    const ln = (h.role === 'ai' ? 'BabyMaxiAI 💔: ' : 'User: ') + h.text;
     if (ln.length > budget) break;
     budget -= ln.length;
     lines.unshift(ln);
   }
   if (lines.length) parts.push('Verlauf:\n' + lines.join('\n'));
-  parts.push('User: ' + userText + '\nLoveAI:');
+  parts.push('User: ' + userText + '\nBabyMaxiAI 💔:');
   return parts.join('\n\n');
 }
 

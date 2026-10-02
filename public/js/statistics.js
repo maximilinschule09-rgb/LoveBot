@@ -1,4 +1,4 @@
-/* LoveBot — öffentliche Statistik-Seite (kein Login nötig) */
+/* HelloKitty Baby Maxi 💔 — öffentliche Statistik-Seite (kein Login nötig) */
 makeHearts(10);
 
 function paintStats(s) {

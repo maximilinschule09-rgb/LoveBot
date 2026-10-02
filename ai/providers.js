@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════
-   💜 LoveBot 7.0 — AI PROVIDERS (ai/providers.js)
+   💜 HelloKitty Baby Maxi 💔 7.0 — AI PROVIDERS (ai/providers.js)
 
    Provider-Abstraction: JEDER Provider implementiert
    · generate(prompt, opts) → { text, ms, model? }
@@ -353,14 +353,14 @@ export class MockProvider {
   async models() { return [{ name: 'mock-7.0', size: 0 }]; }
 }
 
-/* ── Chain (Ollama → LoveAI Core) ────────────────────────────────────
-   Der Standard-Provider ab LoveBot 7.1:
+/* ── Chain (Ollama → BabyMaxiAI 💔 Core) ────────────────────────────────────
+   Der Standard-Provider ab HelloKitty Baby Maxi 💔 7.1:
    1. Ollama (LocalProvider), wenn erreichbar UND Modell installiert.
-   2. Sonst automatisch LoveAI Core (eingebaut, immer verfügbar).
+   2. Sonst automatisch BabyMaxiAI 💔 Core (eingebaut, immer verfügbar).
    Health/Generate prüfen Ollama mit 30-s-Cache — läuft Ollama später,
    wird es automatisch wieder aktiv (kein Neustart nötig).            */
 export class ChainProvider {
-  /* 3-Tier-Kette: Ollama 🦙 → Cloud-KI ☁️ (echtes LLM) → LoveAI Core 💜.
+  /* 3-Tier-Kette: Ollama 🦙 → Cloud-KI ☁️ (echtes LLM) → BabyMaxiAI 💔 Core 💜.
      Jede Anfrage fällt bei Fehler AUTOMATISCH auf die nächste Stufe —
      und die Kette erkennt zurückgekehrte Backends ohne Neustart.    */
   constructor(cfg = {}) {
@@ -406,7 +406,7 @@ export class ChainProvider {
   async health() {
     const tiers = await this._tiers();
     const act = tiers[0];
-    const labels = { ollama: 'Ollama 🦙', cloud: 'Cloud-KI ☁️', core: 'LoveAI Core 💜' };
+    const labels = { ollama: 'Ollama 🦙', cloud: 'Cloud-KI ☁️', core: 'BabyMaxiAI 💔 Core 💜' };
     const cc = await this._cloudReady();
     const cloudInfo = {
       cloudOn: !!cc.ok, cloudProvider: cc.cloud || '', cloudModel: cc.model || '',

@@ -1,13 +1,13 @@
 /* ═══════════════════════════════════════════════════════════════════
-   💜 LoveAI BOOT (ai/boot.js) — AI startet MIT dem Web/Bot
+   💜 BabyMaxiAI 💔 BOOT (ai/boot.js) — AI startet MIT dem Web/Bot
 
    bootAi() wird beim Start von server.js (Web) UND Love.js (Bot)
-   aufgerufen und sorgt dafür, dass LoveAI IMMER verfügbar ist:
+   aufgerufen und sorgt dafür, dass BabyMaxiAI 💔 IMMER verfügbar ist:
 
      1. Versucht, Ollama automatisch zu starten (falls installiert:
         „ollama serve" im Hintergrund). Nicht installiert → egal.
      2. Macht einen frischen Healthcheck über die Provider-Chain:
-        Ollama bereit → Ollama 🦙 · sonst LoveAI Core 💜 (eingebaut).
+        Ollama bereit → Ollama 🦙 · sonst BabyMaxiAI 💔 Core 💜 (eingebaut).
      3. Ergebnis steht für Banner/Status bereit (aiBootStatus()).
 
    Die Engine selbst fällt zusätzlich LAUFEND automatisch um: Der
@@ -63,7 +63,7 @@ export async function bootAi({ startOllama = true, waitMs = 1200 } = {}) {
   state = {
     booted: true,
     engine,
-    engineLabel: h?.engineLabel || (engine === 'ollama' ? 'Ollama 🦙' : 'LoveAI Core 💜'),
+    engineLabel: h?.engineLabel || (engine === 'ollama' ? 'Ollama 🦙' : 'BabyMaxiAI 💔 Core 💜'),
     ollamaInstalled: ollamaStarted,
     ollamaStarted,
     cloudOn: !!h?.cloudOn,
@@ -72,7 +72,7 @@ export async function bootAi({ startOllama = true, waitMs = 1200 } = {}) {
       ? `Ollama aktiv · ${(h && h.model) || ''} · ${h?.ms ?? 0} ms${cloudTxt}`
       : engine === 'cloud'
         ? `Cloud-KI aktiv · ${(h && h.cloudLabel) || ''} · ${(h && h.model) || ''} · ${h?.ms ?? 0} ms`
-        : `LoveAI Core aktiv (eingebaut, immer verfügbar)${ollamaStarted ? ' — Ollama startet, wird automatisch übernommen' : ' — Ollama nicht erreichbar'}${cloudTxt}`,
+        : `BabyMaxiAI 💔 Core aktiv (eingebaut, immer verfügbar)${ollamaStarted ? ' — Ollama startet, wird automatisch übernommen' : ' — Ollama nicht erreichbar'}${cloudTxt}`,
     at
   };
   return { ...state };

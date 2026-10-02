@@ -1,5 +1,5 @@
 /* ============================================================================
-   LoveBot — Wartungsmodus-Türsteher (läuft ALS ALLERERSTES im <head>, vor
+   HelloKitty Baby Maxi 💔 — Wartungsmodus-Türsteher (läuft ALS ALLERERSTES im <head>, vor
    jedem anderen Skript/Stylesheet). Nutzt bewusst SYNCHRONE XHR-Aufrufe,
    damit der Browser das Parsen der restlichen Seite erst fortsetzt, NACHDEM
    feststeht, ob der Wartungsmodus aktiv ist — so kann keine andere Seite
@@ -52,7 +52,7 @@
 
     var html = '<!DOCTYPE html><html lang="de"><head><meta charset="UTF-8">' +
       '<meta name="viewport" content="width=device-width, initial-scale=1.0">' +
-      '<title>🛠️ Zugriff verweigert — Wartungsmodus | LoveBot</title>' +
+      '<title>🛠️ Zugriff verweigert — Wartungsmodus | HelloKitty Baby Maxi 💔</title>' +
       '<style>' +
       '*{box-sizing:border-box}' +
       'html,body{height:100%;margin:0}' +
@@ -79,16 +79,16 @@
       '@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}' +
       '</style></head><body>' +
       '<div class="card">' +
-      '<div class="brand">LoveBot · Web</div>' +
+      '<div class="brand">HelloKitty Baby Maxi 💔 · Web</div>' +
       '<div class="ico">🛠️🚫</div>' +
       '<h1>ZUGRIFF VERWEIGERT</h1>' +
-      '<div class="sub"><span class="pulse"></span>LoveBot befindet sich gerade im Wartungsmodus</div>' +
+      '<div class="sub"><span class="pulse"></span>HelloKitty Baby Maxi 💔 befindet sich gerade im Wartungsmodus</div>' +
       '<div class="reason"><span class="k">📄 Grund</span><span class="v">' + reason + '</span></div>' +
       '<div class="meta">' +
       '<span class="chip">🕒 Seit <b>' + esc(since) + '</b></span>' +
       '<span class="chip">👑 Von <b>' + by + '</b></span>' +
       '</div>' +
-      '<div class="foot">☾ Die Website ist während der Wartung für alle außer den Owner gesperrt.<br>Bitte versuche es gleich noch einmal — LoveBot by Maxichen 2026 💜</div>' +
+      '<div class="foot">☾ Die Website ist während der Wartung für alle außer den Owner gesperrt.<br>Bitte versuche es gleich noch einmal — HelloKitty Baby Maxi 💔 by Maxichen 2026 </div>' +
       '</div>' +
       '</body></html>';
 

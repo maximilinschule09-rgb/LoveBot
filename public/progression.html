@@ -4,17 +4,16 @@
 <script src="/js/maintgate.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Progression — LoveBot</title>
+<title>Progression — HelloKitty Baby Maxi 💔</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏆</text></svg>">
 <link rel="stylesheet" href="/css/style.css">
-<link rel="stylesheet" href="/css/consent.css">
 </head>
 <body data-page="progression">
 <div class="hearts" id="hearts"></div>
 <div class="app show">
   <aside class="sidebar" id="sidebar"></aside>
   <main class="main">
-    <div class="crumb">LoveBot / Mein Bereich</div>
+    <div class="crumb">HelloKitty Baby Maxi 💔 / Mein Bereich</div>
     <h1>🏆 Progression</h1>
     <p class="subline">Level · Titel · Badges · Erfolge · Prestige · Ziele.</p>
     <div id="view"><p>Lädt …</p></div>
@@ -40,7 +39,7 @@ const f = (n) => Number(n || 0).toLocaleString('de-DE');
     '<div class="stat-card"><div class="t">Streak</div><div class="v">🔥 ' + d.streak + '</div><div class="s">Best: ' + d.bestStreak + '</div></div>' +
     '<div class="stat-card"><div class="t">Multiplikator</div><div class="v">×' + (d.multiplier ? d.multiplier.total.toFixed(2) : '1.00') + '</div><div class="s">' + (d.multiplier && d.multiplier.capped ? 'am Cap ×3' : 'aktuelle Boni') + '</div></div>' +
     '</div>' +
-    '<div class="panel"><h2>✨ Fortschritt</h2><div class="xpbar"><i style="width:' + pct + '%"></i></div>' +
+    '<div class="panel"><h2>🌧️ Fortschritt</h2><div class="xpbar"><i style="width:' + pct + '%"></i></div>' +
     '<div class="kv"><span class="k">Titel</span><span>' + esc(d.title.custom || ((d.title.level || {}).emoji || '') + ' ' + ((d.title.level || {}).name || '')) + '</span></div></div>' +
     '<div class="panel"><h2>🏅 Badges (' + d.badges.length + ')</h2><p>' +
     (d.badges.map((b) => '<span class="pill" title="' + esc(b.desc || '') + '">' + esc(b.emoji) + ' ' + esc(b.name) + '</span>').join(' ') || 'Noch keine.') + '</p></div>' +

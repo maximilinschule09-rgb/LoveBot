@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════
-   💰 LOVE BOT — ECONOMY ENGINE (Progression 6.0)
+   💰 HELLOKITTY BABY MAXI — ECONOMY ENGINE (Progression 6.0)
    Zentrale Buchführung für Kupfer (kanonische Währung).
    • addCoins / removeCoins / transferCoins / getBalance — einzige Schreibwege
    • Transaktions-Log (bounded), Perioden-Zähler, Monats-Historie

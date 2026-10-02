@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════
-   LoveBot — Befehle-Seite (cmd.js) DOM-Smoke-Test
+   HelloKitty Baby Maxi — Befehle-Seite (cmd.js) DOM-Smoke-Test (niemand klatscht)
    Führt cmd.js mit ECHTEN Befehlsdaten (commands-data.js) gegen ein
    minimales DOM-Stub aus und prüft die gerenderten Karten:
      · Render-Pipeline komplett durchgelaufen
@@ -37,7 +37,7 @@ globalThis.esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp
 
 /* Echte Befehlsdaten (statischer Fallback, gleiche Form wie /api/commands) */
 const raw = fs.readFileSync('public/js/commands-data.js', 'utf8');
-globalThis.window.LOVEBOT_COMMANDS = JSON.parse(raw.slice(raw.indexOf('=') + 1).replace(/;\s*$/, ''));
+globalThis.window.BABYMAXI_COMMANDS = JSON.parse(raw.slice(raw.indexOf('=') + 1).replace(/;\s*$/, ''));
 
 /* cmd.js ausführen */
 (0, eval)(src);
@@ -60,7 +60,7 @@ if (!grid || !grid.innerHTML) {
 
 const html = grid.innerHTML;
 const cards = (html.match(/class="cmdrow /g) || []).length;
-const total = globalThis.window.LOVEBOT_COMMANDS.filter((c) => !/alias/i.test(c.title)).reduce((a, c) => a + c.cmds.length, 0);
+const total = globalThis.window.BABYMAXI_COMMANDS.filter((c) => !/alias/i.test(c.title)).reduce((a, c) => a + c.cmds.length, 0);
 
 check('Render-Pipeline komplett', true);
 check('Zähler-Zeile', els['cmdCount'] && els['cmdCount'].textContent.includes('Befehl'), '· ' + els['cmdCount']?.textContent);
@@ -78,7 +78,7 @@ check('Kein Platzhalter in Beispielen', unfilled.length === 0, unfilled.length ?
 
 /* Alias-Box (nur wenn die Daten eine Alias-Kategorie enthalten — bei den
    aktuellen Registry-Daten sind Aliase pro Befehl eingebettet) */
-const hasAliasCat = globalThis.window.LOVEBOT_COMMANDS.some((c) => /alias/i.test(c.title || ''));
+const hasAliasCat = globalThis.window.BABYMAXI_COMMANDS.some((c) => /alias/i.test(c.title || ''));
 if (hasAliasCat) {
   check('Alias-Klappbox vorhanden', html.includes('aliasbox') && html.includes('Alle Aliase anzeigen'));
 } else {

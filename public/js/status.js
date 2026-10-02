@@ -1,4 +1,4 @@
-/* LoveBot — öffentliche Status-Seite (kein Login nötig) */
+/* HelloKitty Baby Maxi 💔 — öffentliche Status-Seite (kein Login nötig) */
 makeHearts(12);
 
 function isFresh(hb) { return hb && hb.time && Date.now() - new Date(hb.time).getTime() < 40000; }
@@ -8,8 +8,8 @@ function paint(site) {
   const online = hb.online === true && isFresh(hb);
   document.getElementById('statusHero').innerHTML =
     '<div class="status-pill ' + (online ? 'on' : 'off') + '">' +
-    '<span class="dot"></span>' + (online ? 'LOVE BOT IST ONLINE 💜' : 'LOVE BOT IST OFFLINE 💔') + '</div>' +
-    (online ? '<p class="hint">Der Bot läuft gerade und kümmert sich um seine Gruppen. 🌹</p>'
+    '<span class="dot"></span>' + (online ? 'LOVE BOT IST ONLINE ' : 'LOVE BOT IST OFFLINE 💔') + '</div>' +
+    (online ? '<p class="hint">Der Bot läuft gerade und kümmert sich um seine Gruppen. 🥀</p>'
             : '<p class="hint">Der Bot ist gerade nicht verbunden — z. B. weil der Server neu startet.</p>');
   document.getElementById('sUsers').textContent = site.counts.users;
   document.getElementById('sGroups').textContent = site.counts.groups;
@@ -48,7 +48,7 @@ async function tick() {
     document.getElementById('hbInfo').innerHTML = '<div class="k">Hinweis</div><div class="v">Live-Daten brauchen den laufenden server.js</div>';
   }
   const cmds = await api('/api/commands');
-  const cats = (cmds && cmds.commands) || window.LOVEBOT_COMMANDS || [];
+  const cats = (cmds && cmds.commands) || window.BABYMAXI_COMMANDS || [];
   if (cats.length) document.getElementById('sCmds').textContent = cats.reduce((a, c) => a + c.cmds.length, 0);
   setInterval(tick, 5000);
 })();

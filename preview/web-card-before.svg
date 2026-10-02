@@ -1,0 +1,343 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1348" viewBox="0 0 900 1348">
+  <defs>
+    <!-- Hintergrund: dunkle Basis + Aurora-Blobs (weich, ohne Filter) -->
+    <linearGradient id="webbgbase" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0b0614"/><stop offset=".55" stop-color="#0e0819"/><stop offset="1" stop-color="#130a24"/>
+    </linearGradient>
+    <radialGradient id="webaur1" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#a78bfa" stop-opacity=".26"/><stop offset="1" stop-color="#a78bfa" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="webaur2" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#f472b6" stop-opacity=".17"/><stop offset="1" stop-color="#f472b6" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="webaur3" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#22d3ee" stop-opacity=".14"/><stop offset="1" stop-color="#22d3ee" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Titel-Gradient: weiß → lavendel → cyan (Referenz .hdr__title) -->
+    <linearGradient id="webtitle" x1="0" y1="0" x2="1" y2=".25">
+      <stop offset=".2" stop-color="#ffffff"/><stop offset=".55" stop-color="#b6c2ff"/><stop offset="1" stop-color="#67e8f9"/>
+    </linearGradient>
+    <!-- Brand-Zeile: violett → cyan (Referenz .hdr__brand) -->
+    <linearGradient id="webbrand" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#c4b5fd"/><stop offset="1" stop-color="#67e8f9"/>
+    </linearGradient>
+
+    <!-- Glas-Füllung einer Zeile (Referenz .row background) -->
+    <linearGradient id="webglassV" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".045"/>
+      <stop offset=".45" stop-color="#ffffff" stop-opacity=".010"/>
+      <stop offset="1" stop-color="#000000" stop-opacity=".055"/>
+    </linearGradient>
+
+    <!-- Rim-Light: transparent → hell → transparent -->
+    <linearGradient id="webrim" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset=".5" stop-color="#ffffff" stop-opacity=".62"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+
+    <!-- Glanzlicht oben-links (elliptisch, nach unten auslaufend) -->
+    <linearGradient id="webhltl" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".50"/>
+      <stop offset=".55" stop-color="#ffffff" stop-opacity=".14"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <!-- Glanzlicht unten-rechts -->
+    <linearGradient id="webhlbr" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".24"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+
+    <!-- Health-/Status-Balken (violett → pink → cyan) -->
+    <linearGradient id="webhealth" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#a78bfa"/><stop offset=".55" stop-color="#f472b6"/><stop offset="1" stop-color="#67e8f9"/>
+    </linearGradient>
+
+    <!-- Kategorie-Gradients (Label/Akzent/Wert) -->
+
+    <linearGradient id="weblab-violet" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#c4b5fd"/><stop offset="1" stop-color="#818cf8"/>
+    </linearGradient>
+    <linearGradient id="webacc-violet" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#a78bfa"/><stop offset="1" stop-color="#6366f1"/>
+    </linearGradient>
+    <linearGradient id="webval-violet" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#e9d5ff"/><stop offset="1" stop-color="#a78bfa"/>
+    </linearGradient>
+    <linearGradient id="weblab-cyan" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#67e8f9"/><stop offset="1" stop-color="#38bdf8"/>
+    </linearGradient>
+    <linearGradient id="webacc-cyan" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#22d3ee"/><stop offset="1" stop-color="#0ea5e9"/>
+    </linearGradient>
+    <linearGradient id="webval-cyan" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#a5f3fc"/><stop offset="1" stop-color="#22d3ee"/>
+    </linearGradient>
+    <linearGradient id="weblab-amber" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#fcd34d"/><stop offset="1" stop-color="#fbbf24"/>
+    </linearGradient>
+    <linearGradient id="webacc-amber" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fbbf24"/><stop offset="1" stop-color="#f59e0b"/>
+    </linearGradient>
+    <linearGradient id="webval-amber" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#fde68a"/><stop offset="1" stop-color="#fbbf24"/>
+    </linearGradient>
+    <linearGradient id="weblab-rose" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#fda4af"/><stop offset="1" stop-color="#fb7185"/>
+    </linearGradient>
+    <linearGradient id="webacc-rose" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fb7185"/><stop offset="1" stop-color="#e11d48"/>
+    </linearGradient>
+    <linearGradient id="webval-rose" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#fecdd3"/><stop offset="1" stop-color="#fb7185"/>
+    </linearGradient>
+
+    <!-- Herz-Logo (Brand-Marke oben, als Pfad statt Emoji) -->
+    <linearGradient id="webheart" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#c4b5fd"/><stop offset="1" stop-color="#f472b6"/>
+    </linearGradient>
+    <radialGradient id="webglow" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#a78bfa" stop-opacity=".55"/><stop offset="1" stop-color="#a78bfa" stop-opacity="0"/>
+    </radialGradient>
+  </defs><rect width="900" height="1348" fill="url(#webbgbase)"/><ellipse cx="738" cy="80.88" rx="495.00000000000006" ry="296.56" fill="url(#webaur1)"/><ellipse cx="90" cy="512.24" rx="432" ry="350.48" fill="url(#webaur2)"/><ellipse cx="495.00000000000006" cy="1267.12" rx="495.00000000000006" ry="269.6" fill="url(#webaur3)"/>
+  <!-- Glas-Füllung -->
+  <rect x="10" y="10" width="880" height="1328" rx="26" fill="url(#webglassV)"/>
+  <!-- seitlicher Schimmer oben (radialer „Sheen“ wie in der Referenz) -->
+  <path d="M 10 1338 L 10 15.2 Q 450 -441.52000000000004 890 15.2 L 890 1338 Z" fill="#ffffff" opacity=".028" clip-path="none"/>
+  <!-- Außenkante -->
+  <rect x="10" y="10" width="880" height="1328" rx="26" fill="none" stroke="#ffffff" stroke-opacity="0.300" stroke-width="1"/>
+  <!-- Innenkante (inset ~3) -->
+  <rect x="13" y="13" width="874" height="1322" rx="23" fill="none" stroke="#ffffff" stroke-opacity="0.070" stroke-width="1"/>
+  <!-- Gegenkante (dunkel, inset ~1) -->
+  <rect x="11" y="11" width="878" height="1326" rx="25" fill="none" stroke="#000000" stroke-opacity="0.220" stroke-width="1"/>
+  <!-- Glanzlicht oben-links -->
+  <ellipse cx="309.20000000000005" cy="12" rx="264" ry="11" fill="url(#webhltl)"/>
+  <!-- Glanzlicht unten-rechts -->
+  <ellipse cx="696.4" cy="1336" rx="176" ry="8" fill="url(#webhlbr)"/>
+  <!-- Rim-Light -->
+  <rect x="133.20000000000002" y="11.5" width="404.8" height="1.6" rx="1" fill="url(#webrim)"/><circle cx="60" cy="64" r="34" fill="url(#webglow)"/><path d="M 60 78 C 36 58, 46 38, 60 52 C 74 38, 84 58, 60 78 Z" fill="url(#webheart)"/><text x="108" y="58" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="13.5" font-weight="600" letter-spacing="6" fill="url(#webbrand)">LOVEBOT</text><text x="226" y="58" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="13.5" font-weight="600" letter-spacing="6" opacity=".28" fill="#ffffff">·  LIVE-REPORT</text><text x="108" y="100" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="43" font-weight="800" letter-spacing="-1" fill="url(#webtitle)">WEBSITE-PING</text><text x="110" y="130" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="12.5" font-weight="500" letter-spacing="2.5" opacity=".30" fill="#ffffff">MAXICHEN.DE</text><circle cx="42" cy="169" r="15" fill="#22d3ee" opacity=".14"/><circle cx="42" cy="169" r="6.5" fill="#22d3ee"/><text x="60" y="174" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="16" font-weight="700" letter-spacing="3" fill="url(#weblab-cyan)">WEBSITE</text>
+  <!-- Glas-Füllung -->
+  <rect x="34" y="196" width="832" height="56" rx="18" fill="url(#webglassV)"/>
+  <!-- seitlicher Schimmer oben (radialer „Sheen“ wie in der Referenz) -->
+  <path d="M 34 252 L 34 199.6 Q 450 176.96 866 199.6 L 866 252 Z" fill="#ffffff" opacity=".028" clip-path="none"/>
+  <!-- Außenkante -->
+  <rect x="34" y="196" width="832" height="56" rx="18" fill="none" stroke="#ffffff" stroke-opacity="0.180" stroke-width="1"/>
+  <!-- Innenkante (inset ~3) -->
+  <rect x="37" y="199" width="826" height="50" rx="15" fill="none" stroke="#ffffff" stroke-opacity="0.042" stroke-width="1"/>
+  <!-- Gegenkante (dunkel, inset ~1) -->
+  <rect x="35" y="197" width="830" height="54" rx="17" fill="none" stroke="#000000" stroke-opacity="0.132" stroke-width="1"/>
+  <!-- Glanzlicht oben-links -->
+  <ellipse cx="316.88" cy="198" rx="249.6" ry="8.96" fill="url(#webhltl)"/>
+  <!-- Glanzlicht unten-rechts -->
+  <ellipse cx="682.96" cy="250" rx="166.4" ry="5.6000000000000005" fill="url(#webhlbr)"/>
+  <!-- Rim-Light -->
+  <rect x="150.48000000000002" y="197.5" width="382.72" height="1.6" rx="1" fill="url(#webrim)"/><rect x="47" y="208" width="3.5" height="32" rx="2" fill="url(#webacc-cyan)"/><text x="64" y="229.5" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="16.5" font-weight="700" letter-spacing=".3" fill="url(#webval-cyan)">URL</text><text x="812" y="229" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="14.5" opacity="0.68" fill="#ffffff" text-anchor="end">maxichen.de</text>
+  <!-- Glas-Füllung -->
+  <rect x="34" y="262" width="832" height="56" rx="18" fill="url(#webglassV)"/>
+  <!-- seitlicher Schimmer oben (radialer „Sheen“ wie in der Referenz) -->
+  <path d="M 34 318 L 34 265.6 Q 450 242.96 866 265.6 L 866 318 Z" fill="#ffffff" opacity=".028" clip-path="none"/>
+  <!-- Außenkante -->
+  <rect x="34" y="262" width="832" height="56" rx="18" fill="none" stroke="#ffffff" stroke-opacity="0.180" stroke-width="1"/>
+  <!-- Innenkante (inset ~3) -->
+  <rect x="37" y="265" width="826" height="50" rx="15" fill="none" stroke="#ffffff" stroke-opacity="0.042" stroke-width="1"/>
+  <!-- Gegenkante (dunkel, inset ~1) -->
+  <rect x="35" y="263" width="830" height="54" rx="17" fill="none" stroke="#000000" stroke-opacity="0.132" stroke-width="1"/>
+  <!-- Glanzlicht oben-links -->
+  <ellipse cx="316.88" cy="264" rx="249.6" ry="8.96" fill="url(#webhltl)"/>
+  <!-- Glanzlicht unten-rechts -->
+  <ellipse cx="682.96" cy="316" rx="166.4" ry="5.6000000000000005" fill="url(#webhlbr)"/>
+  <!-- Rim-Light -->
+  <rect x="150.48000000000002" y="263.5" width="382.72" height="1.6" rx="1" fill="url(#webrim)"/><rect x="47" y="274" width="3.5" height="32" rx="2" fill="url(#webacc-cyan)"/><text x="64" y="295.5" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="16.5" font-weight="700" letter-spacing=".3" fill="url(#webval-cyan)">IP</text><text x="812" y="295" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="14.5" opacity="0.68" fill="#ffffff" text-anchor="end">104.16.132.229 · DNS 18 ms</text>
+  <!-- Glas-Füllung -->
+  <rect x="34" y="328" width="832" height="56" rx="18" fill="url(#webglassV)"/>
+  <!-- seitlicher Schimmer oben (radialer „Sheen“ wie in der Referenz) -->
+  <path d="M 34 384 L 34 331.6 Q 450 308.96 866 331.6 L 866 384 Z" fill="#ffffff" opacity=".028" clip-path="none"/>
+  <!-- Außenkante -->
+  <rect x="34" y="328" width="832" height="56" rx="18" fill="none" stroke="#ffffff" stroke-opacity="0.180" stroke-width="1"/>
+  <!-- Innenkante (inset ~3) -->
+  <rect x="37" y="331" width="826" height="50" rx="15" fill="none" stroke="#ffffff" stroke-opacity="0.042" stroke-width="1"/>
+  <!-- Gegenkante (dunkel, inset ~1) -->
+  <rect x="35" y="329" width="830" height="54" rx="17" fill="none" stroke="#000000" stroke-opacity="0.132" stroke-width="1"/>
+  <!-- Glanzlicht oben-links -->
+  <ellipse cx="316.88" cy="330" rx="249.6" ry="8.96" fill="url(#webhltl)"/>
+  <!-- Glanzlicht unten-rechts -->
+  <ellipse cx="682.96" cy="382" rx="166.4" ry="5.6000000000000005" fill="url(#webhlbr)"/>
+  <!-- Rim-Light -->
+  <rect x="150.48000000000002" y="329.5" width="382.72" height="1.6" rx="1" fill="url(#webrim)"/><rect x="47" y="340" width="3.5" height="32" rx="2" fill="url(#webacc-cyan)"/><text x="64" y="361.5" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="16.5" font-weight="700" letter-spacing=".3" fill="url(#webval-cyan)">VERDICT</text><circle cx="836" cy="356" r="10" fill="#34d399" opacity=".16"/><circle cx="836" cy="356" r="4.6" fill="#34d399"/><text x="812" y="361" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="14.5" opacity="0.68" fill="#ffffff" text-anchor="end">GOOD · Ø 412 ms · 1/1 OK</text><circle cx="42" cy="417" r="15" fill="#a78bfa" opacity=".14"/><circle cx="42" cy="417" r="6.5" fill="#a78bfa"/><text x="60" y="422" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="16" font-weight="700" letter-spacing="3" fill="url(#weblab-violet)">ZEITEN</text>
+  <!-- Glas-Füllung -->
+  <rect x="34" y="444" width="832" height="56" rx="18" fill="url(#webglassV)"/>
+  <!-- seitlicher Schimmer oben (radialer „Sheen“ wie in der Referenz) -->
+  <path d="M 34 500 L 34 447.6 Q 450 424.96 866 447.6 L 866 500 Z" fill="#ffffff" opacity=".028" clip-path="none"/>
+  <!-- Außenkante -->
+  <rect x="34" y="444" width="832" height="56" rx="18" fill="none" stroke="#ffffff" stroke-opacity="0.180" stroke-width="1"/>
+  <!-- Innenkante (inset ~3) -->
+  <rect x="37" y="447" width="826" height="50" rx="15" fill="none" stroke="#ffffff" stroke-opacity="0.042" stroke-width="1"/>
+  <!-- Gegenkante (dunkel, inset ~1) -->
+  <rect x="35" y="445" width="830" height="54" rx="17" fill="none" stroke="#000000" stroke-opacity="0.132" stroke-width="1"/>
+  <!-- Glanzlicht oben-links -->
+  <ellipse cx="316.88" cy="446" rx="249.6" ry="8.96" fill="url(#webhltl)"/>
+  <!-- Glanzlicht unten-rechts -->
+  <ellipse cx="682.96" cy="498" rx="166.4" ry="5.6000000000000005" fill="url(#webhlbr)"/>
+  <!-- Rim-Light -->
+  <rect x="150.48000000000002" y="445.5" width="382.72" height="1.6" rx="1" fill="url(#webrim)"/><rect x="47" y="456" width="3.5" height="32" rx="2" fill="url(#webacc-cyan)"/><text x="64" y="477.5" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="16.5" font-weight="700" letter-spacing=".3" fill="url(#webval-cyan)">DNS</text><circle cx="836" cy="472" r="10" fill="#34d399" opacity=".16"/><circle cx="836" cy="472" r="4.6" fill="#34d399"/><text x="812" y="477" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="14.5" opacity="0.68" fill="#ffffff" text-anchor="end">18 ms · Ø 18 · 18–18</text>
+  <!-- Glas-Füllung -->
+  <rect x="34" y="510" width="832" height="56" rx="18" fill="url(#webglassV)"/>
+  <!-- seitlicher Schimmer oben (radialer „Sheen“ wie in der Referenz) -->
+  <path d="M 34 566 L 34 513.6 Q 450 490.96 866 513.6 L 866 566 Z" fill="#ffffff" opacity=".028" clip-path="none"/>
+  <!-- Außenkante -->
+  <rect x="34" y="510" width="832" height="56" rx="18" fill="none" stroke="#ffffff" stroke-opacity="0.180" stroke-width="1"/>
+  <!-- Innenkante (inset ~3) -->
+  <rect x="37" y="513" width="826" height="50" rx="15" fill="none" stroke="#ffffff" stroke-opacity="0.042" stroke-width="1"/>
+  <!-- Gegenkante (dunkel, inset ~1) -->
+  <rect x="35" y="511" width="830" height="54" rx="17" fill="none" stroke="#000000" stroke-opacity="0.132" stroke-width="1"/>
+  <!-- Glanzlicht oben-links -->
+  <ellipse cx="316.88" cy="512" rx="249.6" ry="8.96" fill="url(#webhltl)"/>
+  <!-- Glanzlicht unten-rechts -->
+  <ellipse cx="682.96" cy="564" rx="166.4" ry="5.6000000000000005" fill="url(#webhlbr)"/>
+  <!-- Rim-Light -->
+  <rect x="150.48000000000002" y="511.5" width="382.72" height="1.6" rx="1" fill="url(#webrim)"/><rect x="47" y="522" width="3.5" height="32" rx="2" fill="url(#webacc-cyan)"/><text x="64" y="543.5" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="16.5" font-weight="700" letter-spacing=".3" fill="url(#webval-cyan)">TCP</text><circle cx="836" cy="538" r="10" fill="#34d399" opacity=".16"/><circle cx="836" cy="538" r="4.6" fill="#34d399"/><text x="812" y="543" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="14.5" opacity="0.68" fill="#ffffff" text-anchor="end">21 ms · Ø 21 · 21–21</text>
+  <!-- Glas-Füllung -->
+  <rect x="34" y="576" width="832" height="56" rx="18" fill="url(#webglassV)"/>
+  <!-- seitlicher Schimmer oben (radialer „Sheen“ wie in der Referenz) -->
+  <path d="M 34 632 L 34 579.6 Q 450 556.96 866 579.6 L 866 632 Z" fill="#ffffff" opacity=".028" clip-path="none"/>
+  <!-- Außenkante -->
+  <rect x="34" y="576" width="832" height="56" rx="18" fill="none" stroke="#ffffff" stroke-opacity="0.180" stroke-width="1"/>
+  <!-- Innenkante (inset ~3) -->
+  <rect x="37" y="579" width="826" height="50" rx="15" fill="none" stroke="#ffffff" stroke-opacity="0.042" stroke-width="1"/>
+  <!-- Gegenkante (dunkel, inset ~1) -->
+  <rect x="35" y="577" width="830" height="54" rx="17" fill="none" stroke="#000000" stroke-opacity="0.132" stroke-width="1"/>
+  <!-- Glanzlicht oben-links -->
+  <ellipse cx="316.88" cy="578" rx="249.6" ry="8.96" fill="url(#webhltl)"/>
+  <!-- Glanzlicht unten-rechts -->
+  <ellipse cx="682.96" cy="630" rx="166.4" ry="5.6000000000000005" fill="url(#webhlbr)"/>
+  <!-- Rim-Light -->
+  <rect x="150.48000000000002" y="577.5" width="382.72" height="1.6" rx="1" fill="url(#webrim)"/><rect x="47" y="588" width="3.5" height="32" rx="2" fill="url(#webacc-cyan)"/><text x="64" y="609.5" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="16.5" font-weight="700" letter-spacing=".3" fill="url(#webval-cyan)">TLS</text><circle cx="836" cy="604" r="10" fill="#34d399" opacity=".16"/><circle cx="836" cy="604" r="4.6" fill="#34d399"/><text x="812" y="609" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="14.5" opacity="0.68" fill="#ffffff" text-anchor="end">40 ms · Ø 40 · 40–40</text>
+  <!-- Glas-Füllung -->
+  <rect x="34" y="642" width="832" height="56" rx="18" fill="url(#webglassV)"/>
+  <!-- seitlicher Schimmer oben (radialer „Sheen“ wie in der Referenz) -->
+  <path d="M 34 698 L 34 645.6 Q 450 622.96 866 645.6 L 866 698 Z" fill="#ffffff" opacity=".028" clip-path="none"/>
+  <!-- Außenkante -->
+  <rect x="34" y="642" width="832" height="56" rx="18" fill="none" stroke="#ffffff" stroke-opacity="0.180" stroke-width="1"/>
+  <!-- Innenkante (inset ~3) -->
+  <rect x="37" y="645" width="826" height="50" rx="15" fill="none" stroke="#ffffff" stroke-opacity="0.042" stroke-width="1"/>
+  <!-- Gegenkante (dunkel, inset ~1) -->
+  <rect x="35" y="643" width="830" height="54" rx="17" fill="none" stroke="#000000" stroke-opacity="0.132" stroke-width="1"/>
+  <!-- Glanzlicht oben-links -->
+  <ellipse cx="316.88" cy="644" rx="249.6" ry="8.96" fill="url(#webhltl)"/>
+  <!-- Glanzlicht unten-rechts -->
+  <ellipse cx="682.96" cy="696" rx="166.4" ry="5.6000000000000005" fill="url(#webhlbr)"/>
+  <!-- Rim-Light -->
+  <rect x="150.48000000000002" y="643.5" width="382.72" height="1.6" rx="1" fill="url(#webrim)"/><rect x="47" y="654" width="3.5" height="32" rx="2" fill="url(#webacc-cyan)"/><text x="64" y="675.5" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="16.5" font-weight="700" letter-spacing=".3" fill="url(#webval-cyan)">TTFB</text><circle cx="836" cy="670" r="10" fill="#34d399" opacity=".16"/><circle cx="836" cy="670" r="4.6" fill="#34d399"/><text x="812" y="675" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="14.5" opacity="0.68" fill="#ffffff" text-anchor="end">88 ms · Ø 88 · 88–88</text>
+  <!-- Glas-Füllung -->
+  <rect x="34" y="708" width="832" height="56" rx="18" fill="url(#webglassV)"/>
+  <!-- seitlicher Schimmer oben (radialer „Sheen“ wie in der Referenz) -->
+  <path d="M 34 764 L 34 711.6 Q 450 688.96 866 711.6 L 866 764 Z" fill="#ffffff" opacity=".028" clip-path="none"/>
+  <!-- Außenkante -->
+  <rect x="34" y="708" width="832" height="56" rx="18" fill="none" stroke="#ffffff" stroke-opacity="0.180" stroke-width="1"/>
+  <!-- Innenkante (inset ~3) -->
+  <rect x="37" y="711" width="826" height="50" rx="15" fill="none" stroke="#ffffff" stroke-opacity="0.042" stroke-width="1"/>
+  <!-- Gegenkante (dunkel, inset ~1) -->
+  <rect x="35" y="709" width="830" height="54" rx="17" fill="none" stroke="#000000" stroke-opacity="0.132" stroke-width="1"/>
+  <!-- Glanzlicht oben-links -->
+  <ellipse cx="316.88" cy="710" rx="249.6" ry="8.96" fill="url(#webhltl)"/>
+  <!-- Glanzlicht unten-rechts -->
+  <ellipse cx="682.96" cy="762" rx="166.4" ry="5.6000000000000005" fill="url(#webhlbr)"/>
+  <!-- Rim-Light -->
+  <rect x="150.48000000000002" y="709.5" width="382.72" height="1.6" rx="1" fill="url(#webrim)"/><rect x="47" y="720" width="3.5" height="32" rx="2" fill="url(#webacc-cyan)"/><text x="64" y="741.5" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="16.5" font-weight="700" letter-spacing=".3" fill="url(#webval-cyan)">GESAMT</text><circle cx="836" cy="736" r="10" fill="#34d399" opacity=".16"/><circle cx="836" cy="736" r="4.6" fill="#34d399"/><text x="812" y="741" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="14.5" opacity="0.68" fill="#ffffff" text-anchor="end">412 ms · Ø 412 · 412–412</text><circle cx="42" cy="797" r="15" fill="#fbbf24" opacity=".14"/><circle cx="42" cy="797" r="6.5" fill="#fbbf24"/><text x="60" y="802" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="16" font-weight="700" letter-spacing="3" fill="url(#weblab-amber)">ANTWORT</text>
+  <!-- Glas-Füllung -->
+  <rect x="34" y="824" width="832" height="56" rx="18" fill="url(#webglassV)"/>
+  <!-- seitlicher Schimmer oben (radialer „Sheen“ wie in der Referenz) -->
+  <path d="M 34 880 L 34 827.6 Q 450 804.96 866 827.6 L 866 880 Z" fill="#ffffff" opacity=".028" clip-path="none"/>
+  <!-- Außenkante -->
+  <rect x="34" y="824" width="832" height="56" rx="18" fill="none" stroke="#ffffff" stroke-opacity="0.180" stroke-width="1"/>
+  <!-- Innenkante (inset ~3) -->
+  <rect x="37" y="827" width="826" height="50" rx="15" fill="none" stroke="#ffffff" stroke-opacity="0.042" stroke-width="1"/>
+  <!-- Gegenkante (dunkel, inset ~1) -->
+  <rect x="35" y="825" width="830" height="54" rx="17" fill="none" stroke="#000000" stroke-opacity="0.132" stroke-width="1"/>
+  <!-- Glanzlicht oben-links -->
+  <ellipse cx="316.88" cy="826" rx="249.6" ry="8.96" fill="url(#webhltl)"/>
+  <!-- Glanzlicht unten-rechts -->
+  <ellipse cx="682.96" cy="878" rx="166.4" ry="5.6000000000000005" fill="url(#webhlbr)"/>
+  <!-- Rim-Light -->
+  <rect x="150.48000000000002" y="825.5" width="382.72" height="1.6" rx="1" fill="url(#webrim)"/><rect x="47" y="836" width="3.5" height="32" rx="2" fill="url(#webacc-cyan)"/><text x="64" y="857.5" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="16.5" font-weight="700" letter-spacing=".3" fill="url(#webval-cyan)">STATUS</text><circle cx="836" cy="852" r="10" fill="#34d399" opacity=".16"/><circle cx="836" cy="852" r="4.6" fill="#34d399"/><text x="812" y="857" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="14.5" opacity="0.68" fill="#ffffff" text-anchor="end">200 OK</text>
+  <!-- Glas-Füllung -->
+  <rect x="34" y="890" width="832" height="56" rx="18" fill="url(#webglassV)"/>
+  <!-- seitlicher Schimmer oben (radialer „Sheen“ wie in der Referenz) -->
+  <path d="M 34 946 L 34 893.6 Q 450 870.96 866 893.6 L 866 946 Z" fill="#ffffff" opacity=".028" clip-path="none"/>
+  <!-- Außenkante -->
+  <rect x="34" y="890" width="832" height="56" rx="18" fill="none" stroke="#ffffff" stroke-opacity="0.180" stroke-width="1"/>
+  <!-- Innenkante (inset ~3) -->
+  <rect x="37" y="893" width="826" height="50" rx="15" fill="none" stroke="#ffffff" stroke-opacity="0.042" stroke-width="1"/>
+  <!-- Gegenkante (dunkel, inset ~1) -->
+  <rect x="35" y="891" width="830" height="54" rx="17" fill="none" stroke="#000000" stroke-opacity="0.132" stroke-width="1"/>
+  <!-- Glanzlicht oben-links -->
+  <ellipse cx="316.88" cy="892" rx="249.6" ry="8.96" fill="url(#webhltl)"/>
+  <!-- Glanzlicht unten-rechts -->
+  <ellipse cx="682.96" cy="944" rx="166.4" ry="5.6000000000000005" fill="url(#webhlbr)"/>
+  <!-- Rim-Light -->
+  <rect x="150.48000000000002" y="891.5" width="382.72" height="1.6" rx="1" fill="url(#webrim)"/><rect x="47" y="902" width="3.5" height="32" rx="2" fill="url(#webacc-cyan)"/><text x="64" y="923.5" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="16.5" font-weight="700" letter-spacing=".3" fill="url(#webval-cyan)">HTTP</text><text x="812" y="923" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="14.5" opacity="0.68" fill="#ffffff" text-anchor="end">2</text>
+  <!-- Glas-Füllung -->
+  <rect x="34" y="956" width="832" height="56" rx="18" fill="url(#webglassV)"/>
+  <!-- seitlicher Schimmer oben (radialer „Sheen“ wie in der Referenz) -->
+  <path d="M 34 1012 L 34 959.6 Q 450 936.96 866 959.6 L 866 1012 Z" fill="#ffffff" opacity=".028" clip-path="none"/>
+  <!-- Außenkante -->
+  <rect x="34" y="956" width="832" height="56" rx="18" fill="none" stroke="#ffffff" stroke-opacity="0.180" stroke-width="1"/>
+  <!-- Innenkante (inset ~3) -->
+  <rect x="37" y="959" width="826" height="50" rx="15" fill="none" stroke="#ffffff" stroke-opacity="0.042" stroke-width="1"/>
+  <!-- Gegenkante (dunkel, inset ~1) -->
+  <rect x="35" y="957" width="830" height="54" rx="17" fill="none" stroke="#000000" stroke-opacity="0.132" stroke-width="1"/>
+  <!-- Glanzlicht oben-links -->
+  <ellipse cx="316.88" cy="958" rx="249.6" ry="8.96" fill="url(#webhltl)"/>
+  <!-- Glanzlicht unten-rechts -->
+  <ellipse cx="682.96" cy="1010" rx="166.4" ry="5.6000000000000005" fill="url(#webhlbr)"/>
+  <!-- Rim-Light -->
+  <rect x="150.48000000000002" y="957.5" width="382.72" height="1.6" rx="1" fill="url(#webrim)"/><rect x="47" y="968" width="3.5" height="32" rx="2" fill="url(#webacc-cyan)"/><text x="64" y="989.5" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="16.5" font-weight="700" letter-spacing=".3" fill="url(#webval-cyan)">SERVER</text><text x="812" y="989" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="14.5" opacity="0.68" fill="#ffffff" text-anchor="end">cloudflare</text>
+  <!-- Glas-Füllung -->
+  <rect x="34" y="1022" width="832" height="56" rx="18" fill="url(#webglassV)"/>
+  <!-- seitlicher Schimmer oben (radialer „Sheen“ wie in der Referenz) -->
+  <path d="M 34 1078 L 34 1025.6 Q 450 1002.96 866 1025.6 L 866 1078 Z" fill="#ffffff" opacity=".028" clip-path="none"/>
+  <!-- Außenkante -->
+  <rect x="34" y="1022" width="832" height="56" rx="18" fill="none" stroke="#ffffff" stroke-opacity="0.180" stroke-width="1"/>
+  <!-- Innenkante (inset ~3) -->
+  <rect x="37" y="1025" width="826" height="50" rx="15" fill="none" stroke="#ffffff" stroke-opacity="0.042" stroke-width="1"/>
+  <!-- Gegenkante (dunkel, inset ~1) -->
+  <rect x="35" y="1023" width="830" height="54" rx="17" fill="none" stroke="#000000" stroke-opacity="0.132" stroke-width="1"/>
+  <!-- Glanzlicht oben-links -->
+  <ellipse cx="316.88" cy="1024" rx="249.6" ry="8.96" fill="url(#webhltl)"/>
+  <!-- Glanzlicht unten-rechts -->
+  <ellipse cx="682.96" cy="1076" rx="166.4" ry="5.6000000000000005" fill="url(#webhlbr)"/>
+  <!-- Rim-Light -->
+  <rect x="150.48000000000002" y="1023.5" width="382.72" height="1.6" rx="1" fill="url(#webrim)"/><rect x="47" y="1034" width="3.5" height="32" rx="2" fill="url(#webacc-cyan)"/><text x="64" y="1055.5" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="16.5" font-weight="700" letter-spacing=".3" fill="url(#webval-cyan)">TYP</text><text x="812" y="1055" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="14.5" opacity="0.68" fill="#ffffff" text-anchor="end">text/html</text>
+  <!-- Glas-Füllung -->
+  <rect x="34" y="1088" width="832" height="56" rx="18" fill="url(#webglassV)"/>
+  <!-- seitlicher Schimmer oben (radialer „Sheen“ wie in der Referenz) -->
+  <path d="M 34 1144 L 34 1091.6 Q 450 1068.96 866 1091.6 L 866 1144 Z" fill="#ffffff" opacity=".028" clip-path="none"/>
+  <!-- Außenkante -->
+  <rect x="34" y="1088" width="832" height="56" rx="18" fill="none" stroke="#ffffff" stroke-opacity="0.180" stroke-width="1"/>
+  <!-- Innenkante (inset ~3) -->
+  <rect x="37" y="1091" width="826" height="50" rx="15" fill="none" stroke="#ffffff" stroke-opacity="0.042" stroke-width="1"/>
+  <!-- Gegenkante (dunkel, inset ~1) -->
+  <rect x="35" y="1089" width="830" height="54" rx="17" fill="none" stroke="#000000" stroke-opacity="0.132" stroke-width="1"/>
+  <!-- Glanzlicht oben-links -->
+  <ellipse cx="316.88" cy="1090" rx="249.6" ry="8.96" fill="url(#webhltl)"/>
+  <!-- Glanzlicht unten-rechts -->
+  <ellipse cx="682.96" cy="1142" rx="166.4" ry="5.6000000000000005" fill="url(#webhlbr)"/>
+  <!-- Rim-Light -->
+  <rect x="150.48000000000002" y="1089.5" width="382.72" height="1.6" rx="1" fill="url(#webrim)"/><rect x="47" y="1100" width="3.5" height="32" rx="2" fill="url(#webacc-cyan)"/><text x="64" y="1121.5" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="16.5" font-weight="700" letter-spacing=".3" fill="url(#webval-cyan)">GRÖSSE</text><text x="812" y="1121" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="14.5" opacity="0.68" fill="#ffffff" text-anchor="end">44.1 KB</text><circle cx="42" cy="1177" r="15" fill="#fb7185" opacity=".14"/><circle cx="42" cy="1177" r="6.5" fill="#fb7185"/><text x="60" y="1182" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="16" font-weight="700" letter-spacing="3" fill="url(#weblab-rose)">ICMP</text>
+  <!-- Glas-Füllung -->
+  <rect x="34" y="1204" width="832" height="56" rx="18" fill="url(#webglassV)"/>
+  <!-- seitlicher Schimmer oben (radialer „Sheen“ wie in der Referenz) -->
+  <path d="M 34 1260 L 34 1207.6 Q 450 1184.96 866 1207.6 L 866 1260 Z" fill="#ffffff" opacity=".028" clip-path="none"/>
+  <!-- Außenkante -->
+  <rect x="34" y="1204" width="832" height="56" rx="18" fill="none" stroke="#ffffff" stroke-opacity="0.180" stroke-width="1"/>
+  <!-- Innenkante (inset ~3) -->
+  <rect x="37" y="1207" width="826" height="50" rx="15" fill="none" stroke="#ffffff" stroke-opacity="0.042" stroke-width="1"/>
+  <!-- Gegenkante (dunkel, inset ~1) -->
+  <rect x="35" y="1205" width="830" height="54" rx="17" fill="none" stroke="#000000" stroke-opacity="0.132" stroke-width="1"/>
+  <!-- Glanzlicht oben-links -->
+  <ellipse cx="316.88" cy="1206" rx="249.6" ry="8.96" fill="url(#webhltl)"/>
+  <!-- Glanzlicht unten-rechts -->
+  <ellipse cx="682.96" cy="1258" rx="166.4" ry="5.6000000000000005" fill="url(#webhlbr)"/>
+  <!-- Rim-Light -->
+  <rect x="150.48000000000002" y="1205.5" width="382.72" height="1.6" rx="1" fill="url(#webrim)"/><rect x="47" y="1216" width="3.5" height="32" rx="2" fill="url(#webacc-cyan)"/><text x="64" y="1237.5" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="16.5" font-weight="700" letter-spacing=".3" fill="url(#webval-cyan)">MAXICHEN.DE</text><circle cx="836" cy="1232" r="10" fill="#34d399" opacity=".16"/><circle cx="836" cy="1232" r="4.6" fill="#34d399"/><text x="812" y="1237" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="14.5" opacity="0.68" fill="#ffffff" text-anchor="end">12.3 ms · min 10 / max 15 · 0% Verlust</text><text x="450" y="1286" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="11.5" font-weight="600" letter-spacing="3" opacity=".18" fill="#ffffff" text-anchor="middle">LOVEBOT BY MAXICHEN · LIVE GEMESSEN</text></svg>

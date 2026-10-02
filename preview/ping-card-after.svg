@@ -1,0 +1,727 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="2260" viewBox="0 0 900 2260">
+  <defs>
+    <!-- Hintergrund: ausgekühltes Schwarz + verweinte Aurora-Schleier -->
+    <linearGradient id="pingbgbase" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#08080c"/><stop offset=".55" stop-color="#0b0b12"/><stop offset="1" stop-color="#0e0e16"/>
+    </linearGradient>
+    <radialGradient id="pingaur1" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#7a5a8c" stop-opacity=".14"/><stop offset="1" stop-color="#7a5a8c" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="pingaur2" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#7a2740" stop-opacity=".12"/><stop offset="1" stop-color="#7a2740" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="pingaur3" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#3b4a5f" stop-opacity=".12"/><stop offset="1" stop-color="#3b4a5f" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Titel-Gradient: ausgeblichen (grau → lavendelstaub → regengrau) -->
+    <linearGradient id="pingtitle" x1="0" y1="0" x2="1" y2=".25">
+      <stop offset=".2" stop-color="#e2dde8"/><stop offset=".55" stop-color="#a99fc0"/><stop offset="1" stop-color="#7d8bab"/>
+    </linearGradient>
+    <!-- Brand-Zeile: rosenstaub → regengrau -->
+    <linearGradient id="pingbrand" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#b98ba0"/><stop offset="1" stop-color="#7d8bab"/>
+    </linearGradient>
+
+    <!-- Glas-Füllung: trübes, gesprungenes Glas -->
+    <linearGradient id="pingglassV" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".032"/>
+      <stop offset=".45" stop-color="#ffffff" stop-opacity=".008"/>
+      <stop offset="1" stop-color="#000000" stop-opacity=".07"/>
+    </linearGradient>
+
+    <!-- Rim-Light: nur noch ein letzter matter Schimmer -->
+    <linearGradient id="pingrim" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset=".5" stop-color="#ffffff" stop-opacity=".30"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+
+    <!-- Glanzlicht oben-links (matt, wie angelaufen) -->
+    <linearGradient id="pinghltl" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".22"/>
+      <stop offset=".55" stop-color="#ffffff" stop-opacity=".07"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <!-- Glanzlicht unten-rechts -->
+    <linearGradient id="pinghlbr" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".12"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+
+    <!-- Health-Balken: Prellungsviolett → Wundenrose → Regengrau -->
+    <linearGradient id="pinghealth" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#6b5a8c"/><stop offset=".55" stop-color="#8c4a5f"/><stop offset="1" stop-color="#5f7a8c"/>
+    </linearGradient>
+
+    <!-- Kategorie-Gradients (Label/Akzent/Wert) -->
+
+    <linearGradient id="pinglab-violet" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#b4a9c9"/><stop offset="1" stop-color="#8d7bab"/>
+    </linearGradient>
+    <linearGradient id="pingacc-violet" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8d7bab"/><stop offset="1" stop-color="#5f5379"/>
+    </linearGradient>
+    <linearGradient id="pingval-violet" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#cabfd9"/><stop offset="1" stop-color="#8d7bab"/>
+    </linearGradient>
+    <linearGradient id="pinglab-cyan" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#a9bcc9"/><stop offset="1" stop-color="#6f8bab"/>
+    </linearGradient>
+    <linearGradient id="pingacc-cyan" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6f8bab"/><stop offset="1" stop-color="#4a5f79"/>
+    </linearGradient>
+    <linearGradient id="pingval-cyan" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#c3d2dd"/><stop offset="1" stop-color="#6f8bab"/>
+    </linearGradient>
+    <linearGradient id="pinglab-amber" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#d9c3a0"/><stop offset="1" stop-color="#b89a6a"/>
+    </linearGradient>
+    <linearGradient id="pingacc-amber" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#b89a6a"/><stop offset="1" stop-color="#8a6f4a"/>
+    </linearGradient>
+    <linearGradient id="pingval-amber" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#e6d6b8"/><stop offset="1" stop-color="#b89a6a"/>
+    </linearGradient>
+    <linearGradient id="pinglab-rose" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#d9a9b4"/><stop offset="1" stop-color="#b06a7a"/>
+    </linearGradient>
+    <linearGradient id="pingacc-rose" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#b06a7a"/><stop offset="1" stop-color="#7a4350"/>
+    </linearGradient>
+    <linearGradient id="pingval-rose" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#e6c3cb"/><stop offset="1" stop-color="#b06a7a"/>
+    </linearGradient>
+
+    <!-- gebrochenes Herz (Brand-Marke oben): alte Wundfarben -->
+    <linearGradient id="pingheart" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#a06078"/><stop offset="1" stop-color="#6b3a4a"/>
+    </linearGradient>
+    <radialGradient id="pingglow" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#7a5a8c" stop-opacity=".35"/><stop offset="1" stop-color="#7a5a8c" stop-opacity="0"/>
+    </radialGradient>
+    <!-- Träne (Regengrau-Blau) -->
+    <linearGradient id="pingtear" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#9db4c9"/><stop offset="1" stop-color="#5f7a8c"/>
+    </linearGradient>
+  </defs><rect width="900" height="2260" fill="url(#pingbgbase)"/><ellipse cx="738" cy="135.6" rx="495.00000000000006" ry="497.2" fill="url(#pingaur1)"/><ellipse cx="90" cy="858.8" rx="432" ry="587.6" fill="url(#pingaur2)"/><ellipse cx="495.00000000000006" cy="2124.4" rx="495.00000000000006" ry="452" fill="url(#pingaur3)"/>
+  <clipPath id="pingcp30"><rect x="10" y="10" width="880" height="2240" rx="26"/></clipPath>
+  <!-- Glas-Füllung -->
+  <rect x="10" y="10" width="880" height="2240" rx="26" fill="url(#pingglassV)"/>
+  <!-- Licht-Schichten (geclippt auf das Panel) -->
+  <g clip-path="url(#pingcp30)">
+    <!-- seitlicher Schimmer oben (radialer „Sheen“ wie in der Referenz) -->
+    <path d="M 10 2250 L 10 15.2 Q 450 -751.6 890 15.2 L 890 2250 Z" fill="#ffffff" opacity="0.028"/>
+    <!-- Glanzlicht oben-links -->
+    <ellipse cx="309.20000000000005" cy="8" rx="264" ry="10" fill="url(#pinghltl)"/>
+    <!-- Glanzlicht unten-rechts -->
+    <ellipse cx="696.4" cy="2251" rx="176" ry="7" fill="url(#pinghlbr)"/>
+    <!-- Rim-Light -->
+    <rect x="133.20000000000002" y="11.5" width="404.8" height="1.6" rx="1" fill="url(#pingrim)" opacity="1"/>
+  </g>
+  <!-- Außenkante -->
+  <rect x="10" y="10" width="880" height="2240" rx="26" fill="none" stroke="#ffffff" stroke-opacity="0.300" stroke-width="1"/>
+  <!-- Innenkante (inset ~3) -->
+  <rect x="13" y="13" width="874" height="2234" rx="23" fill="none" stroke="#ffffff" stroke-opacity="0.070" stroke-width="1"/>
+  <!-- Gegenkante (dunkel, inset ~1) -->
+  <rect x="11" y="11" width="878" height="2238" rx="25" fill="none" stroke="#000000" stroke-opacity="0.220" stroke-width="1"/><path d="M 12 362 l 26 16 l -11 21 l 30 24 l -8 18" fill="none" stroke="#ffffff" stroke-width="1.1" opacity=".055"/><path d="M 886 678 l -28 15 l 12 22 l -26 19" fill="none" stroke="#ffffff" stroke-width="1" opacity=".045"/><path d="M 558 2248 l -14 -22 l 10 -16 l -18 -20" fill="none" stroke="#ffffff" stroke-width="1" opacity=".04"/><g opacity=".05" transform="rotate(-18 450 1130)"><text x="-180" y="-226" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="24" font-weight="700" fill="#f9a8d4">by maxichen · nicht klauen</text><text x="250" y="-226" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="24" font-weight="700" fill="#f9a8d4">by maxichen · nicht klauen</text><text x="680" y="-226" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="24" font-weight="700" fill="#f9a8d4">by maxichen · nicht klauen</text><text x="-180" y="-36" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="24" font-weight="700" fill="#f9a8d4">by maxichen · nicht klauen</text><text x="250" y="-36" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="24" font-weight="700" fill="#f9a8d4">by maxichen · nicht klauen</text><text x="680" y="-36" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="24" font-weight="700" fill="#f9a8d4">by maxichen · nicht klauen</text><text x="-180" y="154" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="24" font-weight="700" fill="#f9a8d4">by maxichen · nicht klauen</text><text x="250" y="154" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="24" font-weight="700" fill="#f9a8d4">by maxichen · nicht klauen</text><text x="680" y="154" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="24" font-weight="700" fill="#f9a8d4">by maxichen · nicht klauen</text><text x="-180" y="344" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="24" font-weight="700" fill="#f9a8d4">by maxichen · nicht klauen</text><text x="250" y="344" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="24" font-weight="700" fill="#f9a8d4">by maxichen · nicht klauen</text><text x="680" y="344" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="24" font-weight="700" fill="#f9a8d4">by maxichen · nicht klauen</text><text x="-180" y="534" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="24" font-weight="700" fill="#f9a8d4">by maxichen · nicht klauen</text><text x="250" y="534" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="24" font-weight="700" fill="#f9a8d4">by maxichen · nicht klauen</text><text x="680" y="534" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="24" font-weight="700" fill="#f9a8d4">by maxichen · nicht klauen</text><text x="-180" y="724" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="24" font-weight="700" fill="#f9a8d4">by maxichen · nicht klauen</text><text x="250" y="724" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="24" font-weight="700" fill="#f9a8d4">by maxichen · nicht klauen</text><text x="680" y="724" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="24" font-weight="700" fill="#f9a8d4">by maxichen · nicht klauen</text><text x="-180" y="914" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="24" font-weight="700" fill="#f9a8d4">by maxichen · nicht klauen</text><text x="250" y="914" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="24" font-weight="700" fill="#f9a8d4">by maxichen · nicht klauen</text><text x="680" y="914" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="24" font-weight="700" fill="#f9a8d4">by maxichen · nicht klauen</text><text x="-180" y="1104" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="24" font-weight="700" fill="#f9a8d4">by maxichen · nicht klauen</text><text x="250" y="1104" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="24" font-weight="700" fill="#f9a8d4">by maxichen · nicht klauen</text><text x="680" y="1104" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="24" font-weight="700" fill="#f9a8d4">by maxichen · nicht klauen</text><text x="-180" y="1294" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="24" font-weight="700" fill="#f9a8d4">by maxichen · nicht klauen</text><text x="250" y="1294" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="24" font-weight="700" fill="#f9a8d4">by maxichen · nicht klauen</text><text x="680" y="1294" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="24" font-weight="700" fill="#f9a8d4">by maxichen · nicht klauen</text><text x="-180" y="1484" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="24" font-weight="700" fill="#f9a8d4">by maxichen · nicht klauen</text><text x="250" y="1484" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="24" font-weight="700" fill="#f9a8d4">by maxichen · nicht klauen</text><text x="680" y="1484" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="24" font-weight="700" fill="#f9a8d4">by maxichen · nicht klauen</text><text x="-180" y="1674" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="24" font-weight="700" fill="#f9a8d4">by maxichen · nicht klauen</text><text x="250" y="1674" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="24" font-weight="700" fill="#f9a8d4">by maxichen · nicht klauen</text><text x="680" y="1674" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="24" font-weight="700" fill="#f9a8d4">by maxichen · nicht klauen</text><text x="-180" y="1864" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="24" font-weight="700" fill="#f9a8d4">by maxichen · nicht klauen</text><text x="250" y="1864" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="24" font-weight="700" fill="#f9a8d4">by maxichen · nicht klauen</text><text x="680" y="1864" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="24" font-weight="700" fill="#f9a8d4">by maxichen · nicht klauen</text><text x="-180" y="2054" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="24" font-weight="700" fill="#f9a8d4">by maxichen · nicht klauen</text><text x="250" y="2054" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="24" font-weight="700" fill="#f9a8d4">by maxichen · nicht klauen</text><text x="680" y="2054" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="24" font-weight="700" fill="#f9a8d4">by maxichen · nicht klauen</text><text x="-180" y="2244" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="24" font-weight="700" fill="#f9a8d4">by maxichen · nicht klauen</text><text x="250" y="2244" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="24" font-weight="700" fill="#f9a8d4">by maxichen · nicht klauen</text><text x="680" y="2244" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="24" font-weight="700" fill="#f9a8d4">by maxichen · nicht klauen</text><text x="-180" y="2434" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="24" font-weight="700" fill="#f9a8d4">by maxichen · nicht klauen</text><text x="250" y="2434" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="24" font-weight="700" fill="#f9a8d4">by maxichen · nicht klauen</text><text x="680" y="2434" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="24" font-weight="700" fill="#f9a8d4">by maxichen · nicht klauen</text></g><circle cx="60" cy="64" r="34" fill="url(#pingglow)"/><path d="M 58.5 79 C 34 60, 43 39, 58.5 53 L 56 62 L 60.5 68 L 57 73 Z" fill="url(#pingheart)" transform="rotate(-6 60 64)"/><path d="M 62.5 80 C 87 61, 78 40, 62.5 54 L 60 62 L 64 68 L 61 74 Z" fill="url(#pingheart)" transform="rotate(5 60 64) translate(1.5 1)"/><path d="M 60 52 L 57 61 L 62 67 L 58 74 L 61 80" fill="none" stroke="#08080c" stroke-width="2.2" stroke-linecap="round" opacity=".9"/><path d="M 51 86 C 47.5 91, 47.5 94.5, 51 96.5 C 54.5 94.5, 54.5 91, 51 86 Z" fill="url(#pingtear)" opacity=".85"/><path d="M 68 92 C 65.5 95.5, 65.5 98, 68 99.5 C 70.5 98, 70.5 95.5, 68 92 Z" fill="url(#pingtear)" opacity=".55"/><text x="108" y="58" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="13.5" font-weight="600" letter-spacing="4.5" fill="url(#pingbrand)">HELLOKITTY BABY MAXI</text><text x="408" y="58" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="13.5" font-weight="600" letter-spacing="3" opacity=".24" fill="#ffffff">· tut so als ob</text><text x="108" y="100" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="43" font-weight="800" letter-spacing="-1" fill="url(#pingtitle)">ping-report.</text><text x="110" y="130" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="12.5" font-weight="500" letter-spacing="2.5" opacity=".28" fill="#ffffff">26.09.2026 · 04:40  ·  standard (mit speedtest) · niemand hat gefragt</text>
+  <clipPath id="pingcp0"><rect x="34" y="162" width="832" height="122" rx="22"/></clipPath>
+  <!-- Glas-Füllung -->
+  <rect x="34" y="162" width="832" height="122" rx="22" fill="url(#pingglassV)"/>
+  <!-- Licht-Schichten (geclippt auf das Panel) -->
+  <g clip-path="url(#pingcp0)">
+    <!-- seitlicher Schimmer oben (radialer „Sheen“ wie in der Referenz) -->
+    <path d="M 34 284 L 34 166.4 Q 450 120.52 866 166.4 L 866 284 Z" fill="#ffffff" opacity="0.028"/>
+    <!-- Glanzlicht oben-links -->
+    <ellipse cx="316.88" cy="160" rx="249.6" ry="10" fill="url(#pinghltl)"/>
+    <!-- Glanzlicht unten-rechts -->
+    <ellipse cx="682.96" cy="285" rx="166.4" ry="7" fill="url(#pinghlbr)"/>
+    <!-- Rim-Light -->
+    <rect x="150.48000000000002" y="163.5" width="382.72" height="1.6" rx="1" fill="url(#pingrim)" opacity="1"/>
+  </g>
+  <!-- Außenkante -->
+  <rect x="34" y="162" width="832" height="122" rx="22" fill="none" stroke="#ffffff" stroke-opacity="0.300" stroke-width="1"/>
+  <!-- Innenkante (inset ~3) -->
+  <rect x="37" y="165" width="826" height="116" rx="19" fill="none" stroke="#ffffff" stroke-opacity="0.070" stroke-width="1"/>
+  <!-- Gegenkante (dunkel, inset ~1) -->
+  <rect x="35" y="163" width="830" height="120" rx="21" fill="none" stroke="#000000" stroke-opacity="0.220" stroke-width="1"/><ellipse cx="786" cy="200" rx="110" ry="44" fill="url(#pingglow)" opacity=".45"/><text x="58" y="198" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="15" font-weight="700" letter-spacing="3" fill="url(#pinglab-rose)">herz-zustand</text><rect x="232" y="181" width="54" height="24" rx="12" fill="#7ba896" fill-opacity=".13" stroke="#7ba896" stroke-opacity=".45"/><text x="259" y="197.5" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="11" font-weight="700" letter-spacing="2" fill="#7ba896" text-anchor="middle">Good</text><text x="842" y="204" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="36" font-weight="800" fill="url(#pingtitle)" text-anchor="end">86%</text><rect x="58" y="218" width="784" height="16" rx="8" fill="#000000" fill-opacity=".30" stroke="#ffffff" stroke-opacity=".10"/><rect x="58" y="218" width="674" height="16" rx="8" fill="url(#pinghealth)"/><rect x="60" y="220" width="670" height="3" rx="1.5" fill="#ffffff" opacity=".28"/><rect x="254" y="222" width="1.2" height="8" fill="#000000" opacity=".30"/><rect x="450" y="222" width="1.2" height="8" fill="#000000" opacity=".30"/><rect x="646" y="222" width="1.2" height="8" fill="#000000" opacity=".30"/><rect x="58" y="250" width="64" height="22" rx="11" fill="#ffffff" fill-opacity=".04" stroke="#ffffff" stroke-opacity=".09"/><circle cx="70" cy="261" r="3.2" fill="#7ba896"/><text x="78" y="265" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="10.5" font-weight="600" letter-spacing=".5" opacity=".55" fill="#ffffff">bot 88</text><rect x="130" y="250" width="96" height="22" rx="11" fill="#ffffff" fill-opacity=".04" stroke="#ffffff" stroke-opacity=".09"/><circle cx="142" cy="261" r="3.2" fill="#b8a06a"/><text x="150" y="265" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="10.5" font-weight="600" letter-spacing=".5" opacity=".55" fill="#ffffff">websites 84</text><rect x="234" y="250" width="96" height="22" rx="11" fill="#ffffff" fill-opacity=".04" stroke="#ffffff" stroke-opacity=".09"/><circle cx="246" cy="261" r="3.2" fill="#7ba896"/><text x="254" y="265" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="10.5" font-weight="600" letter-spacing=".5" opacity=".55" fill="#ffffff">netzwerk 97</text><rect x="338" y="250" width="109" height="22" rx="11" fill="#ffffff" fill-opacity=".04" stroke="#ffffff" stroke-opacity=".09"/><circle cx="350" cy="261" r="3.2" fill="#7ba896"/><text x="358" y="265" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="10.5" font-weight="600" letter-spacing=".5" opacity=".55" fill="#ffffff">verbindung 92</text><rect x="455" y="250" width="84" height="22" rx="11" fill="#ffffff" fill-opacity=".04" stroke="#ffffff" stroke-opacity=".09"/><circle cx="467" cy="261" r="3.2" fill="#7ba896"/><text x="475" y="265" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="10.5" font-weight="600" letter-spacing=".5" opacity=".55" fill="#ffffff">speed 100</text><rect x="547" y="250" width="84" height="22" rx="11" fill="#ffffff" fill-opacity=".04" stroke="#ffffff" stroke-opacity=".09"/><circle cx="559" cy="261" r="3.2" fill="#b0836a"/><text x="567" y="265" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="10.5" font-weight="600" letter-spacing=".5" opacity=".55" fill="#ffffff">system 58</text>
+  <clipPath id="pingcp1"><rect x="34" y="304" width="199" height="106" rx="16"/></clipPath>
+  <!-- Glas-Füllung -->
+  <rect x="34" y="304" width="199" height="106" rx="16" fill="url(#pingglassV)"/>
+  <!-- Licht-Schichten (geclippt auf das Panel) -->
+  <g clip-path="url(#pingcp1)">
+    <!-- seitlicher Schimmer oben (radialer „Sheen“ wie in der Referenz) -->
+    <path d="M 34 410 L 34 307.2 Q 133.5 267.96 233 307.2 L 233 410 Z" fill="#ffffff" opacity="0.020"/>
+    <!-- Glanzlicht oben-links -->
+    <ellipse cx="101.66000000000001" cy="302" rx="59.699999999999996" ry="10" fill="url(#pinghltl)"/>
+    <!-- Glanzlicht unten-rechts -->
+    <ellipse cx="189.22" cy="411" rx="39.800000000000004" ry="7" fill="url(#pinghlbr)"/>
+    <!-- Rim-Light -->
+    <rect x="61.86" y="305.5" width="91.54" height="1.6" rx="1" fill="url(#pingrim)" opacity="0.5"/>
+  </g>
+  <!-- Außenkante -->
+  <rect x="34" y="304" width="199" height="106" rx="16" fill="none" stroke="#ffffff" stroke-opacity="0.180" stroke-width="1"/>
+  <!-- Innenkante (inset ~3) -->
+  <rect x="37" y="307" width="193" height="100" rx="13" fill="none" stroke="#ffffff" stroke-opacity="0.042" stroke-width="1"/>
+  <!-- Gegenkante (dunkel, inset ~1) -->
+  <rect x="35" y="305" width="197" height="104" rx="15" fill="none" stroke="#000000" stroke-opacity="0.132" stroke-width="1"/><rect x="48" y="322" width="3" height="12" rx="1.5" fill="url(#pingacc-violet)"/><text x="58" y="332" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="11" font-weight="700" letter-spacing="1.6" opacity=".44" fill="#ffffff">bot-ping ø · allein</text><circle cx="213" cy="328" r="10" fill="#7ba896" opacity=".16"/><circle cx="213" cy="328" r="4.6" fill="#7ba896"/><text x="50" y="370" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="27" font-weight="800" fill="url(#pingval-violet)">126 ms</text><text x="50" y="390" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="11" font-weight="500" opacity=".36" fill="#ffffff">IQ 147 ms · RTT 214 ms</text><rect x="50" y="400" width="167" height="3" rx="1.5" fill="#ffffff" fill-opacity=".07"/><rect x="50" y="400" width="142" height="3" rx="1.5" fill="#7ba896" opacity=".9"/><circle cx="192" cy="401.5" r="2.6" fill="#7ba896" opacity=".55"/>
+  <clipPath id="pingcp2"><rect x="245" y="304" width="199" height="106" rx="16"/></clipPath>
+  <!-- Glas-Füllung -->
+  <rect x="245" y="304" width="199" height="106" rx="16" fill="url(#pingglassV)"/>
+  <!-- Licht-Schichten (geclippt auf das Panel) -->
+  <g clip-path="url(#pingcp2)">
+    <!-- seitlicher Schimmer oben (radialer „Sheen“ wie in der Referenz) -->
+    <path d="M 245 410 L 245 307.2 Q 344.5 267.96 444 307.2 L 444 410 Z" fill="#ffffff" opacity="0.020"/>
+    <!-- Glanzlicht oben-links -->
+    <ellipse cx="312.66" cy="302" rx="59.699999999999996" ry="10" fill="url(#pinghltl)"/>
+    <!-- Glanzlicht unten-rechts -->
+    <ellipse cx="400.22" cy="411" rx="39.800000000000004" ry="7" fill="url(#pinghlbr)"/>
+    <!-- Rim-Light -->
+    <rect x="272.86" y="305.5" width="91.54" height="1.6" rx="1" fill="url(#pingrim)" opacity="0.5"/>
+  </g>
+  <!-- Außenkante -->
+  <rect x="245" y="304" width="199" height="106" rx="16" fill="none" stroke="#ffffff" stroke-opacity="0.180" stroke-width="1"/>
+  <!-- Innenkante (inset ~3) -->
+  <rect x="248" y="307" width="193" height="100" rx="13" fill="none" stroke="#ffffff" stroke-opacity="0.042" stroke-width="1"/>
+  <!-- Gegenkante (dunkel, inset ~1) -->
+  <rect x="246" y="305" width="197" height="104" rx="15" fill="none" stroke="#000000" stroke-opacity="0.132" stroke-width="1"/><rect x="259" y="322" width="3" height="12" rx="1.5" fill="url(#pingacc-cyan)"/><text x="269" y="332" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="11" font-weight="700" letter-spacing="1.6" opacity=".44" fill="#ffffff">websites ø · fern</text><circle cx="424" cy="328" r="10" fill="#7ba896" opacity=".16"/><circle cx="424" cy="328" r="4.6" fill="#7ba896"/><text x="261" y="370" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="27" font-weight="800" fill="url(#pingval-cyan)">540 ms</text><text x="261" y="390" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="11" font-weight="500" opacity=".36" fill="#ffffff">5/6 ok · niemand da</text><rect x="261" y="400" width="167" height="3" rx="1.5" fill="#ffffff" fill-opacity=".07"/><rect x="261" y="400" width="142" height="3" rx="1.5" fill="#7ba896" opacity=".9"/><circle cx="403" cy="401.5" r="2.6" fill="#7ba896" opacity=".55"/>
+  <clipPath id="pingcp3"><rect x="456" y="304" width="199" height="106" rx="16"/></clipPath>
+  <!-- Glas-Füllung -->
+  <rect x="456" y="304" width="199" height="106" rx="16" fill="url(#pingglassV)"/>
+  <!-- Licht-Schichten (geclippt auf das Panel) -->
+  <g clip-path="url(#pingcp3)">
+    <!-- seitlicher Schimmer oben (radialer „Sheen“ wie in der Referenz) -->
+    <path d="M 456 410 L 456 307.2 Q 555.5 267.96 655 307.2 L 655 410 Z" fill="#ffffff" opacity="0.020"/>
+    <!-- Glanzlicht oben-links -->
+    <ellipse cx="523.66" cy="302" rx="59.699999999999996" ry="10" fill="url(#pinghltl)"/>
+    <!-- Glanzlicht unten-rechts -->
+    <ellipse cx="611.22" cy="411" rx="39.800000000000004" ry="7" fill="url(#pinghlbr)"/>
+    <!-- Rim-Light -->
+    <rect x="483.86" y="305.5" width="91.54" height="1.6" rx="1" fill="url(#pingrim)" opacity="0.5"/>
+  </g>
+  <!-- Außenkante -->
+  <rect x="456" y="304" width="199" height="106" rx="16" fill="none" stroke="#ffffff" stroke-opacity="0.180" stroke-width="1"/>
+  <!-- Innenkante (inset ~3) -->
+  <rect x="459" y="307" width="193" height="100" rx="13" fill="none" stroke="#ffffff" stroke-opacity="0.042" stroke-width="1"/>
+  <!-- Gegenkante (dunkel, inset ~1) -->
+  <rect x="457" y="305" width="197" height="104" rx="15" fill="none" stroke="#000000" stroke-opacity="0.132" stroke-width="1"/><rect x="470" y="322" width="3" height="12" rx="1.5" fill="url(#pingacc-rose)"/><text x="480" y="332" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="11" font-weight="700" letter-spacing="1.6" opacity=".44" fill="#ffffff">netz ø · im regen</text><circle cx="635" cy="328" r="10" fill="#7ba896" opacity=".16"/><circle cx="635" cy="328" r="4.6" fill="#7ba896"/><text x="472" y="370" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="27" font-weight="800" fill="url(#pingval-rose)">18 ms</text><text x="472" y="390" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="11" font-weight="500" opacity=".36" fill="#ffffff">3 ziele · 0% verloren</text><rect x="472" y="400" width="167" height="3" rx="1.5" fill="#ffffff" fill-opacity=".07"/><rect x="472" y="400" width="167" height="3" rx="1.5" fill="#7ba896" opacity=".9"/><circle cx="639" cy="401.5" r="2.6" fill="#7ba896" opacity=".55"/>
+  <clipPath id="pingcp4"><rect x="667" y="304" width="199" height="106" rx="16"/></clipPath>
+  <!-- Glas-Füllung -->
+  <rect x="667" y="304" width="199" height="106" rx="16" fill="url(#pingglassV)"/>
+  <!-- Licht-Schichten (geclippt auf das Panel) -->
+  <g clip-path="url(#pingcp4)">
+    <!-- seitlicher Schimmer oben (radialer „Sheen“ wie in der Referenz) -->
+    <path d="M 667 410 L 667 307.2 Q 766.5 267.96 866 307.2 L 866 410 Z" fill="#ffffff" opacity="0.020"/>
+    <!-- Glanzlicht oben-links -->
+    <ellipse cx="734.66" cy="302" rx="59.699999999999996" ry="10" fill="url(#pinghltl)"/>
+    <!-- Glanzlicht unten-rechts -->
+    <ellipse cx="822.22" cy="411" rx="39.800000000000004" ry="7" fill="url(#pinghlbr)"/>
+    <!-- Rim-Light -->
+    <rect x="694.86" y="305.5" width="91.54" height="1.6" rx="1" fill="url(#pingrim)" opacity="0.5"/>
+  </g>
+  <!-- Außenkante -->
+  <rect x="667" y="304" width="199" height="106" rx="16" fill="none" stroke="#ffffff" stroke-opacity="0.180" stroke-width="1"/>
+  <!-- Innenkante (inset ~3) -->
+  <rect x="670" y="307" width="193" height="100" rx="13" fill="none" stroke="#ffffff" stroke-opacity="0.042" stroke-width="1"/>
+  <!-- Gegenkante (dunkel, inset ~1) -->
+  <rect x="668" y="305" width="197" height="104" rx="15" fill="none" stroke="#000000" stroke-opacity="0.132" stroke-width="1"/><rect x="681" y="322" width="3" height="12" rx="1.5" fill="url(#pingacc-amber)"/><text x="691" y="332" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="11" font-weight="700" letter-spacing="1.6" opacity=".44" fill="#ffffff">download · müde</text><circle cx="846" cy="328" r="10" fill="#7ba896" opacity=".16"/><circle cx="846" cy="328" r="4.6" fill="#7ba896"/><text x="683" y="370" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="27" font-weight="800" fill="url(#pingval-amber)">187 Mbit/s</text><text x="683" y="390" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="11" font-weight="500" opacity=".36" fill="#ffffff">↑ 38.1 Mbit/s</text><rect x="683" y="400" width="167" height="3" rx="1.5" fill="#ffffff" fill-opacity=".07"/><rect x="683" y="400" width="167" height="3" rx="1.5" fill="#7ba896" opacity=".9"/><circle cx="850" cy="401.5" r="2.6" fill="#7ba896" opacity=".55"/><circle cx="42" cy="435" r="15" fill="#8d7bab" opacity=".14"/><circle cx="42" cy="435" r="6.5" fill="#8d7bab"/><text x="60" y="440" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="16" font-weight="700" letter-spacing="2" fill="url(#pinglab-violet)">bot · fühlt nichts</text><rect x="804" y="421" width="62" height="26" rx="13" fill="#ffffff" fill-opacity=".03" stroke="#ffffff" stroke-opacity=".09"/><text x="835" y="438" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="12.5" font-weight="600" letter-spacing="1" opacity=".30" fill="#ffffff" text-anchor="middle">4</text>
+  <clipPath id="pingcp5"><rect x="34" y="462" width="409" height="84" rx="16"/></clipPath>
+  <!-- Glas-Füllung -->
+  <rect x="34" y="462" width="409" height="84" rx="16" fill="url(#pingglassV)"/>
+  <!-- Licht-Schichten (geclippt auf das Panel) -->
+  <g clip-path="url(#pingcp5)">
+    <!-- seitlicher Schimmer oben (radialer „Sheen“ wie in der Referenz) -->
+    <path d="M 34 546 L 34 465.2 Q 238.5 433.44 443 465.2 L 443 546 Z" fill="#ffffff" opacity="0.020"/>
+    <!-- Glanzlicht oben-links -->
+    <ellipse cx="173.06" cy="460" rx="122.69999999999999" ry="10" fill="url(#pinghltl)"/>
+    <!-- Glanzlicht unten-rechts -->
+    <ellipse cx="353.02000000000004" cy="547" rx="81.80000000000001" ry="7" fill="url(#pinghlbr)"/>
+    <!-- Rim-Light -->
+    <rect x="91.26" y="463.5" width="188.14000000000001" height="1.6" rx="1" fill="url(#pingrim)" opacity="0.5"/>
+  </g>
+  <!-- Außenkante -->
+  <rect x="34" y="462" width="409" height="84" rx="16" fill="none" stroke="#ffffff" stroke-opacity="0.180" stroke-width="1"/>
+  <!-- Innenkante (inset ~3) -->
+  <rect x="37" y="465" width="403" height="78" rx="13" fill="none" stroke="#ffffff" stroke-opacity="0.042" stroke-width="1"/>
+  <!-- Gegenkante (dunkel, inset ~1) -->
+  <rect x="35" y="463" width="407" height="82" rx="15" fill="none" stroke="#000000" stroke-opacity="0.132" stroke-width="1"/><rect x="48" y="477" width="3" height="12" rx="1.5" fill="url(#pingacc-violet)"/><text x="58" y="487" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="11" font-weight="700" letter-spacing="1.6" opacity=".44" fill="#ffffff">verbindung · fühlt nichts</text><circle cx="423" cy="483" r="10" fill="#7ba896" opacity=".16"/><circle cx="423" cy="483" r="4.6" fill="#7ba896"/><text x="50" y="514" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="17.5" font-weight="700" opacity=".93" fill="#ffffff">OPEN</text><text x="50" y="531" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="11" font-weight="500" opacity=".36" fill="#ffffff">readyState 1</text><rect x="50" y="536" width="377" height="3" rx="1.5" fill="#ffffff" fill-opacity=".07"/><rect x="50" y="536" width="377" height="3" rx="1.5" fill="#7ba896" opacity=".9"/><circle cx="427" cy="537.5" r="2.6" fill="#7ba896" opacity=".55"/>
+  <clipPath id="pingcp6"><rect x="457" y="462" width="409" height="84" rx="16"/></clipPath>
+  <!-- Glas-Füllung -->
+  <rect x="457" y="462" width="409" height="84" rx="16" fill="url(#pingglassV)"/>
+  <!-- Licht-Schichten (geclippt auf das Panel) -->
+  <g clip-path="url(#pingcp6)">
+    <!-- seitlicher Schimmer oben (radialer „Sheen“ wie in der Referenz) -->
+    <path d="M 457 546 L 457 465.2 Q 661.5 433.44 866 465.2 L 866 546 Z" fill="#ffffff" opacity="0.020"/>
+    <!-- Glanzlicht oben-links -->
+    <ellipse cx="596.06" cy="460" rx="122.69999999999999" ry="10" fill="url(#pinghltl)"/>
+    <!-- Glanzlicht unten-rechts -->
+    <ellipse cx="776.02" cy="547" rx="81.80000000000001" ry="7" fill="url(#pinghlbr)"/>
+    <!-- Rim-Light -->
+    <rect x="514.26" y="463.5" width="188.14000000000001" height="1.6" rx="1" fill="url(#pingrim)" opacity="0.5"/>
+  </g>
+  <!-- Außenkante -->
+  <rect x="457" y="462" width="409" height="84" rx="16" fill="none" stroke="#ffffff" stroke-opacity="0.180" stroke-width="1"/>
+  <!-- Innenkante (inset ~3) -->
+  <rect x="460" y="465" width="403" height="78" rx="13" fill="none" stroke="#ffffff" stroke-opacity="0.042" stroke-width="1"/>
+  <!-- Gegenkante (dunkel, inset ~1) -->
+  <rect x="458" y="463" width="407" height="82" rx="15" fill="none" stroke="#000000" stroke-opacity="0.132" stroke-width="1"/><rect x="471" y="477" width="3" height="12" rx="1.5" fill="url(#pingacc-violet)"/><text x="481" y="487" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="11" font-weight="700" letter-spacing="1.6" opacity=".44" fill="#ffffff">ws-ping</text><circle cx="846" cy="483" r="10" fill="#7ba896" opacity=".16"/><circle cx="846" cy="483" r="4.6" fill="#7ba896"/><text x="473" y="514" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="17.5" font-weight="700" opacity=".93" fill="#ffffff">127 ms</text><text x="473" y="531" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="11" font-weight="500" opacity=".36" fill="#ffffff">Ø 126 · 118–132 · Jitter 8</text><rect x="473" y="536" width="377" height="3" rx="1.5" fill="#ffffff" fill-opacity=".07"/><rect x="473" y="536" width="320" height="3" rx="1.5" fill="#7ba896" opacity=".9"/><circle cx="793" cy="537.5" r="2.6" fill="#7ba896" opacity=".55"/>
+  <clipPath id="pingcp7"><rect x="34" y="558" width="409" height="84" rx="16"/></clipPath>
+  <!-- Glas-Füllung -->
+  <rect x="34" y="558" width="409" height="84" rx="16" fill="url(#pingglassV)"/>
+  <!-- Licht-Schichten (geclippt auf das Panel) -->
+  <g clip-path="url(#pingcp7)">
+    <!-- seitlicher Schimmer oben (radialer „Sheen“ wie in der Referenz) -->
+    <path d="M 34 642 L 34 561.2 Q 238.5 529.44 443 561.2 L 443 642 Z" fill="#ffffff" opacity="0.020"/>
+    <!-- Glanzlicht oben-links -->
+    <ellipse cx="173.06" cy="556" rx="122.69999999999999" ry="10" fill="url(#pinghltl)"/>
+    <!-- Glanzlicht unten-rechts -->
+    <ellipse cx="353.02000000000004" cy="643" rx="81.80000000000001" ry="7" fill="url(#pinghlbr)"/>
+    <!-- Rim-Light -->
+    <rect x="91.26" y="559.5" width="188.14000000000001" height="1.6" rx="1" fill="url(#pingrim)" opacity="0.5"/>
+  </g>
+  <!-- Außenkante -->
+  <rect x="34" y="558" width="409" height="84" rx="16" fill="none" stroke="#ffffff" stroke-opacity="0.180" stroke-width="1"/>
+  <!-- Innenkante (inset ~3) -->
+  <rect x="37" y="561" width="403" height="78" rx="13" fill="none" stroke="#ffffff" stroke-opacity="0.042" stroke-width="1"/>
+  <!-- Gegenkante (dunkel, inset ~1) -->
+  <rect x="35" y="559" width="407" height="82" rx="15" fill="none" stroke="#000000" stroke-opacity="0.132" stroke-width="1"/><rect x="48" y="573" width="3" height="12" rx="1.5" fill="url(#pingacc-violet)"/><text x="58" y="583" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="11" font-weight="700" letter-spacing="1.6" opacity=".44" fill="#ffffff">iq-ping</text><circle cx="423" cy="579" r="10" fill="#7ba896" opacity=".16"/><circle cx="423" cy="579" r="4.6" fill="#7ba896"/><text x="50" y="610" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="17.5" font-weight="700" opacity=".93" fill="#ffffff">152 ms</text><text x="50" y="627" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="11" font-weight="500" opacity=".36" fill="#ffffff">Ø 147 · 141–152 · Jitter 7</text><rect x="50" y="632" width="377" height="3" rx="1.5" fill="#ffffff" fill-opacity=".07"/><rect x="50" y="632" width="320" height="3" rx="1.5" fill="#7ba896" opacity=".9"/><circle cx="370" cy="633.5" r="2.6" fill="#7ba896" opacity=".55"/>
+  <clipPath id="pingcp8"><rect x="457" y="558" width="409" height="84" rx="16"/></clipPath>
+  <!-- Glas-Füllung -->
+  <rect x="457" y="558" width="409" height="84" rx="16" fill="url(#pingglassV)"/>
+  <!-- Licht-Schichten (geclippt auf das Panel) -->
+  <g clip-path="url(#pingcp8)">
+    <!-- seitlicher Schimmer oben (radialer „Sheen“ wie in der Referenz) -->
+    <path d="M 457 642 L 457 561.2 Q 661.5 529.44 866 561.2 L 866 642 Z" fill="#ffffff" opacity="0.020"/>
+    <!-- Glanzlicht oben-links -->
+    <ellipse cx="596.06" cy="556" rx="122.69999999999999" ry="10" fill="url(#pinghltl)"/>
+    <!-- Glanzlicht unten-rechts -->
+    <ellipse cx="776.02" cy="643" rx="81.80000000000001" ry="7" fill="url(#pinghlbr)"/>
+    <!-- Rim-Light -->
+    <rect x="514.26" y="559.5" width="188.14000000000001" height="1.6" rx="1" fill="url(#pingrim)" opacity="0.5"/>
+  </g>
+  <!-- Außenkante -->
+  <rect x="457" y="558" width="409" height="84" rx="16" fill="none" stroke="#ffffff" stroke-opacity="0.180" stroke-width="1"/>
+  <!-- Innenkante (inset ~3) -->
+  <rect x="460" y="561" width="403" height="78" rx="13" fill="none" stroke="#ffffff" stroke-opacity="0.042" stroke-width="1"/>
+  <!-- Gegenkante (dunkel, inset ~1) -->
+  <rect x="458" y="559" width="407" height="82" rx="15" fill="none" stroke="#000000" stroke-opacity="0.132" stroke-width="1"/><rect x="471" y="573" width="3" height="12" rx="1.5" fill="url(#pingacc-violet)"/><text x="481" y="583" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="11" font-weight="700" letter-spacing="1.6" opacity=".44" fill="#ffffff">sende-rtt · echo ins leere</text><circle cx="846" cy="579" r="10" fill="#7ba896" opacity=".16"/><circle cx="846" cy="579" r="4.6" fill="#7ba896"/><text x="473" y="610" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="17.5" font-weight="700" opacity=".93" fill="#ffffff">214 ms</text><text x="473" y="627" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="11" font-weight="500" opacity=".36" fill="#ffffff">server-echo · senden 96 ms · keine antwort</text><rect x="473" y="632" width="377" height="3" rx="1.5" fill="#ffffff" fill-opacity=".07"/><rect x="473" y="632" width="320" height="3" rx="1.5" fill="#7ba896" opacity=".9"/><circle cx="793" cy="633.5" r="2.6" fill="#7ba896" opacity=".55"/><circle cx="42" cy="669" r="15" fill="#6f8bab" opacity=".14"/><circle cx="42" cy="669" r="6.5" fill="#6f8bab"/><text x="60" y="674" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="16" font-weight="700" letter-spacing="2" fill="url(#pinglab-cyan)">websites · weit weg</text><rect x="804" y="655" width="62" height="26" rx="13" fill="#ffffff" fill-opacity=".03" stroke="#ffffff" stroke-opacity=".09"/><text x="835" y="672" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="12.5" font-weight="600" letter-spacing="1" opacity=".30" fill="#ffffff" text-anchor="middle">2</text>
+  <clipPath id="pingcp9"><rect x="34" y="696" width="409" height="84" rx="16"/></clipPath>
+  <!-- Glas-Füllung -->
+  <rect x="34" y="696" width="409" height="84" rx="16" fill="url(#pingglassV)"/>
+  <!-- Licht-Schichten (geclippt auf das Panel) -->
+  <g clip-path="url(#pingcp9)">
+    <!-- seitlicher Schimmer oben (radialer „Sheen“ wie in der Referenz) -->
+    <path d="M 34 780 L 34 699.2 Q 238.5 667.44 443 699.2 L 443 780 Z" fill="#ffffff" opacity="0.020"/>
+    <!-- Glanzlicht oben-links -->
+    <ellipse cx="173.06" cy="694" rx="122.69999999999999" ry="10" fill="url(#pinghltl)"/>
+    <!-- Glanzlicht unten-rechts -->
+    <ellipse cx="353.02000000000004" cy="781" rx="81.80000000000001" ry="7" fill="url(#pinghlbr)"/>
+    <!-- Rim-Light -->
+    <rect x="91.26" y="697.5" width="188.14000000000001" height="1.6" rx="1" fill="url(#pingrim)" opacity="0.5"/>
+  </g>
+  <!-- Außenkante -->
+  <rect x="34" y="696" width="409" height="84" rx="16" fill="none" stroke="#ffffff" stroke-opacity="0.180" stroke-width="1"/>
+  <!-- Innenkante (inset ~3) -->
+  <rect x="37" y="699" width="403" height="78" rx="13" fill="none" stroke="#ffffff" stroke-opacity="0.042" stroke-width="1"/>
+  <!-- Gegenkante (dunkel, inset ~1) -->
+  <rect x="35" y="697" width="407" height="82" rx="15" fill="none" stroke="#000000" stroke-opacity="0.132" stroke-width="1"/><rect x="48" y="711" width="3" height="12" rx="1.5" fill="url(#pingacc-cyan)"/><text x="58" y="721" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="11" font-weight="700" letter-spacing="1.6" opacity=".44" fill="#ffffff">maxichen.de</text><circle cx="423" cy="717" r="10" fill="#7ba896" opacity=".16"/><circle cx="423" cy="717" r="4.6" fill="#7ba896"/><text x="50" y="748" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="17.5" font-weight="700" opacity=".93" fill="#ffffff">401 ms</text><text x="50" y="765" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="11" font-weight="500" opacity=".36" fill="#ffffff">http 200 · 3/3 ok · icmp 12 ms · weit weg</text><rect x="50" y="770" width="377" height="3" rx="1.5" fill="#ffffff" fill-opacity=".07"/><rect x="50" y="770" width="320" height="3" rx="1.5" fill="#7ba896" opacity=".9"/><circle cx="370" cy="771.5" r="2.6" fill="#7ba896" opacity=".55"/>
+  <clipPath id="pingcp10"><rect x="457" y="696" width="409" height="84" rx="16"/></clipPath>
+  <!-- Glas-Füllung -->
+  <rect x="457" y="696" width="409" height="84" rx="16" fill="url(#pingglassV)"/>
+  <!-- Licht-Schichten (geclippt auf das Panel) -->
+  <g clip-path="url(#pingcp10)">
+    <!-- seitlicher Schimmer oben (radialer „Sheen“ wie in der Referenz) -->
+    <path d="M 457 780 L 457 699.2 Q 661.5 667.44 866 699.2 L 866 780 Z" fill="#ffffff" opacity="0.020"/>
+    <!-- Glanzlicht oben-links -->
+    <ellipse cx="596.06" cy="694" rx="122.69999999999999" ry="10" fill="url(#pinghltl)"/>
+    <!-- Glanzlicht unten-rechts -->
+    <ellipse cx="776.02" cy="781" rx="81.80000000000001" ry="7" fill="url(#pinghlbr)"/>
+    <!-- Rim-Light -->
+    <rect x="514.26" y="697.5" width="188.14000000000001" height="1.6" rx="1" fill="url(#pingrim)" opacity="0.5"/>
+  </g>
+  <!-- Außenkante -->
+  <rect x="457" y="696" width="409" height="84" rx="16" fill="none" stroke="#ffffff" stroke-opacity="0.180" stroke-width="1"/>
+  <!-- Innenkante (inset ~3) -->
+  <rect x="460" y="699" width="403" height="78" rx="13" fill="none" stroke="#ffffff" stroke-opacity="0.042" stroke-width="1"/>
+  <!-- Gegenkante (dunkel, inset ~1) -->
+  <rect x="458" y="697" width="407" height="82" rx="15" fill="none" stroke="#000000" stroke-opacity="0.132" stroke-width="1"/><rect x="471" y="711" width="3" height="12" rx="1.5" fill="url(#pingacc-cyan)"/><text x="481" y="721" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="11" font-weight="700" letter-spacing="1.6" opacity=".44" fill="#ffffff">maxichen.gamebot.me</text><circle cx="846" cy="717" r="10" fill="#b8a06a" opacity=".16"/><circle cx="846" cy="717" r="4.6" fill="#b8a06a"/><text x="473" y="748" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="17.5" font-weight="700" opacity=".93" fill="#ffffff">679 ms</text><text x="473" y="765" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="11" font-weight="500" opacity=".36" fill="#ffffff">http 200 · 2/3 ok · icmp 14 ms · weit weg</text><rect x="473" y="770" width="377" height="3" rx="1.5" fill="#ffffff" fill-opacity=".07"/><rect x="473" y="770" width="192" height="3" rx="1.5" fill="#b8a06a" opacity=".9"/><circle cx="665" cy="771.5" r="2.6" fill="#b8a06a" opacity=".55"/><circle cx="42" cy="807" r="15" fill="#b89a6a" opacity=".14"/><circle cx="42" cy="807" r="6.5" fill="#b89a6a"/><text x="60" y="812" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="16" font-weight="700" letter-spacing="2" fill="url(#pinglab-amber)">verbindung · bricht sowieso</text><rect x="804" y="793" width="62" height="26" rx="13" fill="#ffffff" fill-opacity=".03" stroke="#ffffff" stroke-opacity=".09"/><text x="835" y="810" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="12.5" font-weight="600" letter-spacing="1" opacity=".30" fill="#ffffff" text-anchor="middle">5</text>
+  <clipPath id="pingcp11"><rect x="34" y="834" width="409" height="84" rx="16"/></clipPath>
+  <!-- Glas-Füllung -->
+  <rect x="34" y="834" width="409" height="84" rx="16" fill="url(#pingglassV)"/>
+  <!-- Licht-Schichten (geclippt auf das Panel) -->
+  <g clip-path="url(#pingcp11)">
+    <!-- seitlicher Schimmer oben (radialer „Sheen“ wie in der Referenz) -->
+    <path d="M 34 918 L 34 837.2 Q 238.5 805.44 443 837.2 L 443 918 Z" fill="#ffffff" opacity="0.020"/>
+    <!-- Glanzlicht oben-links -->
+    <ellipse cx="173.06" cy="832" rx="122.69999999999999" ry="10" fill="url(#pinghltl)"/>
+    <!-- Glanzlicht unten-rechts -->
+    <ellipse cx="353.02000000000004" cy="919" rx="81.80000000000001" ry="7" fill="url(#pinghlbr)"/>
+    <!-- Rim-Light -->
+    <rect x="91.26" y="835.5" width="188.14000000000001" height="1.6" rx="1" fill="url(#pingrim)" opacity="0.5"/>
+  </g>
+  <!-- Außenkante -->
+  <rect x="34" y="834" width="409" height="84" rx="16" fill="none" stroke="#ffffff" stroke-opacity="0.180" stroke-width="1"/>
+  <!-- Innenkante (inset ~3) -->
+  <rect x="37" y="837" width="403" height="78" rx="13" fill="none" stroke="#ffffff" stroke-opacity="0.042" stroke-width="1"/>
+  <!-- Gegenkante (dunkel, inset ~1) -->
+  <rect x="35" y="835" width="407" height="82" rx="15" fill="none" stroke="#000000" stroke-opacity="0.132" stroke-width="1"/><rect x="48" y="849" width="3" height="12" rx="1.5" fill="url(#pingacc-amber)"/><text x="58" y="859" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="11" font-weight="700" letter-spacing="1.6" opacity=".44" fill="#ffffff">dns</text><circle cx="423" cy="855" r="10" fill="#7ba896" opacity=".16"/><circle cx="423" cy="855" r="4.6" fill="#7ba896"/><text x="50" y="886" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="17.5" font-weight="700" opacity=".93" fill="#ffffff">14.2 ms</text><text x="50" y="903" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="11" font-weight="500" opacity=".36" fill="#ffffff">104.16.132.229</text><rect x="50" y="908" width="377" height="3" rx="1.5" fill="#ffffff" fill-opacity=".07"/><rect x="50" y="908" width="377" height="3" rx="1.5" fill="#7ba896" opacity=".9"/><circle cx="427" cy="909.5" r="2.6" fill="#7ba896" opacity=".55"/>
+  <clipPath id="pingcp12"><rect x="457" y="834" width="409" height="84" rx="16"/></clipPath>
+  <!-- Glas-Füllung -->
+  <rect x="457" y="834" width="409" height="84" rx="16" fill="url(#pingglassV)"/>
+  <!-- Licht-Schichten (geclippt auf das Panel) -->
+  <g clip-path="url(#pingcp12)">
+    <!-- seitlicher Schimmer oben (radialer „Sheen“ wie in der Referenz) -->
+    <path d="M 457 918 L 457 837.2 Q 661.5 805.44 866 837.2 L 866 918 Z" fill="#ffffff" opacity="0.020"/>
+    <!-- Glanzlicht oben-links -->
+    <ellipse cx="596.06" cy="832" rx="122.69999999999999" ry="10" fill="url(#pinghltl)"/>
+    <!-- Glanzlicht unten-rechts -->
+    <ellipse cx="776.02" cy="919" rx="81.80000000000001" ry="7" fill="url(#pinghlbr)"/>
+    <!-- Rim-Light -->
+    <rect x="514.26" y="835.5" width="188.14000000000001" height="1.6" rx="1" fill="url(#pingrim)" opacity="0.5"/>
+  </g>
+  <!-- Außenkante -->
+  <rect x="457" y="834" width="409" height="84" rx="16" fill="none" stroke="#ffffff" stroke-opacity="0.180" stroke-width="1"/>
+  <!-- Innenkante (inset ~3) -->
+  <rect x="460" y="837" width="403" height="78" rx="13" fill="none" stroke="#ffffff" stroke-opacity="0.042" stroke-width="1"/>
+  <!-- Gegenkante (dunkel, inset ~1) -->
+  <rect x="458" y="835" width="407" height="82" rx="15" fill="none" stroke="#000000" stroke-opacity="0.132" stroke-width="1"/><rect x="471" y="849" width="3" height="12" rx="1.5" fill="url(#pingacc-amber)"/><text x="481" y="859" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="11" font-weight="700" letter-spacing="1.6" opacity=".44" fill="#ffffff">tcp</text><circle cx="846" cy="855" r="10" fill="#7ba896" opacity=".16"/><circle cx="846" cy="855" r="4.6" fill="#7ba896"/><text x="473" y="886" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="17.5" font-weight="700" opacity=".93" fill="#ffffff">22.8 ms</text><text x="473" y="903" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="11" font-weight="500" opacity=".36" fill="#ffffff">cloudflare.com:443 · connect · irgendwie</text><rect x="473" y="908" width="377" height="3" rx="1.5" fill="#ffffff" fill-opacity=".07"/><rect x="473" y="908" width="377" height="3" rx="1.5" fill="#7ba896" opacity=".9"/><circle cx="850" cy="909.5" r="2.6" fill="#7ba896" opacity=".55"/>
+  <clipPath id="pingcp13"><rect x="34" y="930" width="409" height="84" rx="16"/></clipPath>
+  <!-- Glas-Füllung -->
+  <rect x="34" y="930" width="409" height="84" rx="16" fill="url(#pingglassV)"/>
+  <!-- Licht-Schichten (geclippt auf das Panel) -->
+  <g clip-path="url(#pingcp13)">
+    <!-- seitlicher Schimmer oben (radialer „Sheen“ wie in der Referenz) -->
+    <path d="M 34 1014 L 34 933.2 Q 238.5 901.44 443 933.2 L 443 1014 Z" fill="#ffffff" opacity="0.020"/>
+    <!-- Glanzlicht oben-links -->
+    <ellipse cx="173.06" cy="928" rx="122.69999999999999" ry="10" fill="url(#pinghltl)"/>
+    <!-- Glanzlicht unten-rechts -->
+    <ellipse cx="353.02000000000004" cy="1015" rx="81.80000000000001" ry="7" fill="url(#pinghlbr)"/>
+    <!-- Rim-Light -->
+    <rect x="91.26" y="931.5" width="188.14000000000001" height="1.6" rx="1" fill="url(#pingrim)" opacity="0.5"/>
+  </g>
+  <!-- Außenkante -->
+  <rect x="34" y="930" width="409" height="84" rx="16" fill="none" stroke="#ffffff" stroke-opacity="0.180" stroke-width="1"/>
+  <!-- Innenkante (inset ~3) -->
+  <rect x="37" y="933" width="403" height="78" rx="13" fill="none" stroke="#ffffff" stroke-opacity="0.042" stroke-width="1"/>
+  <!-- Gegenkante (dunkel, inset ~1) -->
+  <rect x="35" y="931" width="407" height="82" rx="15" fill="none" stroke="#000000" stroke-opacity="0.132" stroke-width="1"/><rect x="48" y="945" width="3" height="12" rx="1.5" fill="url(#pingacc-amber)"/><text x="58" y="955" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="11" font-weight="700" letter-spacing="1.6" opacity=".44" fill="#ffffff">tls</text><circle cx="423" cy="951" r="10" fill="#7ba896" opacity=".16"/><circle cx="423" cy="951" r="4.6" fill="#7ba896"/><text x="50" y="982" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="17.5" font-weight="700" opacity=".93" fill="#ffffff">40.0 ms</text><text x="50" y="999" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="11" font-weight="500" opacity=".36" fill="#ffffff">handshake · halbherzig</text><rect x="50" y="1004" width="377" height="3" rx="1.5" fill="#ffffff" fill-opacity=".07"/><rect x="50" y="1004" width="377" height="3" rx="1.5" fill="#7ba896" opacity=".9"/><circle cx="427" cy="1005.5" r="2.6" fill="#7ba896" opacity=".55"/>
+  <clipPath id="pingcp14"><rect x="457" y="930" width="409" height="84" rx="16"/></clipPath>
+  <!-- Glas-Füllung -->
+  <rect x="457" y="930" width="409" height="84" rx="16" fill="url(#pingglassV)"/>
+  <!-- Licht-Schichten (geclippt auf das Panel) -->
+  <g clip-path="url(#pingcp14)">
+    <!-- seitlicher Schimmer oben (radialer „Sheen“ wie in der Referenz) -->
+    <path d="M 457 1014 L 457 933.2 Q 661.5 901.44 866 933.2 L 866 1014 Z" fill="#ffffff" opacity="0.020"/>
+    <!-- Glanzlicht oben-links -->
+    <ellipse cx="596.06" cy="928" rx="122.69999999999999" ry="10" fill="url(#pinghltl)"/>
+    <!-- Glanzlicht unten-rechts -->
+    <ellipse cx="776.02" cy="1015" rx="81.80000000000001" ry="7" fill="url(#pinghlbr)"/>
+    <!-- Rim-Light -->
+    <rect x="514.26" y="931.5" width="188.14000000000001" height="1.6" rx="1" fill="url(#pingrim)" opacity="0.5"/>
+  </g>
+  <!-- Außenkante -->
+  <rect x="457" y="930" width="409" height="84" rx="16" fill="none" stroke="#ffffff" stroke-opacity="0.180" stroke-width="1"/>
+  <!-- Innenkante (inset ~3) -->
+  <rect x="460" y="933" width="403" height="78" rx="13" fill="none" stroke="#ffffff" stroke-opacity="0.042" stroke-width="1"/>
+  <!-- Gegenkante (dunkel, inset ~1) -->
+  <rect x="458" y="931" width="407" height="82" rx="15" fill="none" stroke="#000000" stroke-opacity="0.132" stroke-width="1"/><rect x="471" y="945" width="3" height="12" rx="1.5" fill="url(#pingacc-amber)"/><text x="481" y="955" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="11" font-weight="700" letter-spacing="1.6" opacity=".44" fill="#ffffff">ttfb</text><circle cx="846" cy="951" r="10" fill="#7ba896" opacity=".16"/><circle cx="846" cy="951" r="4.6" fill="#7ba896"/><text x="473" y="982" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="17.5" font-weight="700" opacity=".93" fill="#ffffff">88 ms</text><text x="473" y="999" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="11" font-weight="500" opacity=".36" fill="#ffffff">zeit bis 1. byte · spät</text><rect x="473" y="1004" width="377" height="3" rx="1.5" fill="#ffffff" fill-opacity=".07"/><rect x="473" y="1004" width="377" height="3" rx="1.5" fill="#7ba896" opacity=".9"/><circle cx="850" cy="1005.5" r="2.6" fill="#7ba896" opacity=".55"/>
+  <clipPath id="pingcp15"><rect x="34" y="1026" width="832" height="84" rx="16"/></clipPath>
+  <!-- Glas-Füllung -->
+  <rect x="34" y="1026" width="832" height="84" rx="16" fill="url(#pingglassV)"/>
+  <!-- Licht-Schichten (geclippt auf das Panel) -->
+  <g clip-path="url(#pingcp15)">
+    <!-- seitlicher Schimmer oben (radialer „Sheen“ wie in der Referenz) -->
+    <path d="M 34 1110 L 34 1029.2 Q 450 997.44 866 1029.2 L 866 1110 Z" fill="#ffffff" opacity="0.020"/>
+    <!-- Glanzlicht oben-links -->
+    <ellipse cx="316.88" cy="1024" rx="249.6" ry="10" fill="url(#pinghltl)"/>
+    <!-- Glanzlicht unten-rechts -->
+    <ellipse cx="682.96" cy="1111" rx="166.4" ry="7" fill="url(#pinghlbr)"/>
+    <!-- Rim-Light -->
+    <rect x="150.48000000000002" y="1027.5" width="382.72" height="1.6" rx="1" fill="url(#pingrim)" opacity="0.5"/>
+  </g>
+  <!-- Außenkante -->
+  <rect x="34" y="1026" width="832" height="84" rx="16" fill="none" stroke="#ffffff" stroke-opacity="0.180" stroke-width="1"/>
+  <!-- Innenkante (inset ~3) -->
+  <rect x="37" y="1029" width="826" height="78" rx="13" fill="none" stroke="#ffffff" stroke-opacity="0.042" stroke-width="1"/>
+  <!-- Gegenkante (dunkel, inset ~1) -->
+  <rect x="35" y="1027" width="830" height="82" rx="15" fill="none" stroke="#000000" stroke-opacity="0.132" stroke-width="1"/><rect x="48" y="1041" width="3" height="12" rx="1.5" fill="url(#pingacc-amber)"/><text x="58" y="1051" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="11" font-weight="700" letter-spacing="1.6" opacity=".44" fill="#ffffff">gesamt · irgendwie</text><circle cx="846" cy="1047" r="10" fill="#7ba896" opacity=".16"/><circle cx="846" cy="1047" r="4.6" fill="#7ba896"/><text x="50" y="1078" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="17.5" font-weight="700" opacity=".93" fill="#ffffff">143 ms</text><text x="50" y="1095" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="11" font-weight="500" opacity=".36" fill="#ffffff">http/2 · status 200</text><rect x="50" y="1100" width="800" height="3" rx="1.5" fill="#ffffff" fill-opacity=".07"/><rect x="50" y="1100" width="800" height="3" rx="1.5" fill="#7ba896" opacity=".9"/><circle cx="850" cy="1101.5" r="2.6" fill="#7ba896" opacity=".55"/><circle cx="42" cy="1137" r="15" fill="#b06a7a" opacity=".14"/><circle cx="42" cy="1137" r="6.5" fill="#b06a7a"/><text x="60" y="1142" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="16" font-weight="700" letter-spacing="2" fill="url(#pinglab-rose)">network · im regen</text><rect x="804" y="1123" width="62" height="26" rx="13" fill="#ffffff" fill-opacity=".03" stroke="#ffffff" stroke-opacity=".09"/><text x="835" y="1140" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="12.5" font-weight="600" letter-spacing="1" opacity=".30" fill="#ffffff" text-anchor="middle">5</text>
+  <clipPath id="pingcp16"><rect x="34" y="1164" width="409" height="84" rx="16"/></clipPath>
+  <!-- Glas-Füllung -->
+  <rect x="34" y="1164" width="409" height="84" rx="16" fill="url(#pingglassV)"/>
+  <!-- Licht-Schichten (geclippt auf das Panel) -->
+  <g clip-path="url(#pingcp16)">
+    <!-- seitlicher Schimmer oben (radialer „Sheen“ wie in der Referenz) -->
+    <path d="M 34 1248 L 34 1167.2 Q 238.5 1135.44 443 1167.2 L 443 1248 Z" fill="#ffffff" opacity="0.020"/>
+    <!-- Glanzlicht oben-links -->
+    <ellipse cx="173.06" cy="1162" rx="122.69999999999999" ry="10" fill="url(#pinghltl)"/>
+    <!-- Glanzlicht unten-rechts -->
+    <ellipse cx="353.02000000000004" cy="1249" rx="81.80000000000001" ry="7" fill="url(#pinghlbr)"/>
+    <!-- Rim-Light -->
+    <rect x="91.26" y="1165.5" width="188.14000000000001" height="1.6" rx="1" fill="url(#pingrim)" opacity="0.5"/>
+  </g>
+  <!-- Außenkante -->
+  <rect x="34" y="1164" width="409" height="84" rx="16" fill="none" stroke="#ffffff" stroke-opacity="0.180" stroke-width="1"/>
+  <!-- Innenkante (inset ~3) -->
+  <rect x="37" y="1167" width="403" height="78" rx="13" fill="none" stroke="#ffffff" stroke-opacity="0.042" stroke-width="1"/>
+  <!-- Gegenkante (dunkel, inset ~1) -->
+  <rect x="35" y="1165" width="407" height="82" rx="15" fill="none" stroke="#000000" stroke-opacity="0.132" stroke-width="1"/><rect x="48" y="1179" width="3" height="12" rx="1.5" fill="url(#pingacc-rose)"/><text x="58" y="1189" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="11" font-weight="700" letter-spacing="1.6" opacity=".44" fill="#ffffff">1.1.1.1</text><circle cx="423" cy="1185" r="10" fill="#7ba896" opacity=".16"/><circle cx="423" cy="1185" r="4.6" fill="#7ba896"/><text x="50" y="1216" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="17.5" font-weight="700" opacity=".93" fill="#ffffff">11.2 ms</text><text x="50" y="1233" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="11" font-weight="500" opacity=".36" fill="#ffffff">min 10 / max 14 · 0% verloren gegangen</text><rect x="50" y="1238" width="377" height="3" rx="1.5" fill="#ffffff" fill-opacity=".07"/><rect x="50" y="1238" width="377" height="3" rx="1.5" fill="#7ba896" opacity=".9"/><circle cx="427" cy="1239.5" r="2.6" fill="#7ba896" opacity=".55"/>
+  <clipPath id="pingcp17"><rect x="457" y="1164" width="409" height="84" rx="16"/></clipPath>
+  <!-- Glas-Füllung -->
+  <rect x="457" y="1164" width="409" height="84" rx="16" fill="url(#pingglassV)"/>
+  <!-- Licht-Schichten (geclippt auf das Panel) -->
+  <g clip-path="url(#pingcp17)">
+    <!-- seitlicher Schimmer oben (radialer „Sheen“ wie in der Referenz) -->
+    <path d="M 457 1248 L 457 1167.2 Q 661.5 1135.44 866 1167.2 L 866 1248 Z" fill="#ffffff" opacity="0.020"/>
+    <!-- Glanzlicht oben-links -->
+    <ellipse cx="596.06" cy="1162" rx="122.69999999999999" ry="10" fill="url(#pinghltl)"/>
+    <!-- Glanzlicht unten-rechts -->
+    <ellipse cx="776.02" cy="1249" rx="81.80000000000001" ry="7" fill="url(#pinghlbr)"/>
+    <!-- Rim-Light -->
+    <rect x="514.26" y="1165.5" width="188.14000000000001" height="1.6" rx="1" fill="url(#pingrim)" opacity="0.5"/>
+  </g>
+  <!-- Außenkante -->
+  <rect x="457" y="1164" width="409" height="84" rx="16" fill="none" stroke="#ffffff" stroke-opacity="0.180" stroke-width="1"/>
+  <!-- Innenkante (inset ~3) -->
+  <rect x="460" y="1167" width="403" height="78" rx="13" fill="none" stroke="#ffffff" stroke-opacity="0.042" stroke-width="1"/>
+  <!-- Gegenkante (dunkel, inset ~1) -->
+  <rect x="458" y="1165" width="407" height="82" rx="15" fill="none" stroke="#000000" stroke-opacity="0.132" stroke-width="1"/><rect x="471" y="1179" width="3" height="12" rx="1.5" fill="url(#pingacc-rose)"/><text x="481" y="1189" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="11" font-weight="700" letter-spacing="1.6" opacity=".44" fill="#ffffff">8.8.8.8</text><circle cx="846" cy="1185" r="10" fill="#7ba896" opacity=".16"/><circle cx="846" cy="1185" r="4.6" fill="#7ba896"/><text x="473" y="1216" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="17.5" font-weight="700" opacity=".93" fill="#ffffff">13.8 ms</text><text x="473" y="1233" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="11" font-weight="500" opacity=".36" fill="#ffffff">min 12 / max 18 · 0% verloren gegangen</text><rect x="473" y="1238" width="377" height="3" rx="1.5" fill="#ffffff" fill-opacity=".07"/><rect x="473" y="1238" width="377" height="3" rx="1.5" fill="#7ba896" opacity=".9"/><circle cx="850" cy="1239.5" r="2.6" fill="#7ba896" opacity=".55"/>
+  <clipPath id="pingcp18"><rect x="34" y="1260" width="409" height="84" rx="16"/></clipPath>
+  <!-- Glas-Füllung -->
+  <rect x="34" y="1260" width="409" height="84" rx="16" fill="url(#pingglassV)"/>
+  <!-- Licht-Schichten (geclippt auf das Panel) -->
+  <g clip-path="url(#pingcp18)">
+    <!-- seitlicher Schimmer oben (radialer „Sheen“ wie in der Referenz) -->
+    <path d="M 34 1344 L 34 1263.2 Q 238.5 1231.44 443 1263.2 L 443 1344 Z" fill="#ffffff" opacity="0.020"/>
+    <!-- Glanzlicht oben-links -->
+    <ellipse cx="173.06" cy="1258" rx="122.69999999999999" ry="10" fill="url(#pinghltl)"/>
+    <!-- Glanzlicht unten-rechts -->
+    <ellipse cx="353.02000000000004" cy="1345" rx="81.80000000000001" ry="7" fill="url(#pinghlbr)"/>
+    <!-- Rim-Light -->
+    <rect x="91.26" y="1261.5" width="188.14000000000001" height="1.6" rx="1" fill="url(#pingrim)" opacity="0.5"/>
+  </g>
+  <!-- Außenkante -->
+  <rect x="34" y="1260" width="409" height="84" rx="16" fill="none" stroke="#ffffff" stroke-opacity="0.180" stroke-width="1"/>
+  <!-- Innenkante (inset ~3) -->
+  <rect x="37" y="1263" width="403" height="78" rx="13" fill="none" stroke="#ffffff" stroke-opacity="0.042" stroke-width="1"/>
+  <!-- Gegenkante (dunkel, inset ~1) -->
+  <rect x="35" y="1261" width="407" height="82" rx="15" fill="none" stroke="#000000" stroke-opacity="0.132" stroke-width="1"/><rect x="48" y="1275" width="3" height="12" rx="1.5" fill="url(#pingacc-rose)"/><text x="58" y="1285" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="11" font-weight="700" letter-spacing="1.6" opacity=".44" fill="#ffffff">web.whatsapp.net</text><circle cx="423" cy="1281" r="10" fill="#7ba896" opacity=".16"/><circle cx="423" cy="1281" r="4.6" fill="#7ba896"/><text x="50" y="1312" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="17.5" font-weight="700" opacity=".93" fill="#ffffff">28.4 ms</text><text x="50" y="1329" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="11" font-weight="500" opacity=".36" fill="#ffffff">min 24 / max 35 · 0% verloren gegangen</text><rect x="50" y="1334" width="377" height="3" rx="1.5" fill="#ffffff" fill-opacity=".07"/><rect x="50" y="1334" width="377" height="3" rx="1.5" fill="#7ba896" opacity=".9"/><circle cx="427" cy="1335.5" r="2.6" fill="#7ba896" opacity=".55"/>
+  <clipPath id="pingcp19"><rect x="34" y="1356" width="832" height="84" rx="16"/></clipPath>
+  <!-- Glas-Füllung -->
+  <rect x="34" y="1356" width="832" height="84" rx="16" fill="url(#pingglassV)"/>
+  <!-- Licht-Schichten (geclippt auf das Panel) -->
+  <g clip-path="url(#pingcp19)">
+    <!-- seitlicher Schimmer oben (radialer „Sheen“ wie in der Referenz) -->
+    <path d="M 34 1440 L 34 1359.2 Q 450 1327.44 866 1359.2 L 866 1440 Z" fill="#ffffff" opacity="0.020"/>
+    <!-- Glanzlicht oben-links -->
+    <ellipse cx="316.88" cy="1354" rx="249.6" ry="10" fill="url(#pinghltl)"/>
+    <!-- Glanzlicht unten-rechts -->
+    <ellipse cx="682.96" cy="1441" rx="166.4" ry="7" fill="url(#pinghlbr)"/>
+    <!-- Rim-Light -->
+    <rect x="150.48000000000002" y="1357.5" width="382.72" height="1.6" rx="1" fill="url(#pingrim)" opacity="0.5"/>
+  </g>
+  <!-- Außenkante -->
+  <rect x="34" y="1356" width="832" height="84" rx="16" fill="none" stroke="#ffffff" stroke-opacity="0.180" stroke-width="1"/>
+  <!-- Innenkante (inset ~3) -->
+  <rect x="37" y="1359" width="826" height="78" rx="13" fill="none" stroke="#ffffff" stroke-opacity="0.042" stroke-width="1"/>
+  <!-- Gegenkante (dunkel, inset ~1) -->
+  <rect x="35" y="1357" width="830" height="82" rx="15" fill="none" stroke="#000000" stroke-opacity="0.132" stroke-width="1"/><rect x="48" y="1371" width="3" height="12" rx="1.5" fill="url(#pingacc-rose)"/><text x="58" y="1381" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="11" font-weight="700" letter-spacing="1.6" opacity=".44" fill="#ffffff">öffentliche ip · verborgen</text><circle cx="846" cy="1377" r="10" fill="#7d9ab0" opacity=".16"/><circle cx="846" cy="1377" r="4.6" fill="#7d9ab0"/><text x="50" y="1408" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="17.5" font-weight="700" opacity=".93" fill="#ffffff">verborgen.</text><text x="50" y="1425" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="11" font-weight="500" opacity=".36" fill="#ffffff">anti-leak · niemand geht dich was an</text><rect x="50" y="1430" width="800" height="3" rx="1.5" fill="#ffffff" fill-opacity=".07"/><rect x="50" y="1430" width="800" height="3" rx="1.5" fill="#7d9ab0" opacity=".9"/><circle cx="850" cy="1431.5" r="2.6" fill="#7d9ab0" opacity=".55"/>
+  <clipPath id="pingcp20"><rect x="34" y="1452" width="409" height="84" rx="16"/></clipPath>
+  <!-- Glas-Füllung -->
+  <rect x="34" y="1452" width="409" height="84" rx="16" fill="url(#pingglassV)"/>
+  <!-- Licht-Schichten (geclippt auf das Panel) -->
+  <g clip-path="url(#pingcp20)">
+    <!-- seitlicher Schimmer oben (radialer „Sheen“ wie in der Referenz) -->
+    <path d="M 34 1536 L 34 1455.2 Q 238.5 1423.44 443 1455.2 L 443 1536 Z" fill="#ffffff" opacity="0.020"/>
+    <!-- Glanzlicht oben-links -->
+    <ellipse cx="173.06" cy="1450" rx="122.69999999999999" ry="10" fill="url(#pinghltl)"/>
+    <!-- Glanzlicht unten-rechts -->
+    <ellipse cx="353.02000000000004" cy="1537" rx="81.80000000000001" ry="7" fill="url(#pinghlbr)"/>
+    <!-- Rim-Light -->
+    <rect x="91.26" y="1453.5" width="188.14000000000001" height="1.6" rx="1" fill="url(#pingrim)" opacity="0.5"/>
+  </g>
+  <!-- Außenkante -->
+  <rect x="34" y="1452" width="409" height="84" rx="16" fill="none" stroke="#ffffff" stroke-opacity="0.180" stroke-width="1"/>
+  <!-- Innenkante (inset ~3) -->
+  <rect x="37" y="1455" width="403" height="78" rx="13" fill="none" stroke="#ffffff" stroke-opacity="0.042" stroke-width="1"/>
+  <!-- Gegenkante (dunkel, inset ~1) -->
+  <rect x="35" y="1453" width="407" height="82" rx="15" fill="none" stroke="#000000" stroke-opacity="0.132" stroke-width="1"/><rect x="48" y="1467" width="3" height="12" rx="1.5" fill="url(#pingacc-rose)"/><text x="58" y="1477" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="11" font-weight="700" letter-spacing="1.6" opacity=".44" fill="#ffffff">lokale ip · verborgen</text><text x="50" y="1504" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="17.5" font-weight="700" opacity=".93" fill="#ffffff">verborgen.</text><text x="50" y="1521" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="11" font-weight="500" opacity=".36" fill="#ffffff">dein netz. dein geheimnis.</text><rect x="50" y="1526" width="377" height="3" rx="1.5" fill="#ffffff" fill-opacity=".07"/><circle cx="42" cy="1563" r="15" fill="#6f8bab" opacity=".14"/><circle cx="42" cy="1563" r="6.5" fill="#6f8bab"/><text x="60" y="1568" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="16" font-weight="700" letter-spacing="2" fill="url(#pinglab-cyan)">speed · zu müde</text><rect x="804" y="1549" width="62" height="26" rx="13" fill="#ffffff" fill-opacity=".03" stroke="#ffffff" stroke-opacity=".09"/><text x="835" y="1566" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="12.5" font-weight="600" letter-spacing="1" opacity=".30" fill="#ffffff" text-anchor="middle">2</text>
+  <clipPath id="pingcp21"><rect x="34" y="1590" width="409" height="84" rx="16"/></clipPath>
+  <!-- Glas-Füllung -->
+  <rect x="34" y="1590" width="409" height="84" rx="16" fill="url(#pingglassV)"/>
+  <!-- Licht-Schichten (geclippt auf das Panel) -->
+  <g clip-path="url(#pingcp21)">
+    <!-- seitlicher Schimmer oben (radialer „Sheen“ wie in der Referenz) -->
+    <path d="M 34 1674 L 34 1593.2 Q 238.5 1561.44 443 1593.2 L 443 1674 Z" fill="#ffffff" opacity="0.020"/>
+    <!-- Glanzlicht oben-links -->
+    <ellipse cx="173.06" cy="1588" rx="122.69999999999999" ry="10" fill="url(#pinghltl)"/>
+    <!-- Glanzlicht unten-rechts -->
+    <ellipse cx="353.02000000000004" cy="1675" rx="81.80000000000001" ry="7" fill="url(#pinghlbr)"/>
+    <!-- Rim-Light -->
+    <rect x="91.26" y="1591.5" width="188.14000000000001" height="1.6" rx="1" fill="url(#pingrim)" opacity="0.5"/>
+  </g>
+  <!-- Außenkante -->
+  <rect x="34" y="1590" width="409" height="84" rx="16" fill="none" stroke="#ffffff" stroke-opacity="0.180" stroke-width="1"/>
+  <!-- Innenkante (inset ~3) -->
+  <rect x="37" y="1593" width="403" height="78" rx="13" fill="none" stroke="#ffffff" stroke-opacity="0.042" stroke-width="1"/>
+  <!-- Gegenkante (dunkel, inset ~1) -->
+  <rect x="35" y="1591" width="407" height="82" rx="15" fill="none" stroke="#000000" stroke-opacity="0.132" stroke-width="1"/><rect x="48" y="1605" width="3" height="12" rx="1.5" fill="url(#pingacc-cyan)"/><text x="58" y="1615" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="11" font-weight="700" letter-spacing="1.6" opacity=".44" fill="#ffffff">download · zu müde</text><circle cx="423" cy="1611" r="10" fill="#7ba896" opacity=".16"/><circle cx="423" cy="1611" r="4.6" fill="#7ba896"/><text x="50" y="1642" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="17.5" font-weight="700" opacity=".93" fill="#ffffff">187.42 Mbit/s</text><text x="50" y="1659" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="11" font-weight="500" opacity=".36" fill="#ffffff">3.00 MB in 0.13 s</text><rect x="50" y="1664" width="377" height="3" rx="1.5" fill="#ffffff" fill-opacity=".07"/><rect x="50" y="1664" width="377" height="3" rx="1.5" fill="#7ba896" opacity=".9"/><circle cx="427" cy="1665.5" r="2.6" fill="#7ba896" opacity=".55"/>
+  <clipPath id="pingcp22"><rect x="457" y="1590" width="409" height="84" rx="16"/></clipPath>
+  <!-- Glas-Füllung -->
+  <rect x="457" y="1590" width="409" height="84" rx="16" fill="url(#pingglassV)"/>
+  <!-- Licht-Schichten (geclippt auf das Panel) -->
+  <g clip-path="url(#pingcp22)">
+    <!-- seitlicher Schimmer oben (radialer „Sheen“ wie in der Referenz) -->
+    <path d="M 457 1674 L 457 1593.2 Q 661.5 1561.44 866 1593.2 L 866 1674 Z" fill="#ffffff" opacity="0.020"/>
+    <!-- Glanzlicht oben-links -->
+    <ellipse cx="596.06" cy="1588" rx="122.69999999999999" ry="10" fill="url(#pinghltl)"/>
+    <!-- Glanzlicht unten-rechts -->
+    <ellipse cx="776.02" cy="1675" rx="81.80000000000001" ry="7" fill="url(#pinghlbr)"/>
+    <!-- Rim-Light -->
+    <rect x="514.26" y="1591.5" width="188.14000000000001" height="1.6" rx="1" fill="url(#pingrim)" opacity="0.5"/>
+  </g>
+  <!-- Außenkante -->
+  <rect x="457" y="1590" width="409" height="84" rx="16" fill="none" stroke="#ffffff" stroke-opacity="0.180" stroke-width="1"/>
+  <!-- Innenkante (inset ~3) -->
+  <rect x="460" y="1593" width="403" height="78" rx="13" fill="none" stroke="#ffffff" stroke-opacity="0.042" stroke-width="1"/>
+  <!-- Gegenkante (dunkel, inset ~1) -->
+  <rect x="458" y="1591" width="407" height="82" rx="15" fill="none" stroke="#000000" stroke-opacity="0.132" stroke-width="1"/><rect x="471" y="1605" width="3" height="12" rx="1.5" fill="url(#pingacc-cyan)"/><text x="481" y="1615" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="11" font-weight="700" letter-spacing="1.6" opacity=".44" fill="#ffffff">upload · noch müder</text><circle cx="846" cy="1611" r="10" fill="#7ba896" opacity=".16"/><circle cx="846" cy="1611" r="4.6" fill="#7ba896"/><text x="473" y="1642" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="17.5" font-weight="700" opacity=".93" fill="#ffffff">38.11 Mbit/s</text><text x="473" y="1659" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="11" font-weight="500" opacity=".36" fill="#ffffff">1.00 MB in 0.22 s</text><rect x="473" y="1664" width="377" height="3" rx="1.5" fill="#ffffff" fill-opacity=".07"/><rect x="473" y="1664" width="377" height="3" rx="1.5" fill="#7ba896" opacity=".9"/><circle cx="850" cy="1665.5" r="2.6" fill="#7ba896" opacity=".55"/><circle cx="42" cy="1701" r="15" fill="#8d7bab" opacity=".14"/><circle cx="42" cy="1701" r="6.5" fill="#8d7bab"/><text x="60" y="1706" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="16" font-weight="700" letter-spacing="2" fill="url(#pinglab-violet)">system · läuft leider weiter</text><rect x="804" y="1687" width="62" height="26" rx="13" fill="#ffffff" fill-opacity=".03" stroke="#ffffff" stroke-opacity=".09"/><text x="835" y="1704" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="12.5" font-weight="600" letter-spacing="1" opacity=".30" fill="#ffffff" text-anchor="middle">5</text>
+  <clipPath id="pingcp23"><rect x="34" y="1728" width="409" height="84" rx="16"/></clipPath>
+  <!-- Glas-Füllung -->
+  <rect x="34" y="1728" width="409" height="84" rx="16" fill="url(#pingglassV)"/>
+  <!-- Licht-Schichten (geclippt auf das Panel) -->
+  <g clip-path="url(#pingcp23)">
+    <!-- seitlicher Schimmer oben (radialer „Sheen“ wie in der Referenz) -->
+    <path d="M 34 1812 L 34 1731.2 Q 238.5 1699.44 443 1731.2 L 443 1812 Z" fill="#ffffff" opacity="0.020"/>
+    <!-- Glanzlicht oben-links -->
+    <ellipse cx="173.06" cy="1726" rx="122.69999999999999" ry="10" fill="url(#pinghltl)"/>
+    <!-- Glanzlicht unten-rechts -->
+    <ellipse cx="353.02000000000004" cy="1813" rx="81.80000000000001" ry="7" fill="url(#pinghlbr)"/>
+    <!-- Rim-Light -->
+    <rect x="91.26" y="1729.5" width="188.14000000000001" height="1.6" rx="1" fill="url(#pingrim)" opacity="0.5"/>
+  </g>
+  <!-- Außenkante -->
+  <rect x="34" y="1728" width="409" height="84" rx="16" fill="none" stroke="#ffffff" stroke-opacity="0.180" stroke-width="1"/>
+  <!-- Innenkante (inset ~3) -->
+  <rect x="37" y="1731" width="403" height="78" rx="13" fill="none" stroke="#ffffff" stroke-opacity="0.042" stroke-width="1"/>
+  <!-- Gegenkante (dunkel, inset ~1) -->
+  <rect x="35" y="1729" width="407" height="82" rx="15" fill="none" stroke="#000000" stroke-opacity="0.132" stroke-width="1"/><rect x="48" y="1743" width="3" height="12" rx="1.5" fill="url(#pingacc-violet)"/><text x="58" y="1753" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="11" font-weight="700" letter-spacing="1.6" opacity=".44" fill="#ffffff">uptime · wacht seit</text><text x="50" y="1780" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="17.5" font-weight="700" opacity=".93" fill="#ffffff">7h 12m</text><text x="50" y="1797" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="11" font-weight="500" opacity=".36" fill="#ffffff">dem letzten aufwachen. leider</text><rect x="50" y="1802" width="377" height="3" rx="1.5" fill="#ffffff" fill-opacity=".07"/>
+  <clipPath id="pingcp24"><rect x="457" y="1728" width="409" height="84" rx="16"/></clipPath>
+  <!-- Glas-Füllung -->
+  <rect x="457" y="1728" width="409" height="84" rx="16" fill="url(#pingglassV)"/>
+  <!-- Licht-Schichten (geclippt auf das Panel) -->
+  <g clip-path="url(#pingcp24)">
+    <!-- seitlicher Schimmer oben (radialer „Sheen“ wie in der Referenz) -->
+    <path d="M 457 1812 L 457 1731.2 Q 661.5 1699.44 866 1731.2 L 866 1812 Z" fill="#ffffff" opacity="0.020"/>
+    <!-- Glanzlicht oben-links -->
+    <ellipse cx="596.06" cy="1726" rx="122.69999999999999" ry="10" fill="url(#pinghltl)"/>
+    <!-- Glanzlicht unten-rechts -->
+    <ellipse cx="776.02" cy="1813" rx="81.80000000000001" ry="7" fill="url(#pinghlbr)"/>
+    <!-- Rim-Light -->
+    <rect x="514.26" y="1729.5" width="188.14000000000001" height="1.6" rx="1" fill="url(#pingrim)" opacity="0.5"/>
+  </g>
+  <!-- Außenkante -->
+  <rect x="457" y="1728" width="409" height="84" rx="16" fill="none" stroke="#ffffff" stroke-opacity="0.180" stroke-width="1"/>
+  <!-- Innenkante (inset ~3) -->
+  <rect x="460" y="1731" width="403" height="78" rx="13" fill="none" stroke="#ffffff" stroke-opacity="0.042" stroke-width="1"/>
+  <!-- Gegenkante (dunkel, inset ~1) -->
+  <rect x="458" y="1729" width="407" height="82" rx="15" fill="none" stroke="#000000" stroke-opacity="0.132" stroke-width="1"/><rect x="471" y="1743" width="3" height="12" rx="1.5" fill="url(#pingacc-violet)"/><text x="481" y="1753" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="11" font-weight="700" letter-spacing="1.6" opacity=".44" fill="#ffffff">ram · schwer</text><circle cx="846" cy="1749" r="10" fill="#7ba896" opacity=".16"/><circle cx="846" cy="1749" r="4.6" fill="#7ba896"/><text x="473" y="1780" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="17.5" font-weight="700" opacity=".93" fill="#ffffff">218 MB</text><text x="473" y="1797" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="11" font-weight="500" opacity=".36" fill="#ffffff">heap 96.0 MB · 2% · drückt</text><rect x="473" y="1802" width="377" height="3" rx="1.5" fill="#ffffff" fill-opacity=".07"/><rect x="473" y="1802" width="377" height="3" rx="1.5" fill="#7ba896" opacity=".9"/><circle cx="850" cy="1803.5" r="2.6" fill="#7ba896" opacity=".55"/>
+  <clipPath id="pingcp25"><rect x="34" y="1824" width="409" height="84" rx="16"/></clipPath>
+  <!-- Glas-Füllung -->
+  <rect x="34" y="1824" width="409" height="84" rx="16" fill="url(#pingglassV)"/>
+  <!-- Licht-Schichten (geclippt auf das Panel) -->
+  <g clip-path="url(#pingcp25)">
+    <!-- seitlicher Schimmer oben (radialer „Sheen“ wie in der Referenz) -->
+    <path d="M 34 1908 L 34 1827.2 Q 238.5 1795.44 443 1827.2 L 443 1908 Z" fill="#ffffff" opacity="0.020"/>
+    <!-- Glanzlicht oben-links -->
+    <ellipse cx="173.06" cy="1822" rx="122.69999999999999" ry="10" fill="url(#pinghltl)"/>
+    <!-- Glanzlicht unten-rechts -->
+    <ellipse cx="353.02000000000004" cy="1909" rx="81.80000000000001" ry="7" fill="url(#pinghlbr)"/>
+    <!-- Rim-Light -->
+    <rect x="91.26" y="1825.5" width="188.14000000000001" height="1.6" rx="1" fill="url(#pingrim)" opacity="0.5"/>
+  </g>
+  <!-- Außenkante -->
+  <rect x="34" y="1824" width="409" height="84" rx="16" fill="none" stroke="#ffffff" stroke-opacity="0.180" stroke-width="1"/>
+  <!-- Innenkante (inset ~3) -->
+  <rect x="37" y="1827" width="403" height="78" rx="13" fill="none" stroke="#ffffff" stroke-opacity="0.042" stroke-width="1"/>
+  <!-- Gegenkante (dunkel, inset ~1) -->
+  <rect x="35" y="1825" width="407" height="82" rx="15" fill="none" stroke="#000000" stroke-opacity="0.132" stroke-width="1"/><rect x="48" y="1839" width="3" height="12" rx="1.5" fill="url(#pingacc-violet)"/><text x="58" y="1849" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="11" font-weight="700" letter-spacing="1.6" opacity=".44" fill="#ffffff">cpu · last. immer.</text><circle cx="423" cy="1845" r="10" fill="#7ba896" opacity=".16"/><circle cx="423" cy="1845" r="4.6" fill="#7ba896"/><text x="50" y="1876" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="17.5" font-weight="700" opacity=".93" fill="#ffffff">Load 0.82</text><text x="50" y="1893" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="11" font-weight="500" opacity=".36" fill="#ffffff">8 Kerne · 0.10/Kern</text><rect x="50" y="1898" width="377" height="3" rx="1.5" fill="#ffffff" fill-opacity=".07"/><rect x="50" y="1898" width="377" height="3" rx="1.5" fill="#7ba896" opacity=".9"/><circle cx="427" cy="1899.5" r="2.6" fill="#7ba896" opacity=".55"/>
+  <clipPath id="pingcp26"><rect x="457" y="1824" width="409" height="84" rx="16"/></clipPath>
+  <!-- Glas-Füllung -->
+  <rect x="457" y="1824" width="409" height="84" rx="16" fill="url(#pingglassV)"/>
+  <!-- Licht-Schichten (geclippt auf das Panel) -->
+  <g clip-path="url(#pingcp26)">
+    <!-- seitlicher Schimmer oben (radialer „Sheen“ wie in der Referenz) -->
+    <path d="M 457 1908 L 457 1827.2 Q 661.5 1795.44 866 1827.2 L 866 1908 Z" fill="#ffffff" opacity="0.020"/>
+    <!-- Glanzlicht oben-links -->
+    <ellipse cx="596.06" cy="1822" rx="122.69999999999999" ry="10" fill="url(#pinghltl)"/>
+    <!-- Glanzlicht unten-rechts -->
+    <ellipse cx="776.02" cy="1909" rx="81.80000000000001" ry="7" fill="url(#pinghlbr)"/>
+    <!-- Rim-Light -->
+    <rect x="514.26" y="1825.5" width="188.14000000000001" height="1.6" rx="1" fill="url(#pingrim)" opacity="0.5"/>
+  </g>
+  <!-- Außenkante -->
+  <rect x="457" y="1824" width="409" height="84" rx="16" fill="none" stroke="#ffffff" stroke-opacity="0.180" stroke-width="1"/>
+  <!-- Innenkante (inset ~3) -->
+  <rect x="460" y="1827" width="403" height="78" rx="13" fill="none" stroke="#ffffff" stroke-opacity="0.042" stroke-width="1"/>
+  <!-- Gegenkante (dunkel, inset ~1) -->
+  <rect x="458" y="1825" width="407" height="82" rx="15" fill="none" stroke="#000000" stroke-opacity="0.132" stroke-width="1"/><rect x="471" y="1839" width="3" height="12" rx="1.5" fill="url(#pingacc-violet)"/><text x="481" y="1849" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="11" font-weight="700" letter-spacing="1.6" opacity=".44" fill="#ffffff">node · gefangen in</text><text x="473" y="1876" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="17.5" font-weight="700" opacity=".93" fill="#ffffff">v24.4.1</text><text x="473" y="1893" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="11" font-weight="500" opacity=".36" fill="#ffffff">win32 · x64</text><rect x="473" y="1898" width="377" height="3" rx="1.5" fill="#ffffff" fill-opacity=".07"/>
+  <clipPath id="pingcp27"><rect x="34" y="1920" width="832" height="84" rx="16"/></clipPath>
+  <!-- Glas-Füllung -->
+  <rect x="34" y="1920" width="832" height="84" rx="16" fill="url(#pingglassV)"/>
+  <!-- Licht-Schichten (geclippt auf das Panel) -->
+  <g clip-path="url(#pingcp27)">
+    <!-- seitlicher Schimmer oben (radialer „Sheen“ wie in der Referenz) -->
+    <path d="M 34 2004 L 34 1923.2 Q 450 1891.44 866 1923.2 L 866 2004 Z" fill="#ffffff" opacity="0.020"/>
+    <!-- Glanzlicht oben-links -->
+    <ellipse cx="316.88" cy="1918" rx="249.6" ry="10" fill="url(#pinghltl)"/>
+    <!-- Glanzlicht unten-rechts -->
+    <ellipse cx="682.96" cy="2005" rx="166.4" ry="7" fill="url(#pinghlbr)"/>
+    <!-- Rim-Light -->
+    <rect x="150.48000000000002" y="1921.5" width="382.72" height="1.6" rx="1" fill="url(#pingrim)" opacity="0.5"/>
+  </g>
+  <!-- Außenkante -->
+  <rect x="34" y="1920" width="832" height="84" rx="16" fill="none" stroke="#ffffff" stroke-opacity="0.180" stroke-width="1"/>
+  <!-- Innenkante (inset ~3) -->
+  <rect x="37" y="1923" width="826" height="78" rx="13" fill="none" stroke="#ffffff" stroke-opacity="0.042" stroke-width="1"/>
+  <!-- Gegenkante (dunkel, inset ~1) -->
+  <rect x="35" y="1921" width="830" height="82" rx="15" fill="none" stroke="#000000" stroke-opacity="0.132" stroke-width="1"/><rect x="48" y="1935" width="3" height="12" rx="1.5" fill="url(#pingacc-violet)"/><text x="58" y="1945" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="11" font-weight="700" letter-spacing="1.6" opacity=".44" fill="#ffffff">datenbank · erinnert sich an alles</text><circle cx="846" cy="1941" r="10" fill="#7ba896" opacity=".16"/><circle cx="846" cy="1941" r="4.6" fill="#7ba896"/><text x="50" y="1972" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="17.5" font-weight="700" opacity=".93" fill="#ffffff">143 Nutzer · 23 Gruppen · 0 Bans</text><text x="50" y="1989" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="11" font-weight="500" opacity=".36" fill="#ffffff">leider</text><rect x="50" y="1994" width="800" height="3" rx="1.5" fill="#ffffff" fill-opacity=".07"/><rect x="50" y="1994" width="800" height="3" rx="1.5" fill="#7ba896" opacity=".9"/><circle cx="850" cy="1995.5" r="2.6" fill="#7ba896" opacity=".55"/><circle cx="42" cy="2031" r="15" fill="#b89a6a" opacity=".14"/><circle cx="42" cy="2031" r="6.5" fill="#b89a6a"/><text x="60" y="2036" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="16" font-weight="700" letter-spacing="2" fill="url(#pinglab-amber)">schmerzen</text><rect x="804" y="2017" width="62" height="26" rx="13" fill="#ffffff" fill-opacity=".03" stroke="#ffffff" stroke-opacity=".09"/><text x="835" y="2034" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="12.5" font-weight="600" letter-spacing="1" opacity=".30" fill="#ffffff" text-anchor="middle">2</text>
+  <clipPath id="pingcp28"><rect x="34" y="2058" width="832" height="46" rx="14"/></clipPath>
+  <!-- Glas-Füllung -->
+  <rect x="34" y="2058" width="832" height="46" rx="14" fill="url(#pingglassV)"/>
+  <!-- Licht-Schichten (geclippt auf das Panel) -->
+  <g clip-path="url(#pingcp28)">
+    <!-- seitlicher Schimmer oben (radialer „Sheen“ wie in der Referenz) -->
+    <path d="M 34 2104 L 34 2060.8 Q 450 2042.36 866 2060.8 L 866 2104 Z" fill="#ffffff" opacity="0.020"/>
+    <!-- Glanzlicht oben-links -->
+    <ellipse cx="316.88" cy="2056" rx="249.6" ry="6.44" fill="url(#pinghltl)"/>
+    <!-- Glanzlicht unten-rechts -->
+    <ellipse cx="682.96" cy="2105" rx="166.4" ry="4.14" fill="url(#pinghlbr)"/>
+    <!-- Rim-Light -->
+    <rect x="150.48000000000002" y="2059.5" width="382.72" height="1.6" rx="1" fill="url(#pingrim)" opacity="0.5"/>
+  </g>
+  <!-- Außenkante -->
+  <rect x="34" y="2058" width="832" height="46" rx="14" fill="none" stroke="#ffffff" stroke-opacity="0.180" stroke-width="1"/>
+  <!-- Innenkante (inset ~3) -->
+  <rect x="37" y="2061" width="826" height="40" rx="11" fill="none" stroke="#ffffff" stroke-opacity="0.042" stroke-width="1"/>
+  <!-- Gegenkante (dunkel, inset ~1) -->
+  <rect x="35" y="2059" width="830" height="44" rx="13" fill="none" stroke="#000000" stroke-opacity="0.132" stroke-width="1"/><circle cx="58" cy="2081" r="10" fill="#b0836a" opacity=".16"/><circle cx="58" cy="2081" r="4.6" fill="#b0836a"/><text x="78" y="2086" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="13" font-weight="600" opacity=".72" fill="#ffffff">maxichen.gamebot.me — 1/3 Versuche fehlgeschlagen (timeout)</text>
+  <clipPath id="pingcp29"><rect x="34" y="2114" width="832" height="46" rx="14"/></clipPath>
+  <!-- Glas-Füllung -->
+  <rect x="34" y="2114" width="832" height="46" rx="14" fill="url(#pingglassV)"/>
+  <!-- Licht-Schichten (geclippt auf das Panel) -->
+  <g clip-path="url(#pingcp29)">
+    <!-- seitlicher Schimmer oben (radialer „Sheen“ wie in der Referenz) -->
+    <path d="M 34 2160 L 34 2116.8 Q 450 2098.36 866 2116.8 L 866 2160 Z" fill="#ffffff" opacity="0.020"/>
+    <!-- Glanzlicht oben-links -->
+    <ellipse cx="316.88" cy="2112" rx="249.6" ry="6.44" fill="url(#pinghltl)"/>
+    <!-- Glanzlicht unten-rechts -->
+    <ellipse cx="682.96" cy="2161" rx="166.4" ry="4.14" fill="url(#pinghlbr)"/>
+    <!-- Rim-Light -->
+    <rect x="150.48000000000002" y="2115.5" width="382.72" height="1.6" rx="1" fill="url(#pingrim)" opacity="0.5"/>
+  </g>
+  <!-- Außenkante -->
+  <rect x="34" y="2114" width="832" height="46" rx="14" fill="none" stroke="#ffffff" stroke-opacity="0.180" stroke-width="1"/>
+  <!-- Innenkante (inset ~3) -->
+  <rect x="37" y="2117" width="826" height="40" rx="11" fill="none" stroke="#ffffff" stroke-opacity="0.042" stroke-width="1"/>
+  <!-- Gegenkante (dunkel, inset ~1) -->
+  <rect x="35" y="2115" width="830" height="44" rx="13" fill="none" stroke="#000000" stroke-opacity="0.132" stroke-width="1"/><circle cx="58" cy="2137" r="10" fill="#b8a06a" opacity=".16"/><circle cx="58" cy="2137" r="4.6" fill="#b8a06a"/><text x="78" y="2142" font-family="'SF Mono','JetBrains Mono','Cascadia Code',Consolas,'DejaVu Sans Mono','Courier New',monospace" font-size="13" font-weight="600" opacity=".72" fill="#ffffff">RAM-Auslastung hoch (22% Heap)</text><text x="450" y="2178" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="11.5" font-weight="600" letter-spacing="2" opacity=".16" fill="#ffffff" text-anchor="middle">niemand hat gefragt. trotzdem gemessen.</text><text x="450" y="2198" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="11.5" font-weight="600" letter-spacing="2" opacity=".16" fill="#ffffff" text-anchor="middle">hellokitty baby maxi by maxichen · allein im regen</text><text x="848" y="2200" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="17" font-weight="800" letter-spacing="1" fill="#f472b6" text-anchor="end">by maxichen</text><path d="M 748 2206 q 26 6 52 -2 q 26 -8 48 2" fill="none" stroke="#f472b6" stroke-width="1.6" stroke-linecap="round" opacity=".8"/><text x="848" y="2216" font-family="'Segoe UI','DejaVu Sans','Helvetica Neue',Arial,sans-serif" font-size="9.5" font-weight="600" letter-spacing=".6" opacity=".55" fill="#f472b6" text-anchor="end">© kopieren verboten · es tut weh · hellokitty baby maxi</text></svg>

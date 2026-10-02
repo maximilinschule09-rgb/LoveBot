@@ -1,5 +1,5 @@
 /* ============================================================================
- * LoveBot — Zusatz-Features
+ * HelloKitty Baby Maxi 💔 — Zusatz-Features
  * AFK-System (mit Auto-Comeback), Auto-Welcome/Goodbye/Kick/Promote/Demote,
  * System-Statistik, Setup, Ban/Unban/Banlist.
  * Alle Daten werden in Database/Database.json (database.json) gesichert.
@@ -395,7 +395,7 @@ export async function sendGroupAutomod(sock, groupJid, opts = {}) {
     text =
       '> 💜 *WILLKOMMEN IN DER GRUPPE* 💜\n\n' +
       `@${cleanId(target.jid || target.lid)} ist jetzt Teil von *${groupSubject}*! 🎉\n\n` +
-      'Ich bin *LoveBot* 🤖 — euer digitaler Helfer.\n' +
+      'Ich bin *HelloKitty Baby Maxi 💔* 🤖 — euer digitaler Helfer.\n' +
       '• Nutze *$me* für dein Profil\n' +
       '• Nutze *$help* oder *$menu* für alle Befehle\n' +
       '• *$verify accept* & *$dsgvo accept* zum Freischalten\n' +
@@ -462,7 +462,7 @@ export function buildSetupDescription(db, groupId, setupAtIso, actorName) {
   const g = db.groups?.[groupId];
   const subject = (g && g.subject) || `Gruppe ${groupId}`;
   return [
-    `🖤 *LoveBot* ist in @${subject} aktiv 🤖`,
+    `🖤 *HelloKitty Baby Maxi 💔* ist in @${subject} aktiv 🤖`,
     'Nutze *$dsgvo* / *$verify* für weitere Infos.',
     '',
     `⏱️ *Setup gesetzt:* ${formatDateTime(setupAtIso)}`,

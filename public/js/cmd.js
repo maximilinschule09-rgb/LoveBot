@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════
-   LoveBot — Befehle-Seite · Liquid Glass
+   HelloKitty Baby Maxi 💔 — Befehle-Seite · Liquid Glass
    Suche · Kategorie-Tabs · Syntax-Highlighting · Copy · Rechte-Badges
    Jede Karte: BEFEHL · BEISPIEL (konkret nutzbar) · ERKLÄRUNG
    ═══════════════════════════════════════════════════════════════════ */
@@ -80,7 +80,7 @@ function beispiel(c) {
       continue;
     }
     if (tok.startsWith('@')) { out.push('@Leni'); continue; }
-    if (tok === 'owner/repo') { out.push('maximilinschule09-rgb/LoveBot'); continue; }
+    if (tok === 'owner/repo') { out.push('maximilinschule09-rgb/HelloKitty Baby Maxi 💔'); continue; }
     /* Datums-Formatvorlage „TT.MM.[JJJJ]" → echtes Datum */
     if (/^TT\.MM/i.test(tok)) { out.push('14.02.2010'); continue; }
     /* freie Auswahl ohne Klammern („on|off", „an|aus", „stein|papier") → erste Wahl */
@@ -158,7 +158,7 @@ function draw(list, aliasCat) {
   const grid = document.getElementById('cmdFullGrid');
   const realCats = list.filter((c) => !isAliasCat(c));
   const total = realCats.reduce((a, c) => a + c.cmds.length, 0);
-  document.getElementById('cmdCount').textContent = '💜 ' + total + plural(total, ' Befehl', ' Befehle') + ' in ' +
+  document.getElementById('cmdCount').textContent = ' ' + total + plural(total, ' Befehl', ' Befehle') + ' in ' +
     realCats.length + plural(realCats.length, ' Kategorie', ' Kategorien') +
     (aliasCat ? ' · plus ' + aliasCat.cmds.length + ' Aliase' : '');
   document.getElementById('noResults').style.display = (total || aliasCat) ? 'none' : 'block';
@@ -172,7 +172,7 @@ function drawTabs() {
   const cats = ALL.filter((c) => !isAliasCat(c));
   const total = cats.reduce((a, c) => a + c.cmds.length, 0);
   bar.innerHTML =
-    '<button class="cat-tab' + (activeCat === 'alle' ? ' active' : '') + '" data-cat="alle">✨ Alle <span class="n">' + total + '</span></button>' +
+    '<button class="cat-tab' + (activeCat === 'alle' ? ' active' : '') + '" data-cat="alle">🌧️ Alle <span class="n">' + total + '</span></button>' +
     cats.map((cat) =>
       '<button class="cat-tab' + (activeCat === cat.title ? ' active' : '') + '" data-cat="' + esc(cat.title) + '">' +
       cat.emoji + ' ' + esc(cat.title.toLowerCase()) + ' <span class="n">' + cat.cmds.length + '</span></button>'
@@ -237,7 +237,7 @@ function bindEvents() {
     if (!row) return;
     const cmd = row.dataset.cmd;
     copyText(cmd).then(() => {
-      toast(cmd + ' kopiert 💜');
+      toast(cmd + ' kopiert ');
       if (copyBtn) {
         copyBtn.textContent = '✓'; copyBtn.classList.add('done');
         setTimeout(() => { copyBtn.textContent = '⧉'; copyBtn.classList.remove('done'); }, 1200);
@@ -250,7 +250,7 @@ function bindEvents() {
 (async function () {
   let data = null;
   try { data = await api('/api/commands'); } catch (e) { /* statisch */ }
-  const cats = (data && data.commands) || window.LOVEBOT_COMMANDS || [];
+  const cats = (data && data.commands) || window.BABYMAXI_COMMANDS || [];
   if (!cats.length) {
     document.getElementById('noResults').style.display = 'block';
     return;

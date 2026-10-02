@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════
-   💖  L O V E P L U S  —  Erweiterungsmodul für LoveBot
+   💖  L O V E P L U S  —  Erweiterungsmodul für HelloKitty Baby Maxi 💔
    ───────────────────────────────────────────────────────────────────────
    Beziehungssystem · Haustiere · Economy 2.0 (Shop/Geschenke) ·
    Achievements · Streaks · Liebesbriefe · Mini-Games
@@ -754,7 +754,7 @@ cmd('coupletop lovetop', async (ctx, store) => {
     (medals[i] || (i + 1) + '.') + ' ' + (c.n1 || '?') + ' 💞 ' + (c.n2 || '?') + '\n     💗 ' + (c.loveXp || 0).toLocaleString('de-DE') + ' Love-XP · ⭐ Lv ' + coupleLevel(c.loveXp || 0) + ' · 🔥 ' + (c.streak || 0) + 'd'
   ).join('\n');
 
-  await send('> 🏆 *LOVE BOT — COUPLE TOP*\n\n' + rows + '\n\n' + LINE + '\n💡 Täglicher Couple-Bonus: *' + ctx.pref + 'lovebonus*');
+  await send('> 🏆 *HELLOKITTY BABY MAXI — COUPLE TOP*\n\n' + rows + '\n\n' + LINE + '\n💡 Täglicher Couple-Bonus: *' + ctx.pref + 'lovebonus*');
   return true;
 });
 

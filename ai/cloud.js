@@ -1,9 +1,9 @@
 /* ═══════════════════════════════════════════════════════════════════
-   ☁️ LoveBot 7.1 — CLOUD-KI (ai/cloud.js)
+   ☁️ HelloKitty Baby Maxi 💔 7.1 — CLOUD-KI (ai/cloud.js)
 
    ECHTE KI wie ChatGPT/Meta AI — über kostenlose Cloud-LLMs mit
    OpenAI-kompatibler API. Der Provider steckt in der Chain:
-        Ollama 🦙 → Cloud-KI ☁️ → LoveAI Core 💜
+        Ollama 🦙 → Cloud-KI ☁️ → BabyMaxiAI 💔 Core 💜
 
    Kostenlose Anbieter (alle gratis, ohne Kreditkarte):
      · Groq        console.groq.com        → Llama 3.3 70B, sehr schnell
@@ -86,12 +86,12 @@ function promptToMessages(prompt) {
   /* System = erster \n\n-Block (buildPrompt setzt den Systemtext an den Anfang) */
   const system = p.split('\n\n')[0] || '';
   const msgs = [{ role: 'system', content: system }];
-  /* Verlauf: „User: …“ / „LoveAI: …“ Zeilen aus dem Verlauf-Block */
+  /* Verlauf: „User: …“ / „BabyMaxiAI 💔: …“ Zeilen aus dem Verlauf-Block */
   const vm = p.match(/Verlauf:\n([\s\S]*?)(?=\n\n[A-Z]|\n\nUser:|$)/);
   if (vm) {
     for (const ln of vm[1].split('\n')) {
-      const m = ln.match(/^(User|LoveAI): (.*)$/);
-      if (m && m[2].trim()) msgs.push({ role: m[1] === 'LoveAI' ? 'assistant' : 'user', content: m[2] });
+      const m = ln.match(/^(User|BabyMaxiAI 💔): (.*)$/);
+      if (m && m[2].trim()) msgs.push({ role: m[1] === 'BabyMaxiAI 💔' ? 'assistant' : 'user', content: m[2] });
     }
   }
   /* User-Nachricht + (ReAct-Runde 2) Tool-Ergebnisse */
@@ -145,12 +145,12 @@ export class CloudProvider {
 
     /* Pollinations (ohne Key): GET-Endpoint, Prompt als Pfad */
     if (r.provider === 'pollinations' && !r.key) {
-      const flat = messages.map((m) => (m.role === 'system' ? 'Anweisungen: ' : (m.role === 'assistant' ? 'LoveAI: ' : 'User: ')) + m.content).join('\n\n');
+      const flat = messages.map((m) => (m.role === 'system' ? 'Anweisungen: ' : (m.role === 'assistant' ? 'BabyMaxiAI 💔: ' : 'User: ')) + m.content).join('\n\n');
       const ctrl = new AbortController();
       const t = setTimeout(() => ctrl.abort(), timeoutMs);
       try {
         const res = await fetch(r.endpoint + '/' + encodeURIComponent(flat.slice(0, 3500)), {
-          signal: ctrl.signal, headers: { 'User-Agent': 'LoveBot/7.1' }
+          signal: ctrl.signal, headers: { 'User-Agent': 'HelloKitty Baby Maxi 💔/7.1' }
         });
         if (!res.ok) throw cloudErr(classifyHttpStatus(res.status).code, classifyHttpStatus(res.status).kind, classifyHttpStatus(res.status).hint, { httpStatus: res.status });
         let text = (await res.text()).trim();

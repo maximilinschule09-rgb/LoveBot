@@ -1,4 +1,4 @@
-/* LoveBot — Startseite (Landing)
+/* HelloKitty Baby Maxi 💔 — Startseite (Landing)
    Holt Live-Daten aus der API; ohne Backend greift ein eingebauter Fallback. */
 makeHearts(14);
 document.getElementById('year').textContent = new Date().getFullYear();
@@ -31,7 +31,7 @@ async function loadCommands() {
     const data = await api('/api/commands');
     if (data && data.commands) cats = data.commands;
   } catch (e) { /* offline / statisch */ }
-  if (!cats && window.LOVEBOT_COMMANDS) cats = window.LOVEBOT_COMMANDS;
+  if (!cats && window.BABYMAXI_COMMANDS) cats = window.BABYMAXI_COMMANDS;
   if (!cats) return;
 
   const total = cats.reduce((a, c) => a + c.cmds.length, 0);

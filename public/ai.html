@@ -4,19 +4,18 @@
 <script src="/js/maintgate.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LoveAI — LoveBot</title>
+<title>LoveAI — HelloKitty Baby Maxi 💔</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>">
 <link rel="stylesheet" href="/css/style.css">
-<link rel="stylesheet" href="/css/consent.css">
 </head>
 <body data-page="ai">
 <div class="hearts" id="hearts"></div>
 <div class="app show">
   <aside class="sidebar" id="sidebar"></aside>
   <main class="main">
-    <div class="crumb">LoveBot / Mein Bereich</div>
+    <div class="crumb">HelloKitty Baby Maxi 💔 / Mein Bereich</div>
     <h1>🤖 LoveAI</h1>
-    <p class="subline">LoveKI — der Copilot deines Bots: kennt alle Befehle, die ganze Website &amp; jedes Feature. <span id="engineTag" class="pill on" style="margin-left:6px">💜 LoveAI Core</span></p>
+    <p class="subline">LoveKI — der HelloKitty Baby Maxi 💔 v2 ai deines Bots: kennt alle Befehle, die ganze Website &amp; jedes Feature. <span id="engineTag" class="pill on" style="margin-left:6px"> LoveAI Core</span></p>
 
     <!-- Status-Hero (Live-Daten aus /api/ai/status) -->
     <div id="status"><p>Lädt …</p></div>
@@ -29,7 +28,7 @@
         <b>So geht's (2 Minuten, gratis):</b><br>
         1️⃣ Kostenlos registrieren: <b>console.groq.com</b> (empfohlen, sehr schnell) oder <b>aistudio.google.com</b><br>
         2️⃣ Dort „API Key" erstellen &amp; kopieren (beginnt mit <code>gsk_…</code> bzw. <code>AIza…</code>)<br>
-        3️⃣ Hier einfügen → <b>Speichern</b> — fertig! 💜
+        3️⃣ Hier einfügen → <b>Speichern</b> — fertig!
       </div>
       <div class="chatbox" style="margin-top:8px">
         <input id="cloudKey" type="password" maxlength="200" placeholder="API-Key einfügen (gsk_… / AIza… / sk-or-…)" autocomplete="off">
@@ -44,7 +43,7 @@
       <h2>💬 Chat</h2>
       <div class="chatlog" id="chat"></div>
       <div class="ai-chips" id="chips">
-        <button class="ai-chip" data-q="Was ist LoveBot? Erklär mir den Bot">🤖 Was ist LoveBot?</button>
+        <button class="ai-chip" data-q="Was ist HelloKitty Baby Maxi 💔? Erklär mir den Bot">🤖 Was ist HelloKitty Baby Maxi 💔?</button>
         <button class="ai-chip" data-q="Was gibt es für Webseiten?">🌐 Website erklären</button>
         <button class="ai-chip" data-q="Wie funktioniert $daily?">📜 Wie funktioniert $daily?</button>
         <button class="ai-chip" data-q="Wie bekomme ich XP?">📈 Wie bekomme ich XP?</button>
@@ -74,7 +73,7 @@ makeHearts(10);
 buildSidebar('ai');
 const chat = document.getElementById('chat');
 const inp = document.getElementById('inp');
-const ENGINE_BADGE = { ollama: '🦙 Ollama', cloud: '☁️ Cloud-KI', core: '💜 Core' };
+const ENGINE_BADGE = { ollama: '🦙 Ollama', cloud: '☁️ Cloud-KI', core: ' Core' };
 
 function bubble(who, text, meta) {
   const d = document.createElement('div');
@@ -92,8 +91,8 @@ async function loadStatus() {
   if (!s || !s.ok) { el.innerHTML = '<div class="panel"><p>Status nicht verfügbar.</p></div>'; return; }
   const eng = s.engine || 'core';
   const tag = document.getElementById('engineTag');
-  tag.textContent = ENGINE_BADGE[eng] || '💜 Core';
-  const engineName = s.engineLabel || ENGINE_BADGE[eng] || 'LoveAI Core 💜';
+  tag.textContent = ENGINE_BADGE[eng] || ' Core';
+  const engineName = s.engineLabel || ENGINE_BADGE[eng] || 'LoveAI Core ';
   const engineSub = eng === 'ollama'
     ? 'lokales LLM (' + esc(s.model || '') + ')'
     : eng === 'cloud'
@@ -145,7 +144,7 @@ document.getElementById('cloudSave').addEventListener('click', async () => {
   try { r = await api('/api/ai/cloud', { method: 'POST', body: { key } }); } catch (e) {}
   if (r && r.ok && r.cloudOn) {
     msg.innerHTML = '✅ <b>Echte KI aktiv!</b> ' + esc(r.cloudProvider || '') + ' · ' + esc(r.cloudModel || '') + ' — frag mich irgendetwas! 🎉';
-    bubble('ai', '🌟 Echte KI ist jetzt aktiv! Ab sofort kann ich dir auf ALLES antworten — Wissen, Hausaufgaben, Rechnen, Texte schreiben, Ideen … Frag mich was! 💜', '☁️ Cloud-KI');
+    bubble('ai', '🌟 Echte KI ist jetzt aktiv! Ab sofort kann ich dir auf ALLES antworten — Wissen, Hausaufgaben, Rechnen, Texte schreiben, Ideen … Frag mich was! ', '☁️ Cloud-KI');
     setTimeout(() => location.reload(), 1800);
   } else if (r && r.error) {
     msg.textContent = '❌ ' + r.error;
@@ -180,7 +179,7 @@ async function send(preset) {
   try { r = await api('/api/ai/chat', { method: 'POST', body: { text: t } }); } catch (e) {}
   typing.remove();
   if (r && r.ok) {
-    bubble('ai', r.text, (ENGINE_BADGE[r.engine] || '💜') + ' · ⏱ ' + r.ms + ' ms');
+    bubble('ai', r.text, (ENGINE_BADGE[r.engine] || '') + ' · ⏱ ' + r.ms + ' ms');
   } else if (r && r.reason === 'limited') {
     bubble('ai', '⏳ Kurz pausieren: Limit erreicht (' + (r.detail || '') + ').');
   } else {
@@ -195,7 +194,7 @@ document.getElementById('clearMem').addEventListener('click', async () => {
   await api('/api/ai/memory/clear', { method: 'POST', body: {} });
   chat.innerHTML = '';
   loadMem();
-  bubble('ai', '🧹 Memory gelöscht — frisch starten! 💜');
+  bubble('ai', '🧹 Memory gelöscht — frisch starten! ');
 });
 
 /* ── Start: Verlauf laden + Begrüßung ────────────────────────────── */
@@ -207,7 +206,7 @@ loadMem();
     for (const c of m.conversation.slice(-6)) bubble(c.role === 'ai' ? 'ai' : 'me', c.text);
   }
   if (!chat.children.length) {
-    bubble('ai', 'Hey! Ich bin *LoveKI* 💜 — der Copilot deines Bots.\n\nIch kenne LoveBot komplett und erkläre dir alles:\n• 🤖 „Was ist LoveBot?“ — Features & Systeme\n• 🌐 „Was gibt es für Webseiten?“ — alle 40 Seiten\n• 📜 „Wie funktioniert $daily?“ — jeder Befehl erklärt\n• 📊 „Zeig meine Stats“ — deine Live-Daten\n\n🔒 Ich schaue nur zu — ich ändere nichts!\n🌟 Mit kostenlosem API-Key beantworte ich dir zusätzlich ALLE Fragen wie ChatGPT.');
+    bubble('ai', 'Hey! Ich bin *LoveKI*  — der HelloKitty Baby Maxi 💔 v2 ai deines Bots.\n\nIch kenne HelloKitty Baby Maxi 💔 komplett und erkläre dir alles:\n• 🤖 „Was ist HelloKitty Baby Maxi 💔?“ — Features & Systeme\n• 🌐 „Was gibt es für Webseiten?“ — alle 40 Seiten\n• 📜 „Wie funktioniert $daily?“ — jeder Befehl erklärt\n• 📊 „Zeig meine Stats“ — deine Live-Daten\n\n🔒 Ich schaue nur zu — ich ändere nichts!\n🌟 Mit kostenlosem API-Key beantworte ich dir zusätzlich ALLE Fragen wie ChatGPT.');
   }
 })();
 </script>

@@ -112,7 +112,7 @@ CC.reg('userFull', async () => {
   }
   else if (tab === 'xp') {
     const src = pr?.xpSources || {};
-    const SRC = { messages: '💬 Nachrichten', commands: '⚡ Befehle', love: '💜 Love-Actions', dailies: '📅 $daily', work: '💼 $work', games: '🎮 Spiele', admin: '👑 Owner', other: 'Sonstiges' };
+    const SRC = { messages: '💬 Nachrichten', commands: '⚡ Befehle', love: ' Love-Actions', dailies: '📅 $daily', work: '💼 $work', games: '🎮 Spiele', admin: '👑 Owner', other: 'Sonstiges' };
     body = pr
       ? kv([
           ['Level', '⭐ Lv ' + pr.level + (pr.prestige ? ' · 💎 Prestige ' + pr.prestige : '')],
@@ -159,7 +159,7 @@ CC.reg('userFull', async () => {
     const gs = d.groups || [];
     body = gs.length
       ? CC.table([{ t: 'Gruppen-ID', f: (r) => '<span class="cc-key">' + esc(r.gid) + '</span>' }, { t: 'Status', f: (r) => r.active ? '<span class="cc-tag ok">AKTIV</span>' : '<span class="cc-tag bad">INAKTIV</span>' }, { t: 'Eingerichtet', f: (r) => r.setupAt ? CC.dt(r.setupAt) : '—' }], gs)
-      : empty('Keine LoveBot-Gruppen in der Datenbank (Gruppen-Mitgliedschaften liegen bei WhatsApp).');
+      : empty('Keine HelloKitty Baby Maxi 💔-Gruppen in der Datenbank (Gruppen-Mitgliedschaften liegen bei WhatsApp).');
   }
   else if (tab === 'activity') {
     const au = d.auditEntries || [];
@@ -169,10 +169,10 @@ CC.reg('userFull', async () => {
   }
   else if (tab === 'privacy') {
     const exportJson = () => {
-      const blob = new Blob([JSON.stringify({ exportiertAm: new Date().toISOString(), hinweis: 'LoveBot-Datenexport (DSGVO Art. 20)', account: a, profil: pr, loveplus: lp, gruppen: d.groups, audit: d.auditEntries }, null, 2)], { type: 'application/json' });
+      const blob = new Blob([JSON.stringify({ exportiertAm: new Date().toISOString(), hinweis: 'HelloKitty Baby Maxi 💔-Datenexport (DSGVO Art. 20)', account: a, profil: pr, loveplus: lp, gruppen: d.groups, audit: d.auditEntries }, null, 2)], { type: 'application/json' });
       const u = URL.createObjectURL(blob);
       const l = document.createElement('a');
-      l.href = u; l.download = 'lovebot-export-' + (a.username || id) + '.json'; l.click();
+      l.href = u; l.download = 'hellokitty baby maxi-export-' + (a.username || id) + '.json'; l.click();
       setTimeout(() => URL.revokeObjectURL(u), 5000);
     };
     const deleteWeb = async () => {
@@ -209,7 +209,7 @@ CC.reg('userFull', async () => {
 
   CC.page('👤 ' + esc(a.username || id), 'Vollständige Benutzerakte — eine Quelle, alle Systeme (WhatsApp &amp; Website).',
     '<div class="cc-aktenhead">' +
-      '<div class="cc-avatar xl">💜</div>' +
+      '<div class="cc-avatar xl"></div>' +
       '<div><div style="font-size:20px;font-weight:800">' + esc(a.username || '—') + ' ' + CC.rolepill(a.role) + ' ' + CC.pill(a.status) + '</div>' +
       '<div class="cc-subline" style="margin:4px 0 0">Nummer: <span class="cc-key">' + esc(a.number || '—') + '</span> · erstellt ' + CC.dt(a.createdAt) + (a.lastLoginAt ? ' · zuletzt ' + CC.rel(a.lastLoginAt) : '') + '</div></div>' +
       (canManage ? '<button class="cc-btn sm" style="margin-left:auto" onclick="history.back()">← Zurück zur Liste</button>' : '') +

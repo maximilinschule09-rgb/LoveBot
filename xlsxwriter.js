@@ -1,5 +1,5 @@
 /* ============================================================================
-   LoveBot — Minimaler .xlsx-Schreiber (Zero-Dependency), „Pretty“-Edition
+   HelloKitty Baby Maxi 💔 — Minimaler .xlsx-Schreiber (Zero-Dependency), „Pretty“-Edition
    Baut eine echte Office-Open-XML-Arbeitsmappe (ZIP + XML) per Hand auf:
    node:zlib (deflate) + selbst berechnete CRC32. Kein externes Paket nötig.
 

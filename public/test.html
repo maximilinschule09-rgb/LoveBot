@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<title>System-Test 💜 — LoveBot</title>
-<meta name="description" content="LoveBot System-Test: ausschließlich echte Live-Daten via /api/health. Keine Demo-Werte.">
+<title>System-Test  — HelloKitty Baby Maxi 💔</title>
+<meta name="description" content="HelloKitty Baby Maxi 💔 System-Test: ausschließlich echte Live-Daten via /api/health. Keine Demo-Werte.">
 <meta name="theme-color" content="#0b0614">
 <style>
 /* ═══ Liquid Glass (exakt aus Vorgabe) ═══ */
@@ -223,7 +223,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
   .row:active{transform:none}
   .toast{transition:none}
 }
-/* ═══ LoveBot-Zusatz (einzige Abweichung): fixer Hintergrund, da Vorgabe body:transparent
+/* ═══ HelloKitty Baby Maxi 💔-Zusatz (einzige Abweichung): fixer Hintergrund, da Vorgabe body:transparent
      für eigenständige Seite einen dunklen Untergrund braucht ═══ */
 .bg{position:fixed;inset:0;z-index:-1;
   background:url('/test-bg.jpg') center/cover no-repeat fixed,#0b0614;}
@@ -334,7 +334,7 @@ function renderHero(url) {
 </div>`;
 }
 
-/* ═══ LoveBot Live-Daten (statt Demo-Inhalt der Vorgabe — REAL DATA ONLY) ═══ */
+/* ═══ HelloKitty Baby Maxi 💔 Live-Daten (statt Demo-Inhalt der Vorgabe — REAL DATA ONLY) ═══ */
 const tokenFn = (typeof getToken === 'function') ? getToken : (() => { try { return localStorage.getItem('love_token'); } catch (e) { return null; } });
 const $ = (id) => document.getElementById(id);
 document.getElementById('catcss').textContent = categoryCSS();
@@ -420,7 +420,7 @@ function buildSections(d) {
       return R(V(x.name || x.id), (on ? '🟢 ' : '⚫ ') + V(x.status) + ' · ' + up +
         ' · 💬' + (num(x.messages) ?? '–') + ' ⌨' + (num(x.commands) ?? '–'));
     })},
-    { key: 'info', zen: '✨', name: 'LOVEAI', rows: [
+    { key: 'info', zen: '🌧️', name: 'LOVEAI', rows: [
       R('status', aiState),
       R('modell', ai.model),
       R('latenz', ai.online ? ((ai.latencyMs !== null && ai.latencyMs !== undefined) ? ai.latencyMs + ' ms' : '–') : '–'),
@@ -453,7 +453,7 @@ function errorSections(kind) {
   return [{ key: 'ops', zen: '⚠', name: 'FEHLER', rows }];
 }
 
-/* Komposition wie buildLiquidGlass der Vorgabe (Body-Teile), Branding LoveBot */
+/* Komposition wie buildLiquidGlass der Vorgabe (Body-Teile), Branding HelloKitty Baby Maxi 💔 */
 function renderPage(subtitle, sections) {
   const body = sections.map(renderSection).join('');
   $('page').innerHTML =
@@ -464,7 +464,7 @@ function renderPage(subtitle, sections) {
     '<div class="hdr__meta" id="meta">' + escapeHTML(subtitle) + '</div>' +
     '</div>' +
     body +
-    '<div class="ftr"><div class="ftr__text">Quelle: GET /api/health · 💜 Lovebot</div></div>';
+    '<div class="ftr"><div class="ftr__text">Quelle: GET /api/health ·  Lovebot</div></div>';
 }
 
 function subtitleText() {
@@ -540,7 +540,7 @@ async function load() {
     const cmd = btn.dataset.cmd;
     if (!cmd) return;
 
-    /* LoveBot-Aktionen (einzige Handler-Erweiterung): kein Copy, sondern Aktion */
+    /* HelloKitty Baby Maxi 💔-Aktionen (einzige Handler-Erweiterung): kein Copy, sondern Aktion */
     if (cmd === '__refresh__' || cmd === '__retry__') { load(); return; }
     if (cmd === '__login__') { location.href = '/login.html'; return; }
 

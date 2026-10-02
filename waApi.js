@@ -505,7 +505,7 @@ function checkCommandAccess(senderProfile, groupProfile, role, isGroup, command,
     return {
       allowed: false,
       message: `> 🔐 *DATENSCHUTZ-ZUSTIMMUNG ERFORDERLICH*\n\n` +
-        `Bevor du LoveBot nutzen kannst, musst du einmalig der Datenschutzerklärung (DSGVO) zustimmen.\n\n` +
+        `Bevor du HelloKitty Baby Maxi 💔 nutzen kannst, musst du einmalig der Datenschutzerklärung (DSGVO) zustimmen.\n\n` +
         `📜 *So geht's:*\n` +
         `• *${pref}dsgvo* — zeigt dir, welche Daten gespeichert werden\n` +
         `• *${pref}dsgvo accept* — stimmst du zu, kannst du den Bot sofort nutzen\n` +
@@ -1100,7 +1100,7 @@ function handleCookieCommand(profile, subAction, pref = '¥') {
     cookie.rejectedAt = null;
     saveUserProfile(profile);
     return {
-      text: `> *LoveBot — 🍪 COOKIE-ZUSTIMMUNG* ✅\n\n` +
+      text: `> *HelloKitty Baby Maxi 💔 — 🍪 COOKIE-ZUSTIMMUNG* ✅\n\n` +
         `Danke! Du hast *alle* Kategorien akzeptiert (notwendig + anonyme Statistiken).\n` +
         `• *Zeitstempel:* ${new Date(cookie.acceptedAt).toLocaleString('de-DE')}\n\n` +
         `Nutze *${pref}cookie necessary* für „nur Notwendige“, oder *${pref}cookie reject* zum Widerrufen.`
@@ -1115,7 +1115,7 @@ function handleCookieCommand(profile, subAction, pref = '¥') {
     cookie.rejectedAt = null;
     saveUserProfile(profile);
     return {
-      text: `> *LoveBot — 🍪 COOKIE-ZUSTIMMUNG* ✅\n\n` +
+      text: `> *HelloKitty Baby Maxi 💔 — 🍪 COOKIE-ZUSTIMMUNG* ✅\n\n` +
         `Du nutzt nur *technisch notwendigen* Speicher — keine anonymen Statistiken.\n` +
         `• *Zeitstempel:* ${new Date(cookie.acceptedAt).toLocaleString('de-DE')}`
     };
@@ -1130,7 +1130,7 @@ function handleCookieCommand(profile, subAction, pref = '¥') {
     saveUserProfile(profile);
 
     return {
-      text: `> *LoveBot — 🍪 COOKIE-WIDERRUF* ❌\n\n` +
+      text: `> *HelloKitty Baby Maxi 💔 — 🍪 COOKIE-WIDERRUF* ❌\n\n` +
         `Deine Zustimmung wurde entzogen/abgelehnt.\n` +
         `• *Zeitstempel:* ${new Date(cookie.rejectedAt).toLocaleString('de-DE')}\n\n` +
         `_Ohne Zustimmung bleibt der Bot für dich gesperrt — außer $dsgvo/$cookie selbst._`
@@ -1152,7 +1152,7 @@ function handleCookieCommand(profile, subAction, pref = '¥') {
     '```';
 
   return {
-    text: `> *LoveBot — 🍪 COOKIE- & SPEICHER-HINWEIS* 🍪\n\n` +
+    text: `> *HelloKitty Baby Maxi 💔 — 🍪 COOKIE- & SPEICHER-HINWEIS* 🍪\n\n` +
       `Genau wie auf der Website nutzt auch der Bot lokalen Speicher für deine Sitzung/dein Profil. Hier die Kategorien:\n\n` +
       cookieTable + '\n\n' +
       `• *Aktueller Status:* ${cookieLabel}\n` +
@@ -1848,7 +1848,7 @@ async function pairMenu(options = {}) {
 
   const hasSession = hasValidSession(credsPath);
 
-  /* ── Box-Zeichnung im LoveBot-Night-Stil ─────────────────────────── */
+  /* ── Box-Zeichnung im HelloKitty Baby Maxi 💔-Night-Stil ─────────────────────────── */
   const L = '─'.repeat(46);
   const boxTop  = (t) => console.log('\n' + c.bold + c.brightMagenta + '  ╭' + L + '╮' + c.reset + '\n' + c.bold + c.brightGreen + '  │ ' + String(t).slice(0, 46).padEnd(45) + '│' + c.reset + '\n' + c.bold + c.brightMagenta + '  ├' + L + '┤' + c.reset);
   const boxLine = (t) => console.log(c.cyan + '  │' + c.reset + ' ' + t);
@@ -1886,7 +1886,7 @@ async function pairMenu(options = {}) {
     boxLine(c.brightRed + ' [x] ' + c.reset + c.dim + 'Skript beenden' + c.reset);
     boxBot();
 
-    const choice = (await askFn(c.pink + 'LoveBot › ' + c.reset + c.bold + 'Auswahl [r/d/m/x]: ' + c.reset)).toLowerCase();
+    const choice = (await askFn(c.pink + 'HelloKitty Baby Maxi 💔 › ' + c.reset + c.bold + 'Auswahl [r/d/m/x]: ' + c.reset)).toLowerCase();
     if (choice === 'r') {
       await reconnectOldSession(startBotFn);
     } else if (choice === 'd') {
@@ -1918,7 +1918,7 @@ async function pairMenu(options = {}) {
     boxLine(c.brightRed + ' [x] ' + c.reset + c.dim + 'Skript beenden' + c.reset);
     boxBot();
 
-    const choice = (await askFn(c.pink + 'LoveBot › ' + c.reset + c.bold + 'Auswahl [p/q/m/x]: ' + c.reset)).toLowerCase();
+    const choice = (await askFn(c.pink + 'HelloKitty Baby Maxi 💔 › ' + c.reset + c.bold + 'Auswahl [p/q/m/x]: ' + c.reset)).toLowerCase();
     if (choice === 'p') {
       let phone = await askFn(c.cyan + '📱  Telefonnummer mit Ländervorwahl (z. B. 491701234567): ' + c.reset);
       phone = phone.replace(/\D/g, '');

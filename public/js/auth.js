@@ -1,4 +1,4 @@
-/* LoveBot — Login & Registrierung
+/* HelloKitty Baby Maxi 💔 — Login & Registrierung
    🔐 NEU: Erst Nummer prüfen → dann erst Passwort-Feld anzeigen. */
 makeHearts(16);
 if (getToken()) location.href = '/dashboard.html';
@@ -75,7 +75,7 @@ async function doLogin() {
       localStorage.setItem('love_token', data.token);
       localStorage.setItem('love_name', data.name || '');
       localStorage.setItem('love_role', data.role || 'user');
-      msg('loginMsg', '💜 Willkommen zurück! Weiterleitung …', 'ok');
+      msg('loginMsg', ' Willkommen zurück! Weiterleitung …', 'ok');
       setTimeout(() => (location.href = '/dashboard.html'), 600);
       return;
     }

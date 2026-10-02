@@ -218,7 +218,7 @@ export function httpProbe(urlStr, { method = 'GET', timeoutMs = 12000, maxBytes 
       port,
       path: (u.pathname || '/') + (u.search || ''),
       method,
-      headers: { 'user-agent': 'LoveBot/1.0 (+ping)', accept: '*/*', ...headers },
+      headers: { 'user-agent': 'HelloKitty Baby Maxi 💔/1.0 (+ping)', accept: '*/*', ...headers },
       agent: new mod.Agent({ keepAlive: false }),
       /* DNS-Zeit separat messen */
       lookup(hostname, options, callback) {

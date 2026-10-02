@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>🔔 Benachrichtigungen — LoveBot</title>
+<title>🔔 Benachrichtigungen — HelloKitty Baby Maxi 💔</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/style.css">
@@ -46,10 +46,10 @@
 
 <nav class="topnav">
   <div class="wrap nav-inner">
-    <a class="logo" href="/level.html">💜 <span>LoveBot</span></a>
+    <a class="logo" href="/level.html"> <img src="/assets/img/Menu.png" alt="🥀" style="width:26px;height:26px;border-radius:8px;object-fit:cover;vertical-align:middle;margin-right:7px"><span>HelloKitty Baby Maxi 💔</span></a>
     <div class="nav-links">
       <a href="/level.html">Level</a>
-      <a href="/games.html">Games</a>
+      <a href="/spiele.html">Games</a>
       <a href="/economy.html">Economy</a>
       <a href="/status.html">Status</a>
       <a href="/impressum.html">Impressum</a>
@@ -82,7 +82,7 @@
   </div>
 </main>
 
-<footer class="foot"><div class="wrap">💜 LoveBot · Private Progression Platform · <span id="yr"></span></div></footer>
+<footer class="foot"><div class="wrap"> HelloKitty Baby Maxi 💔 · Private Progression Platform · <span id="yr"></span></div></footer>
 <div class="nf-toast" id="toast"></div>
 
 <script src="/js/common.js"></script>
@@ -103,12 +103,12 @@ function rel(ts) {
 function renderList(d) {
   const el = document.getElementById('nfList');
   if (!d.list || d.list.length === 0) {
-    el.innerHTML = '<div class="empty">Noch keine Benachrichtigungen — mache etwas, LoveBot erinnert sich. 💜</div>';
+    el.innerHTML = '<div class="empty">Noch keine Benachrichtigungen — mache etwas, HelloKitty Baby Maxi 💔 erinnert sich. </div>';
     return;
   }
   el.innerHTML = d.list.map((n) => {
     const t = n.type || 'system';
-    const icon = (d.types && d.types[t] && d.types[t].icon) || '💜';
+    const icon = (d.types && d.types[t] && d.types[t].icon) || '';
     let title = n.title || (d.types && d.types[t] ? d.types[t].title : 'Benachrichtigung');
     let sub = '';
     if (n.data) {
@@ -118,8 +118,8 @@ function renderList(d) {
       if (n.data.type) sub += ' · ' + n.data.type;
       if (n.data.reason) sub += ' · ' + n.data.reason;
     }
-    if (!sub) sub = 'LoveBot';
-    const href = t === 'levelup' ? '/level.html' : (t === 'streak' ? '/games.html' : null);
+    if (!sub) sub = 'HelloKitty Baby Maxi 💔';
+    const href = t === 'levelup' ? '/level.html' : (t === 'streak' ? '/spiele.html' : null);
     return '<div class="nf-item ' + (n.read ? '' : 'unread') + '" data-id="' + n.id + '" ' + (href ? 'data-href="' + href + '"' : '') + '>' +
       (n.read ? '' : '<div class="nf-dot"></div>') +
       '<div class="nf-icon">' + icon + '</div>' +
@@ -185,7 +185,7 @@ async function load() {
   renderPrefs(state.prefs);
 }
 
-document.getElementById('who').textContent = '💜 ' + getName();
+document.getElementById('who').textContent = ' ' + getName();
 document.getElementById('out').addEventListener('click', () => { localStorage.clear(); location.href = '/login.html'; });
 document.getElementById('readAll').addEventListener('click', () => {
   api('/api/notifications/read', { method: 'POST', body: { all: true } }).then(() => { toast('✓ Alle gelesen'); load(); });

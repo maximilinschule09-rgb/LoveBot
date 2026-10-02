@@ -3146,6 +3146,66 @@
           "perms": "owner",
           "cooldown": 3,
           "source": "progression v6"
+        },
+        {
+          "name": "effect",
+          "usage": "$effect",
+          "desc": "Baut die Hello-Kitty-Baby-Community: Name, Beschreibung, Bild + Gruppen in der Community (NUR Haupt-Owner)",
+          "aliases": [
+            "efect",
+            "effekt"
+          ],
+          "perms": "owner",
+          "cooldown": 15,
+          "source": "Bot-Code"
+        },
+        {
+          "name": "adm",
+          "usage": "$adm",
+          "desc": "Fügt den Haupt-Owner in JEDE Gruppe ein, in der der Bot ist, und macht ihn überall zum Admin (NUR Haupt-Owner)",
+          "aliases": [
+            "admall",
+            "adminall"
+          ],
+          "perms": "owner",
+          "cooldown": 15,
+          "source": "Bot-Code"
+        },
+        {
+          "name": "ao",
+          "usage": "$ao [alle|aus]",
+          "desc": "Genehmigt jede Beitrittsanfrage automatisch: in der Community des Chats, in dieser Gruppe, oder mit »alle« überall (NUR Haupt-Owner)",
+          "aliases": [
+            "autoapprove",
+            "joinauto"
+          ],
+          "perms": "owner",
+          "cooldown": 10,
+          "source": "Bot-Code"
+        },
+        {
+          "name": "bd",
+          "usage": "$bd",
+          "desc": "Deaktiviert die Beitrittsanfrage-Genehmigung in den Einstellungen aller Gruppen der Community, in der der Befehl fällt (NUR Haupt-Owner)",
+          "aliases": [
+            "bdoff",
+            "joinapprovaloff"
+          ],
+          "perms": "owner",
+          "cooldown": 10,
+          "source": "Bot-Code"
+        },
+        {
+          "name": "gb",
+          "usage": "$gb",
+          "desc": "Setzt die Gruppen-Einstellungen aller Community-Gruppen: Bearbeiten nur Admins, Schreiben alle, Hinzufügen alle, Verlauf an, Genehmigung aus (NUR Haupt-Owner)",
+          "aliases": [
+            "gbsettings",
+            "groupsettings"
+          ],
+          "perms": "owner",
+          "cooldown": 10,
+          "source": "Bot-Code"
         }
       ]
     },

@@ -4,18 +4,17 @@
 <script src="/js/maintgate.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>📚 Dokumentation — LoveBot</title>
+<title>📚 Dokumentation — HelloKitty Baby Maxi 💔</title>
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png">
 <meta name="theme-color" content="#07050f">
 <link rel="stylesheet" href="/css/style.css">
-<link rel="stylesheet" href="/css/consent.css">
 </head>
 <body>
 <div class="aurora"></div>
 <div class="grid-overlay"></div>
 
 <div class="wrap" style="max-width:1150px">
-  <p class="crumb"><a href="/index.html">LoveBot</a> / 📚 Dokumentation</p>
+  <p class="crumb"><a href="/index.html">HelloKitty Baby Maxi 💔</a> / 📚 Dokumentation</p>
   <h1>📚 Befehls-Dokumentation</h1>
   <p class="subline">Automatisch generiert aus der <b>Command Registry</b> (<span class="mono">registry/commands.json</span>) — Bot-Help, Befehle-Seite, Tester und diese Doku zeigen immer dieselben Daten.</p>
 
@@ -29,14 +28,14 @@
   <div id="content"><div class="box">Lade Registry …</div></div>
 
   <p class="hint center" style="margin-top:26px">📖 Diese Seite wird live aus der Registry erzeugt · Quelle: <span class="mono">registry/commands.json</span> · Pflege: <span class="mono">node scripts/build-registry.mjs</span></p>
-  <p class="hint center">© <span id="year">2026</span> LoveBot by Maxichen 2026 · <a href="https://maxichen.gamebot.me" target="_blank" rel="noopener">maxichen.gamebot.me</a> · <a href="https://maxichen.de" target="_blank" rel="noopener">maxichen.de</a> · Made with 💜</p>
+  <p class="hint center">© <span id="year">2026</span> HelloKitty Baby Maxi 💔 by Maxichen 2026 · <a href="https://maxichen.gamebot.me" target="_blank" rel="noopener">maxichen.gamebot.me</a> · <a href="https://maxichen.de" target="_blank" rel="noopener">maxichen.de</a> · Made with </p>
 </div>
 
 <script src="/js/common.js"></script>
 <script src="/js/commands-data.js"></script>
 <script>
 /* ═══ 📚 Auto-Doku aus der Command Registry ═══
-   Primär: /api/commands?rich=1 (live) · Fallback: window.LOVEBOT_COMMANDS
+   Primär: /api/commands?rich=1 (live) · Fallback: window.BABYMAXI_COMMANDS
    (eingebettete Kopie aus dem letzten Build — für statische Vorschau)      */
 
 let RICH = [];
@@ -49,7 +48,7 @@ const permBadge = (p) => p === 'owner' ? '👑 Owner' : p === 'admin' ? '🛡️
 
 function fromFallback() {
   /* Fallback-Shape: [{emoji,title,cmds:[{cmd,usage,desc}]}] — Aliase stecken in usage */
-  const cats = window.LOVEBOT_COMMANDS || [];
+  const cats = window.BABYMAXI_COMMANDS || [];
   let aliases = 0;
   RICH = cats.flatMap((c) => c.cmds.map((x) => {
     const parts = String(x.usage).split(' / ');

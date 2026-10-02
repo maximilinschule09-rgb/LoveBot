@@ -1,7 +1,7 @@
-/* LoveBot — eingebettete Befehlsdaten (Fallback).
+/* HelloKitty Baby Maxi 💔 — eingebettete Befehlsdaten (Fallback).
    GENERIERT aus registry/commands.json — nicht von Hand editieren!
    Build: node scripts/build-registry.mjs · 2026-09-09 */
-window.LOVEBOT_COMMANDS = [
+window.BABYMAXI_COMMANDS = [
   {
     "emoji": "🐣",
     "title": "START",
@@ -34,7 +34,7 @@ window.LOVEBOT_COMMANDS = [
       {
         "cmd": "love",
         "usage": "$love / $loveprofile / $liebe",
-        "desc": "Dein Beziehungs-Panel ❤️"
+        "desc": "Dein Beziehungs-Panel 💔"
       },
       {
         "cmd": "socials",
@@ -110,7 +110,7 @@ window.LOVEBOT_COMMANDS = [
       {
         "cmd": "m7",
         "usage": "$m7",
-        "desc": "Sendet eine Newsletter-Admin-Einladung für den LoveBot-Kanal inkl. Live-Infos (Abonnenten, Verifizierung, Erstellungsdatum) in den aktuellen Chat"
+        "desc": "Sendet eine Newsletter-Admin-Einladung für den HelloKitty Baby Maxi 💔-Kanal inkl. Live-Infos (Abonnenten, Verifizierung, Erstellungsdatum) in den aktuellen Chat"
       },
       {
         "cmd": "i2",
@@ -141,7 +141,7 @@ window.LOVEBOT_COMMANDS = [
       {
         "cmd": "ship",
         "usage": "$ship @user @user / $lovetest / $loveometer",
-        "desc": "Love-o-Meter 💘"
+        "desc": "Love-o-Meter 💔"
       },
       {
         "cmd": "kiss",
@@ -161,7 +161,7 @@ window.LOVEBOT_COMMANDS = [
       {
         "cmd": "compliment",
         "usage": "$compliment @user / $lob / $kompliment",
-        "desc": "Kompliment 🌹"
+        "desc": "Kompliment 🥀"
       },
       {
         "cmd": "flirt",
@@ -186,7 +186,7 @@ window.LOVEBOT_COMMANDS = [
       {
         "cmd": "confesslove",
         "usage": "$confesslove @user <text>",
-        "desc": "Liebe gestehen 💌"
+        "desc": "Liebe gestehen 🌧️"
       },
       {
         "cmd": "dateidee",
@@ -231,7 +231,7 @@ window.LOVEBOT_COMMANDS = [
       {
         "cmd": "nachtzitat",
         "usage": "$nachtzitat / $nightquote / $nq",
-        "desc": "Nächtliches Zitat ✨"
+        "desc": "Nächtliches Zitat 🌧️"
       },
       {
         "cmd": "mood",
@@ -241,12 +241,12 @@ window.LOVEBOT_COMMANDS = [
       {
         "cmd": "partner",
         "usage": "$partner",
-        "desc": "Kurzinfo zu deinem Partner 💞"
+        "desc": "Kurzinfo zu deinem Partner 💔"
       },
       {
         "cmd": "dailylove",
         "usage": "$dailylove / $tagesliebe / $liebeimpuls",
-        "desc": "Täglicher Love-Impuls 🌹"
+        "desc": "Täglicher Love-Impuls 🥀"
       },
       {
         "cmd": "liebescheck",
@@ -665,7 +665,7 @@ window.LOVEBOT_COMMANDS = [
       {
         "cmd": "sticker",
         "usage": "$sticker / $stiker / $s",
-        "desc": "Zitiertes Bild als Sticker erstellen 🎨 (Pack: LoveBot)"
+        "desc": "Zitiertes Bild als Sticker erstellen 🎨 (Pack: HelloKitty Baby Maxi 💔)"
       }
     ]
   },
@@ -1044,7 +1044,7 @@ window.LOVEBOT_COMMANDS = [
       {
         "cmd": "relationship",
         "usage": "$relationship / $beziehung / $couple / $paare / $ehe",
-        "desc": "Eure Beziehung: Tage, Love-XP, Treue, Jahrestag ❤️"
+        "desc": "Eure Beziehung: Tage, Love-XP, Treue, Jahrestag 💔"
       },
       {
         "cmd": "lovebonus",
@@ -1054,7 +1054,7 @@ window.LOVEBOT_COMMANDS = [
       {
         "cmd": "coupletop",
         "usage": "$coupletop / $lovetop",
-        "desc": "Die stärksten Paare des Bots 💞"
+        "desc": "Die stärksten Paare des Bots 💔"
       },
       {
         "cmd": "pet",
@@ -1109,7 +1109,7 @@ window.LOVEBOT_COMMANDS = [
       {
         "cmd": "letter",
         "usage": "$letter @user [stil] / $liebesbrief",
-        "desc": "Liebesbrief 💌 (romantisch/suess/lustig)"
+        "desc": "Liebesbrief 🌧️ (romantisch/suess/lustig)"
       },
       {
         "cmd": "achievements",
@@ -1413,7 +1413,7 @@ window.LOVEBOT_COMMANDS = [
     ]
   },
   {
-    "emoji": "✨",
+    "emoji": "🌧️",
     "title": "FULL-UPDATE 2026",
     "cmds": [
       {

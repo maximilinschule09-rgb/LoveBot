@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════
-   💜 LoveBot 7.0.2 — AI REPORT (ai/report.js)
+   💜 HelloKitty Baby Maxi 💔 7.0.2 — AI REPORT (ai/report.js)
 
    Reine Text-Builder für $aistatus / $ai diagnose / $ai debug / AI-Fehler.
    Absichtlich ohne WhatsApp-Abhängigkeit: direkt unit-testbar, Love.js
@@ -14,11 +14,11 @@ export function aiEndpoint(cfg = {}, h = null) {
 /* ── $aistatus ────────────────────────────────────────────────────── */
 export function buildAiStatusText({ cfg = {}, h = {}, an = {}, pref = '$' } = {}) {
   const online = !!h.ok;
-  /* 7.1.1: 3-Tier-Chain — Ollama 🦙 → Cloud-KI ☁️ (echtes LLM) → LoveAI Core 💜 */
+  /* 7.1.1: 3-Tier-Chain — Ollama 🦙 → Cloud-KI ☁️ (echtes LLM) → BabyMaxiAI 💔 Core 💜 */
   const core = h.engine === 'core';
   const provName = h.engineLabel
     ? h.engineLabel
-    : (cfg.provider === 'mock' ? 'Mock (Test)' : (core ? 'LoveAI Core 💜' : (h.engine === 'cloud' ? 'Cloud-KI ☁️' : 'Ollama 🦙')));
+    : (cfg.provider === 'mock' ? 'Mock (Test)' : (core ? 'BabyMaxiAI 💔 Core 💜' : (h.engine === 'cloud' ? 'Cloud-KI ☁️' : 'Ollama 🦙')));
   const cloud = h.cloudOn
     ? `🟢 läuft (${h.cloudProvider || '?'}${h.cloudModel ? ' · ' + h.cloudModel : ''})`
     : (h.cloudKeySet ? '🔴 Key gesetzt, aber nicht erreichbar' + (h.cloudHint ? ' (' + h.cloudHint + ')' : '') : (cfg.cloudOn === false ? '📴 aus' : '⚪ kein API-Key — nutze *' + pref + 'aiconfig key <KEY>*'));
@@ -89,7 +89,7 @@ export function buildAiErrorText(res = {}, cfg = {}, pref = '$') {
   const code = res.diag?.code || res.detail || 'unbekannt';
   const hint = res.diag?.hint || '';
   if (res.reason === 'model_missing') {
-    return `> 🤖 *LoveAI*
+    return `> 🤖 *BabyMaxiAI 💔*
 
 🟡 Backend erreichbar — 🔴 *Modell nicht verfügbar*
 
@@ -99,7 +99,7 @@ Endpoint: ${ep}
 Bitte installiere/wähle ein lokales Modell, dann *${pref}ai diagnose*.`;
   }
   if (res.reason === 'timeout') {
-    return `> 🤖 *LoveAI*
+    return `> 🤖 *BabyMaxiAI 💔*
 
 🔴 *Backend antwortet nicht (Timeout)*
 
@@ -108,7 +108,7 @@ Modell: *${cfg.model || res.model || '–'}*
 
 Später erneut versuchen oder *${pref}ai diagnose*. Der Rest des Bots läuft normal weiter. 💜`;
   }
-  return `> 🤖 *LoveAI*
+  return `> 🤖 *BabyMaxiAI 💔*
 
 🔴 *Backend offline* — der lokale AI-Dienst ist gerade nicht erreichbar.
 

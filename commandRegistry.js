@@ -60,10 +60,14 @@ export function getCategories() {
 /* ── Shape für Love.js $help/$menu: [usage, desc]-Tupel ─────────────── */
 export function getHelpCategories() {
   load();
-  return registry.categories.map((c) => ({
+  const cats = registry.categories.map((c) => ({
     slug: c.slug, emoji: c.emoji, title: c.title,
     cmds: c.cmds.map((x) => [x.usage + (x.aliases?.length ? ' / $' + x.aliases.slice(0, 3).join(' / $') : ''), x.desc])
   }));
+  /* 🎀 schöner sortiert: Kategorien A–Z, Befehle innerhalb A–Z */
+  for (const c of cats) c.cmds.sort((a, b) => String(a[0]).localeCompare(String(b[0]), 'de'));
+  cats.sort((a, b) => String(a.title).localeCompare(String(b.title), 'de'));
+  return cats;
 }
 
 /* ── Flache reiche Liste (Admin-Browser, Doku, Tester) ──────────────── */

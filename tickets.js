@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════
-   🎫 LoveBot 7.1.3 — TICKET-SYSTEM (tickets.js)
+   🎫 HelloKitty Baby Maxi 💔 7.1.3 — TICKET-SYSTEM (tickets.js)
 
    Support-Tickets von Nutzern → Team (Supporter/Deputy/Owner) bearbeitet.
 

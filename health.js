@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════
-   💜 LoveBot — RUNTIME HEALTH (health.js)
+   💜 HelloKitty Baby Maxi 💔 — RUNTIME HEALTH (health.js)
 
    REAL DATA ONLY: Jede Zahl hier ist gemessen oder aus echten Dateien/Stores
    abgeleitet. Was nicht messbar ist → null (Frontend zeigt „–“).

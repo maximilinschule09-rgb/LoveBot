@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════════
    SOUL ECHO CONTROL CENTER — Core (Router · Layout · UI-Helfer)
-   Läuft auf dem LoveBot-Webserver und nutzt die echten /api/*.
+   Läuft auf dem HelloKitty Baby Maxi 💔-Webserver und nutzt die echten /api/*.
    ═══════════════════════════════════════════════════════════════ */
 const CC = {
   me: { role: 'user', perms: [], name: '', username: '', number: '', status: 'active' },
@@ -246,7 +246,7 @@ CC.buildSidebar = () => {
   }
   html += '<div class="cc-navlabel">LINKS</div>' +
     '<a class="cc-navitem" href="/"><span class="ico">🏠</span><span class="l">Website</span></a>' +
-    '<a class="cc-navitem" href="/admin.html"><span class="ico">💜</span><span class="l">LoveBot Panel</span></a>' +
+    '<a class="cc-navitem" href="/admin.html"><span class="ico"></span><span class="l">HelloKitty Baby Maxi 💔 Panel</span></a>' +
     '<a class="cc-navitem" href="/status.html"><span class="ico">📡</span><span class="l">Live-Status</span></a>';
   el.innerHTML = html;
   el.querySelectorAll('.cc-navitem[data-id]').forEach((a) => {

@@ -4,19 +4,18 @@
 <script src="/js/maintgate.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard — LoveBot</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💜</text></svg>">
+<title>Dashboard — HelloKitty Baby Maxi 💔</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'></text></svg>">
 <link rel="stylesheet" href="/css/style.css">
-<link rel="stylesheet" href="/css/consent.css">
 </head>
 <body data-page="home">
 <div class="hearts" id="hearts"></div>
 <div class="app show">
   <aside class="sidebar" id="sidebar"></aside>
   <main class="main">
-    <div class="crumb">LoveBot / Mein Bereich</div>
+    <div class="crumb">HelloKitty Baby Maxi 💔 / Mein Bereich</div>
     <h1 id="hello">🏠 Dashboard</h1>
-    <p class="subline">Dein LoveBot auf einen Blick — alles live aus deinem Profil.</p>
+    <p class="subline">Dein HelloKitty Baby Maxi 💔 auf einen Blick — alles live aus deinem Profil.</p>
     <div id="event"></div>
     <div id="view"><p>Lädt …</p></div>
   </main>
@@ -40,7 +39,7 @@ const f = (n) => Number(n || 0).toLocaleString('de-DE');
     '<div class="stat-card"><div class="t">Wallet</div><div class="v">' + f(e.wallet) + '</div><div class="s">+ Bank ' + f(e.bank) + '</div></div>' +
     '<div class="stat-card"><div class="t">Streak</div><div class="v">🔥 ' + p.streak + '</div><div class="s">Best: ' + p.bestStreak + '</div></div>' +
     '</div>' +
-    '<div class="panel"><h2>✨ XP-Fortschritt</h2>' +
+    '<div class="panel"><h2>🌧️ XP-Fortschritt</h2>' +
     '<div class="kv"><span class="k">Level ' + p.level + '</span><span>' + f(p.xp) + ' / ' + f(p.needed) + ' XP</span></div>' +
     '<div class="xpbar"><i style="width:' + pct + '%"></i></div>' +
     '<div class="kv"><span class="k">Total</span><span>' + f(p.totalXp) + ' XP · 🏅 ' + p.badges + ' Badges · 🏆 ' + p.achievements.count + '/' + p.achievements.total + ' Erfolge</span></div>' +

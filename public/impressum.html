@@ -4,13 +4,12 @@
 <script src="/js/maintgate.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Impressum 💜 — LoveBot by Maxichen 2026</title>
-<meta name="description" content="Impressum von LoveBot by Maxichen 2026 — Angaben zum Anbieter, Kontakt und rechtliche Hinweise.">
+<title>Impressum  — HelloKitty Baby Maxi 💔 by Maxichen 2026</title>
+<meta name="description" content="Impressum von HelloKitty Baby Maxi 💔 by Maxichen 2026 — Angaben zum Anbieter, Kontakt und rechtliche Hinweise.">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png">
 <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
 <meta name="theme-color" content="#07050f">
 <link rel="stylesheet" href="/css/style.css">
-<link rel="stylesheet" href="/css/consent.css">
 <style>
   .legal { max-width: 880px; margin: 0 auto; padding: 70px 0 60px; }
   .legal h1 { font-size: clamp(28px, 4.5vw, 40px); font-weight: 900; margin-bottom: 10px; }
@@ -42,7 +41,7 @@
 <div class="hearts" id="hearts"></div>
 
 <header class="topnav">
-  <a class="brand" href="/"><span class="h">💜</span><b>LOVEBOT</b></a>
+  <a class="brand" href="/"><img class="h" src="/assets/img/Menu.png" alt="🥀 HelloKitty Baby Maxi"><b>HELLOKITTY BABY MAXI</b></a>
   <button class="nav-burger" onclick="this.nextElementSibling.classList.toggle('open')" aria-label="Menü">☰</button>
   <nav class="nav-links">
     <a href="/">Start</a>
@@ -60,8 +59,8 @@
 
 <div class="wrap-page">
   <div class="legal">
-    <h1>💜 Impressum</h1>
-    <p class="lead">Angaben gemäß § 5 TMG — wer hinter LoveBot steckt und wie man uns erreicht.</p>
+    <h1> Impressum</h1>
+    <p class="lead">Angaben gemäß § 5 TMG — wer hinter HelloKitty Baby Maxi 💔 steckt und wie man uns erreicht.</p>
 
     <div id="impBanner" class="banner-warn" style="display:none"></div>
 
@@ -123,7 +122,7 @@
 <footer>
   <div class="foot-inner">
     <div>
-      <div class="foot-brand"><span class="h">💜</span><b>LOVEBOT</b></div>
+      <div class="foot-brand"><img class="h" src="/assets/img/Menu.png" alt="🥀 HelloKitty Baby Maxi"><b>HELLOKITTY BABY MAXI</b></div>
       <p class="foot-desc">Der WhatsApp-Bot mit Herz — gebaut von Maxichen. Liebe, Spiele, Economy, KI und ein Live-Dashboard in einem.</p>
     </div>
     <div>
@@ -148,7 +147,7 @@
   </div>
   <div class="foot-bottom">
     <p id="footOwner"></p>
-    <p style="margin-top:6px">© <span id="year">2026</span> LoveBot by Maxichen 2026 · <a href="https://maxichen.gamebot.me" target="_blank" rel="noopener">maxichen.gamebot.me</a> · <a href="https://maxichen.de" target="_blank" rel="noopener">maxichen.de</a> · Made with 💜</p>
+    <p style="margin-top:6px">© <span id="year">2026</span> HelloKitty Baby Maxi 💔 by Maxichen 2026 · <a href="https://maxichen.gamebot.me" target="_blank" rel="noopener">maxichen.gamebot.me</a> · <a href="https://maxichen.de" target="_blank" rel="noopener">maxichen.de</a> · Made with </p>
   </div>
 </footer>
 
@@ -173,7 +172,7 @@
     var status = document.getElementById('impStatus');
     if (data.status && data.status.kommerziell) {
       var g = data.gewerblich || {};
-      status.innerHTML = esc(data.status.hinweis || 'LoveBot wird gewerblich betrieben.');
+      status.innerHTML = esc(data.status.hinweis || 'HelloKitty Baby Maxi 💔 wird gewerblich betrieben.');
       var gbox = document.getElementById('impGewerbe');
       gbox.style.display = '';
       gbox.innerHTML = '<div style="margin-top:10px">' +
@@ -182,7 +181,7 @@
         (String(g.aufsichtsbehoerde || '').trim() ? '<p>Aufsichtsbehörde: <b>' + esc(g.aufsichtsbehoerde) + '</b></p>' : '') +
         '</div>';
     } else {
-      status.innerHTML = 'Hinweis: ' + esc((data.status && data.status.hinweis) || 'LoveBot ist ein privat betriebenes Hobbyprojekt und wird ohne kommerzielle Gewinnerzielungsabsicht betrieben.');
+      status.innerHTML = 'Hinweis: ' + esc((data.status && data.status.hinweis) || 'HelloKitty Baby Maxi 💔 ist ein privat betriebenes Hobbyprojekt und wird ohne kommerzielle Gewinnerzielungsabsicht betrieben.');
     }
 
     /* Produktionscheck */

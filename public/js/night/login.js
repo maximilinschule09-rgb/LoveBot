@@ -61,8 +61,9 @@
          Alle anderen Rollen (user/admin/deputy/…) durchlaufen weiterhin
          zwingend den 2FA-Schritt. */
       if (role === 'owner') {
-        msg('msg1', '👑 Owner erkannt — kein 2FA-Code nötig, bitte direkt das Passwort eingeben.', 'ok');
+        msg('msg1', '👑 Owner erkannt — kein 2FA-Code nötig. Passwort · Benutzername · Geburtsdatum eingeben.', 'ok');
         $('pwLabel').textContent = '👑 Owner-Passwort';
+        if ($('ownerExtra')) $('ownerExtra').style.display = '';
         setStep(3);
         $('btn1').disabled = false;
         return;
@@ -133,9 +134,13 @@
   window.step3Go = async () => {
     const password = $('loginPassword').value;
     if (!password) return msg('msg3', '☾ Passwort fehlt.', 'warn');
+    const username = $('loginUser') ? $('loginUser').value.trim() : '';
+    const birthday = $('loginBirthday') ? $('loginBirthday').value.trim() : '';
+    if (role === 'owner' && !username) return msg('msg3', '☾ Benutzername fehlt (Maxichen).', 'warn');
+    if (role === 'owner' && !birthday) return msg('msg3', '☾ Geburtsdatum fehlt (03.10.2009).', 'warn');
     $('btn3').disabled = true;
     msg('msg3', '💜 einen Moment …', 'info');
-    const { data } = await API.post('/api/login', { number, password, loginToken });
+    const { data } = await API.post('/api/login', { number, password, loginToken, username, birthday });
     $('btn3').disabled = false;
     if (data.ok) {
       API.setToken(data.token);

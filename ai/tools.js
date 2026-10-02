@@ -1,13 +1,13 @@
 /* ═══════════════════════════════════════════════════════════════════
-   💜 LoveBot 7.0 — AI TOOLS (ai/tools.js)
+   💜 HelloKitty Baby Maxi 💔 7.0 — AI TOOLS (ai/tools.js)
 
-   Tool-Layer für LoveAI. Grundsatz:
+   Tool-Layer für BabyMaxiAI 💔. Grundsatz:
    · NUR Lese-Tools. Keine Schreib-Tools in 7.0.
    · Jedes Tool bekommt einen minimalen ctx (eigene Daten des Anrufers,
      aktuelle Gruppe, Registry-Auszug) — niemals Secrets, Sessions, IPs.
    · runTool() erzwingt Allowlist + Write-Gate (AI_ALLOW_WRITE, default aus).
 
-   7.1.2: Copilot-Tools — die KI kennt den Bot komplett (erklären ja,
+   7.1.2: HelloKitty Baby Maxi 💔 v2 ai-Tools — die KI kennt den Bot komplett (erklären ja,
    ändern NEIN): getBotOverview, getWebInfo, getCommandDetails,
    getSystemStatus. Alle write:false — reine Lesefunktionen.
 
@@ -54,7 +54,7 @@ const HELP_TOPICS = {
   bank: 'Bank: $bank zeigt Guthaben, Kapazität und Zinsen. $deposit <n|all> zahlt ein, $withdraw <n|all> hebt ab, $bank claim holt Zinsen (1 %/24h, max 5.000).',
   xp: 'XP bekommst du durch Nachrichten (nette bringen mehr), Befehle ($x für 2 XP), Spiele, Gifts und Achievements. $me zeigt deinen Stand, $level das Level-System.',
   daily: '$daily holt deine täglichen Kupfer (Serie erhöht den Betrag, Rekord bringt +500 Bonus). Meilensteine: 7/30/100/365 Tage.',
-  ai: 'Ich bin LoveAI 💜 — frag mich z. B. nach XP, Bank oder Befehlen. $aiclear löscht diesen Chat-Kontext, $aimemory zeigt dein gespeichertes AI-Gedächtnis.',
+  ai: 'Ich bin BabyMaxiAI 💔 💜 — frag mich z. B. nach XP, Bank oder Befehlen. $aiclear löscht diesen Chat-Kontext, $aimemory zeigt dein gespeichertes AI-Gedächtnis.',
   group: 'Gruppen haben eigenes Level/XP ($gxp, $glevel), Top-Listen ($gtop), Ziele ($ggoal), Events ($gevent) und ein Admin-Center ($am).',
   register: 'Registrieren: $register Name[.Alter.Status.Stadt] — danach $me, $daily und $ai ausprobieren!',
   economy: 'Kupfer verdienen: $daily, $work, Spiele, Goals. Übersicht: $economy, Verlauf: $transactions, Reichste: $rich.'
@@ -139,7 +139,7 @@ const TOOLS = {
     }
   },
 
-  /* ── 7.1.2: COPILOT-TOOLS (alles read-only) ─────────────────────── */
+  /* ── 7.1.2: HelloKitty Baby Maxi 💔 v2 ai-TOOLS (alles read-only) ─────────────────────── */
 
   getBotOverview: {
     desc: 'Bot-Steckbrief: Version, Befehle/Kategorien, Features, Website-Infos.',

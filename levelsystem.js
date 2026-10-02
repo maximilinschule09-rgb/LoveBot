@@ -1411,7 +1411,7 @@ export function applyCommandXp(profile, { loveAction = false, now = Date.now(), 
 }
 
 /* ─────────────────────────────────────────────────────────────────────
-   Anzeigetexte (WhatsApp-Markdown, im LoveBot-Stil)
+   Anzeigetexte (WhatsApp-Markdown, im HelloKitty Baby Maxi 💔-Stil)
    ───────────────────────────────────────────────────────────────────── */
 
 /**

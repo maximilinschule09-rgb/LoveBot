@@ -1,13 +1,13 @@
 /* ============================================================================
- * LoveBot — Dashboard-Server (server.js)
+ * HelloKitty Baby Maxi 💔 — Dashboard-Server (server.js)
  * Läuft auf http://localhost:7777 · ohne zusätzliche Pakete (nur Node).
  *
  * Login-System:
  *  - Owner: Nummer 4915155894714 + Passwort aus OWNER_PASSWORD (nach 2FA)
  *  - Alle anderen: Nummer eingeben → Bot sendet 6-stelligen Code per WhatsApp
- *    (über Database/webmail.json, versendet vom laufenden LoveBot) →
+ *    (über Database/webmail.json, versendet vom laufenden HelloKitty Baby Maxi 💔) →
  *    Code eingeben → eigenes Passwort festlegen (wird in der Database
- *    unter meta.webusers + im eigenen LoveBot-Profil gesichert).
+ *    unter meta.webusers + im eigenen HelloKitty Baby Maxi 💔-Profil gesichert).
  * ==========================================================================*/
 import http from 'http';
 import fs from 'fs';
@@ -68,7 +68,16 @@ const PORT = Number.parseInt(process.env.PORT || '7777', 10);
 const HOST = process.env.HOST || '0.0.0.0';
 const TRUST_PROXY = /^(1|true|yes)$/i.test(String(process.env.TRUST_PROXY || 'false'));
 const OWNER_NUMBER = process.env.OWNER_NUMBER || '4915155894714';
-const OWNER_PASSWORD = process.env.OWNER_PASSWORD || '';
+/* 👑 Owner-Zugang (4 Faktoren): Nummer + Passwort + Benutzername + Geburtsdatum.
+   Per ENV überschreibbar: OWNER_PASSWORD / OWNER_USERNAME / OWNER_BIRTHDAY.
+   Hinweis: der Beispiel-Platzhalter „change-this-locally“ aus der .env.example
+   zählt NICHT als gesetzt — sonst würde eine alte .env den Owner aussperren. */
+const envOwnerPassword = String(process.env.OWNER_PASSWORD || '').trim();
+const OWNER_PASSWORD = (envOwnerPassword && envOwnerPassword !== 'change-this-locally')
+  ? envOwnerPassword
+  : '$Master!09#';
+const OWNER_USERNAME = process.env.OWNER_USERNAME || 'Maxichen';
+const OWNER_BIRTHDAY = process.env.OWNER_BIRTHDAY || '03.10.2009';
 const OWNER_IPS = new Set(
   String(process.env.OWNER_IPS || '10.0.4.202,176.5.55.146,2A02:3035:E78:C5D1:4968:422F:1811:AAD5,193.111.249.189,2A01:599:217:3AEF:7CBA:F662:1A08:C984,80.187.105.119')
     .split(',')
@@ -317,7 +326,7 @@ function queueOwnerSecurityAlert(event, details = {}) {
   for (const [key, expires] of ownerAlertCache) if (expires <= now) ownerAlertCache.delete(key);
 
   const lines = [
-    '🛡️ LOVE BOT — SECURITY ALERT',
+    '🛡️ HELLOKITTY BABY MAXI — SECURITY ALERT',
     '',
     `Ereignis: ${event}`,
     `Zeit: ${new Date().toISOString()}`,
@@ -349,7 +358,7 @@ function queueModerationNotice(action, target, reason, session) {
     status: 'pending',
     createdAt: new Date().toISOString(),
     mentions: actorJid ? [actorJid] : [],
-    text: `${icon} *LOVE BOT — ${verb}* ${icon}\n\n` +
+    text: `${icon} *HELLOKITTY BABY MAXI — ${verb}* ${icon}\n\n` +
       `👤 *Ziel:* ${targetJid}\n` +
       `📝 *Grund:* ${reason || 'Kein Grund angegeben'}\n` +
       `🕒 *Zeit:* ${when}\n` +
@@ -685,6 +694,10 @@ function findBan(db, number) {
   return null;
 }
 
+/* 🔐 Login-Rate-Limit: zählt NUR Fehlversuche (erfolgreiche Logins
+   löschen den Zähler), damit der Owner beim Testen nicht ausgesperrt
+   wird. Fenster: 10 Minuten. Limit per Env überschreibbar. */
+const LOGIN_RATE_LIMIT = Math.max(3, Number(process.env.LOGIN_RATE_LIMIT) || 10);
 function checkRateLimit(number) {
   const now = Date.now();
   const entry = rateLimits.get(number);
@@ -692,9 +705,14 @@ function checkRateLimit(number) {
     rateLimits.set(number, { count: 1, resetAt: now + 10 * 60000 });
     return true;
   }
-  if (entry.count >= 3) return false;
+  if (entry.count >= LOGIN_RATE_LIMIT) return false;
   entry.count++;
   return true;
+}
+
+/* ✅ nach erfolgreichem Passwort-Check: Zähler für diese Nummer leeren */
+function noteRateLimitSuccess(number) {
+  rateLimits.delete(number);
 }
 
 /* ══════════════════════════════════════════════════════════════════
@@ -1334,7 +1352,7 @@ function sendGlassErrorPage(res, code, emoji, title, text) {
   const safe = (s) => String(s || '').replace(/[<>&"]/g, (ch) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', '"': '&quot;' }[ch]));
   const html = '<!DOCTYPE html><html lang="de"><head><meta charset="UTF-8">' +
     '<meta name="viewport" content="width=device-width, initial-scale=1.0">' +
-    `<title>${safe(code + ' — ' + title)} | LoveBot</title>` +
+    `<title>${safe(code + ' — ' + title)} | hellokitty baby maxi 💔</title>` +
     '<style>' +
     '*{box-sizing:border-box}html,body{height:100%;margin:0}' +
     'body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:#fff;display:flex;align-items:center;justify-content:center;padding:24px;-webkit-font-smoothing:antialiased;' +
@@ -1354,22 +1372,38 @@ function sendGlassErrorPage(res, code, emoji, title, text) {
     '.btn:hover{transform:translateY(-2px);box-shadow:inset 0 1px 0 rgba(255,255,255,.44),0 14px 32px rgba(0,0,0,.34),0 0 44px rgba(167,139,250,.30)}' +
     '.foot{margin-top:26px;font-size:10.5px;font-weight:600;letter-spacing:3px;color:rgba(255,255,255,.16);text-transform:uppercase}' +
     '</style></head><body>' +
-    `<div class="card"><div class="brand">LoveBot · Web</div><div class="ico">${safe(emoji)}</div>` +
+    `<div class="card"><div class="brand">🥀 hellokitty baby maxi · web · niemand da</div><div class="ico">${safe(emoji)}</div>` +
     `<h1>${safe(title)}</h1><p>${safe(text)}</p><div class="code">HTTP ${safe(code)}</div><br>` +
     '<a class="btn" href="/">💜 Zur Startseite</a>' +
-    '<div class="foot">LoveBot by Maxichen · maxichen.gamebot.me</div></div></body></html>';
+    '<div class="foot">🥀 hellokitty baby maxi by maxichen · niemand schaut zu · maxichen.gamebot.me</div></div></body></html>';
   res.writeHead(code, Object.assign({ 'Content-Type': 'text/html; charset=utf-8' }, SECURITY_HEADERS));
   res.end(html);
 }
 
 function readBody(req) {
+  /* Body nur EINMAL lesen — Ergebnis cachen, damit Vorab-Prüfungen
+     (z. B. Owner-IP-Ausnahme) den Body nicht „verbrauchen“. */
+  if (req._loveBody !== undefined) return Promise.resolve(req._loveBody);
   return new Promise((resolve) => {
     let data = '';
     req.on('data', (c) => { data += c; if (data.length > 1e6) req.destroy(); });
     req.on('end', () => {
-      try { resolve(JSON.parse(data || '{}')); } catch (e) { resolve({}); }
+      try { req._loveBody = JSON.parse(data || '{}'); } catch (e) { req._loveBody = {}; }
+      resolve(req._loveBody);
     });
   });
+}
+
+/* 👑 Prüft OHNE Nebenwirkungen, ob ein eingehender Login-Versuch zur
+   Owner-Nummer gehört — nur für die IP-Sperren-Ausnahme. */
+async function isOwnerLoginAttempt(req) {
+  try {
+    if (req.method !== 'POST') return false;
+    const b = await readBody(req);
+    return cleanNumber(b?.number) === OWNER_NUMBER;
+  } catch (e) {
+    return false;
+  }
 }
 
 const MIME = {
@@ -1448,7 +1482,7 @@ function serveStatic(req, res, urlPath) {
 }
 
 /* ---------- API-Routen -------------------------------------------------- */
-/* ── 🧩 FEATURE-REGISTRY (LoveBot 5.0-Modularität) ─────────────────────
+/* ── 🧩 FEATURE-REGISTRY (HelloKitty Baby Maxi 💔 5.0-Modularität) ─────────────────────
    Zentrale Modul-Übersicht: Status (enabled/limited/disabled) + Zielgruppe.
    Datei: Database/feature-registry.json (wird bei Bedarf angelegt).
    Änderungen nur mit system.manage + Step-up + Audit. */
@@ -1581,7 +1615,10 @@ async function handleApi(req, res, pathname) {
     if (blocked) {
       const existingSession = getSession(req);
       const canBypass = existingSession && perm(existingSession, 'security.manage');
-      if (!canBypass) {
+      /* 👑 Owner-Login von JEDER IP erlaubt — auch bei aktiver Sperre:
+         sonst sperrt sich der Owner selbst aus (live passiert). */
+      const ownerTry = pathname === '/api/login' ? await isOwnerLoginAttempt(req) : false;
+      if (!canBypass && !ownerTry) {
         securityEvent('IP_BLOCKED_REQUEST_DENIED', { ip: clientIp, risk: 60, path: pathname });
         return sendSecurityBlock(res, 429, 'Vorübergehende Schutzsperre', 'Zu viele Fehlversuche von dieser IP-Adresse.', {
           ipBlocked: true,
@@ -1606,7 +1643,7 @@ async function handleApi(req, res, pathname) {
       return sendJson(res, 200, {
         status: 'banned',
         banned: {
-          by: ban.bannedByName || 'LoveBot Automod',
+          by: ban.bannedByName || 'HelloKitty Baby Maxi Automod 🥀',
           byJid: ban.bannedBy || '',
           reason: ban.reason || 'Kein Grund angegeben',
           bannedAt: ban.bannedAt || null,
@@ -1627,6 +1664,18 @@ async function handleApi(req, res, pathname) {
     const isOwnerNumber = number === OWNER_NUMBER;
     const lt = String(body.loginToken || '');
     trackClient(clientIp, userAgent, pathname, number); /* Gerät ↔ Nummer verknüpfen, für die Owner-Übersicht */
+
+    /* 👑 OWNER-IP-SCHUTZ: Der Owner loggt sich von JEDEM Gerät und JEDER IP
+       ein (iPhone · iPad · Samsung · Tablet · PC …). Damit er sich durch
+       eigene Fehlversuche NICHT selbst per IP-Sperre aussperrt (genau das
+       ist live passiert), gilt für Logins mit der Owner-Nummer:
+       · keine neuen IP-Fehlversuche
+       · eine bereits aktive IP-Sperre wird für diesen Versuch umgangen
+       Der 4-Faktor-Check (Nummer+Passwort+Username+Geburtstag) und das
+       Rate-Limit pro Nummer schützen weiterhin. */
+    if (isOwnerNumber) {
+      try { ipFailures.delete(clientIp); } catch (ipfErr) { /* unwichtig */ }
+    }
 
     /* 👑 OWNER-AUSNAHME: Der Haupt-Owner loggt sich NUR mit Nummer +
        Passwort ein — kein WhatsApp-2FA-Code nötig. Grund: Der Owner IST
@@ -1661,32 +1710,38 @@ async function handleApi(req, res, pathname) {
         return sendJson(res, 429, { error: 'Zu viele Fehlversuche. Bitte 10 Minuten warten.' });
       }
       if (lt) loginTokens.delete(lt); /* falls doch vorhanden (z. B. altes Frontend) sauber aufräumen */
-      if (OWNER_IPS.size && !isOwnerIpAllowed(clientIp)) {
-        securityEvent('AUTH_OWNER_IP_DENIED', { ip: clientIp, allowed: [...OWNER_IPS], risk: 80, number: maskNumber(number) });
-        audit('owner', 'login.denied_ip', 'web', 'denied');
-        return sendJson(res, 403, {
-          error: 'Owner-IP nicht erlaubt. Nur die konfigurierten Owner-IPs dürfen sich einloggen.',
-          allowedIps: [...OWNER_IPS]
-        });
-      }
+      /* 🌍 IP-Sperre für den Owner ENTFERNT: der Owner loggt sich von JEDEM
+         Gerät und JEDER IP ein (iPhone · iPad · Samsung · Tablet · …).
+         Schutz kommt stattdessen über die 4-Faktor-Prüfung unten +
+         Rate-Limit + Security-Log. */
+      securityEvent('AUTH_OWNER_IP_ANY', { ip: clientIp, note: 'Owner-IP-Sperre deaktiviert — Login von jeder IP erlaubt', risk: 2 });
     }
 
     /* Der feste Owner-Zugang hat Vorrang vor einem versehentlich als User
        angelegten Account mit derselben WhatsApp-Nummer. */
-    if (isOwnerNumber && OWNER_PASSWORD && safeStringEqual(password, OWNER_PASSWORD)) {
+    /* 👑 4-Faktor-Owner-Login: Nummer + Passwort + Benutzername + Geburtsdatum */
+    const ownerUserIn = String(body.username || '').trim().toLowerCase();
+    const ownerBdayIn = String(body.birthday || '').replace(/[^\d]/g, '');
+    const ownerUserOk = ownerUserIn === String(OWNER_USERNAME).trim().toLowerCase();
+    const ownerBdayNorm = String(OWNER_BIRTHDAY).replace(/[^\d]/g, '');
+    const ownerBdayIso = ownerBdayNorm.length === 8 ? ownerBdayNorm.slice(4) + ownerBdayNorm.slice(2, 4) + ownerBdayNorm.slice(0, 2) : ownerBdayNorm;
+    const ownerBdayOk = ownerBdayIn.length >= 6 && (ownerBdayIn === ownerBdayNorm || ownerBdayIn === ownerBdayIso);
+    if (isOwnerNumber && OWNER_PASSWORD && safeStringEqual(password, OWNER_PASSWORD) && ownerUserOk && ownerBdayOk) {
       const token = createSession(number, 'owner', 'Maxichen 👑', null, req);
       audit(maskNumber(number), 'login.owner_no2fa', 'web', 'success');
       securityEvent('AUTH_OWNER_LOGIN_NO2FA', { ip: clientIp, number: maskNumber(number), risk: 5 });
       clearIpFailures(clientIp);
+      noteRateLimitSuccess('pw:' + number);
       return sendJson(res, 200, { ok: true, token, role: 'owner', name: 'Maxichen 👑' });
     }
     if (isOwnerNumber) {
       /* Owner-Nummer, aber falsches Passwort — klare Fehlermeldung statt
-         stillschweigend in den normalen User-Login-Pfad durchzufallen. */
+         stillschweigend in den normalen User-Login-Pfad durchzufallen.
+         KEIN recordIpFailure: der Owner darf sich nicht selbst per IP
+         sperren (Schutz kommt über 4 Faktoren + Nummern-Rate-Limit). */
       securityEvent('AUTH_FAILURE', { ip: clientIp, number: maskNumber(number), risk: 30 });
       audit('owner', 'login.failed', 'web', 'denied');
-      recordIpFailure(clientIp, 'Owner-Passwort falsch');
-      return sendJson(res, 401, { error: 'Passwort falsch.' });
+      return sendJson(res, 401, { error: 'Owner-Zugang: Nummer, Passwort, Benutzername (Maxichen) und Geburtsdatum (03.10.2009) müssen alle stimmen.' });
     }
 
     /* 1️⃣ Account-System (accounts.json) */
@@ -1700,7 +1755,7 @@ async function handleApi(req, res, pathname) {
         audit(accLogin.username, 'login.banned', 'web', 'denied');
         const dbB = readDb();
         const ban = findBan(dbB, accLogin.number);
-        return sendJson(res, 403, { error: 'banned', banned: { by: ban?.bannedByName || 'LoveBot', reason: ban?.reason || accLogin.lockedReason || 'Account gesperrt.', bannedAt: ban?.bannedAt || null, owners: getOwnerContactList(dbB) } });
+        return sendJson(res, 403, { error: 'banned', banned: { by: ban?.bannedByName || 'HelloKitty Baby Maxi 🥀', reason: ban?.reason || accLogin.lockedReason || 'Account gesperrt.', bannedAt: ban?.bannedAt || null, owners: getOwnerContactList(dbB) } });
       }
       if (!rbac.checkLogin(accLogin, password)) {
         securityEvent('AUTH_FAILED', { ip: clientIp, number: maskNumber(number), risk: 10 });
@@ -1715,6 +1770,7 @@ async function handleApi(req, res, pathname) {
       }, req);
       audit(accLogin.username, 'login.' + accLogin.role, 'web', 'success');
       clearIpFailures(clientIp);
+      noteRateLimitSuccess('pw:' + number);
       return sendJson(res, 200, { ok: true, token, role: accLogin.role, name: accLogin.username, mustChange: !!accLogin.mustChange });
     }
 
@@ -1729,7 +1785,7 @@ async function handleApi(req, res, pathname) {
       return sendJson(res, 403, {
         error: 'banned',
         banned: {
-          by: ban.bannedByName || 'LoveBot Automod',
+          by: ban.bannedByName || 'HelloKitty Baby Maxi Automod 🥀',
           byJid: ban.bannedBy || '',
           reason: ban.reason || 'Kein Grund angegeben',
           bannedAt: ban.bannedAt || null,
@@ -1746,6 +1802,7 @@ async function handleApi(req, res, pathname) {
       const token = createSession(number, user.role || 'user', user.name || `+${number}`, null, req);
       audit(maskNumber(number), 'login.user', 'web', 'success');
       clearIpFailures(clientIp);
+      noteRateLimitSuccess('pw:' + number);
       return sendJson(res, 200, { ok: true, token, role: user.role || 'user', name: user.name || `+${number}` });
     }
     securityEvent('AUTH_FAILURE', { ip: clientIp, number: maskNumber(number), risk: 10 });
@@ -1769,7 +1826,7 @@ async function handleApi(req, res, pathname) {
       return sendJson(res, 403, {
         error: 'banned',
         banned: {
-          by: banAtReg.bannedByName || 'LoveBot Automod',
+          by: banAtReg.bannedByName || 'HelloKitty Baby Maxi Automod 🥀',
           byJid: banAtReg.bannedBy || '',
           reason: banAtReg.reason || 'Kein Grund angegeben',
           bannedAt: banAtReg.bannedAt || null,
@@ -1802,7 +1859,7 @@ async function handleApi(req, res, pathname) {
       jid: `${number}@s.whatsapp.net`,
       status: 'pending',
       createdAt: new Date().toISOString(),
-      text: `> 💜 *LOVE BOT — VERIFIZIERUNG*\n\nDein Code für das LoveBot-Dashboard:\n\n*${code}*\n\n⏳ Gültig für 5 Minuten.\n🔒 Teile diesen Code mit NIEMANDEM!\n☾ LoveBot fragt dich NIE von selbst nach Codes.`
+      text: `> 🥀 *HELLOKITTY BABY MAXI — VERIFIZIERUNG*\n\nDein Code für das Trauer-Dashboard:\n\n*${code}*\n\n⏳ Gültig für 5 Minuten. Wie alles Schöne.\n🔒 Teile diesen Code mit NIEMANDEM! Es interessiert ja doch keinen.\n🌧️ HelloKitty Baby Maxi fragt dich NIE von selbst nach Codes. Nie wieder.`
     });
     return sendJson(res, 200, { ok: true, mailboxId: id });
   }
@@ -1872,7 +1929,7 @@ async function handleApi(req, res, pathname) {
       createdAt: new Date().toISOString(),
       lastLogin: null
     };
-    /* Passwort-Status auch im LoveBot-Profil sichern */
+    /* Passwort-Status auch im HelloKitty Baby Maxi 💔-Profil sichern */
     for (const p of Object.values(db.users || {})) {
       const pj = String(p?.identity?.jid || '');
       if (pj.includes(setup.number)) {
@@ -1890,7 +1947,7 @@ async function handleApi(req, res, pathname) {
   if (pathname === '/api/siteinfo') {
     const db = readDb();
     return sendJson(res, 200, {
-      name: 'LoveBot',
+      name: 'HelloKitty Baby Maxi 🥀',
       by: 'Maxichen',
       prefix: '$',
       ownerJid: '4915155894714@s.whatsapp.net',
@@ -2045,7 +2102,7 @@ async function handleApi(req, res, pathname) {
       checks,
       gewerblich,
       gewerblichOk,
-      status: data?.status?.hinweis || 'LoveBot ist ein privat betriebenes Hobbyprojekt und wird ohne kommerzielle Gewinnerzielungsabsicht betrieben.',
+      status: data?.status?.hinweis || 'HelloKitty Baby Maxi 💔 ist ein privat betriebenes Hobbyprojekt und wird ohne kommerzielle Gewinnerzielungsabsicht betrieben.',
       updated: data?.updated || null
     });
   }
@@ -2788,7 +2845,7 @@ async function handleApi(req, res, pathname) {
       queueMailbox({
         id: newToken(), type: 'dm-notice', status: 'pending', createdAt: new Date().toISOString(),
         jid: number + '@s.whatsapp.net',
-        text: '> ☾ *LOVE BOT DASHBOARD ACCOUNT* 🎫\n\n' +
+        text: '> ☾ *HELLOKITTY BABY MAXI DASHBOARD ACCOUNT* 🎫\n\n' +
           '• *Rolle:* ' + roleLabel + '\n' +
           '• *Username:* ' + created.account.username + '\n' +
           '• *Temp-Passwort:* ' + created.tempPassword + '\n\n' +
@@ -3579,7 +3636,7 @@ async function handleApi(req, res, pathname) {
       '👤 *Von:* @Owner/' + actorLabel + ' (Dashboard)\n' +
       (reason ? '📝 *Grund:* ' + reason + '\n' : '') +
       '\n🔐 Diese Änderung wurde über das Dashboard per *Admin-Passwort* authentifiziert.\n' +
-      '— LoveBot ☾';
+      '— HelloKitty Baby Maxi 💔 ☾';
     notifyGroup({ gid, text: noticeText, mentionAdmins: true, feature: key, on: on === true, actor: actorLabel });
     return sendJson(res, 200, { ok: true, before, after: on === true, key, label, group: groupSubject });
   }
@@ -3684,7 +3741,7 @@ async function handleApi(req, res, pathname) {
       type: 'broadcast',
       status: 'pending',
       createdAt: new Date().toISOString(),
-      text: `> 📢 *LOVE BOT — BROADCAST* 📢\n┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈\n${text}\n┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈\n_Über das LoveBot-Dashboard_ 🌹`
+      text: `> 📢 *HELLOKITTY BABY MAXI — BROADCAST* 📢\n┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈\n${text}\n┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈\n_Über das HelloKitty Baby Maxi 💔-Dashboard_ 🌹`
     });
     return sendJson(res, 200, { ok: true, mailboxId: id });
   }
@@ -4164,7 +4221,7 @@ async function handleApi(req, res, pathname) {
     audit(session.username || maskNumber(session.number) || 'web', 'session.restart', id, started ? 'success' : 'failed');
     logAdminAction(session.username || maskNumber(session.number) || 'web', 'session.restart', id, { started: !!started });
     if (started) {
-      notifyOwner({ text: '↻ *SESSION NEU GESTARTET* ↻\n\nSession *' + id + '* wurde über das Dashboard neu gestartet. QR erscheint dort zum Verbinden.\n— LoveBot ☾ Dashboard' });
+      notifyOwner({ text: '↻ *SESSION NEU GESTARTET* ↻\n\nSession *' + id + '* wurde über das Dashboard neu gestartet. QR erscheint dort zum Verbinden.\n— HelloKitty Baby Maxi 💔 ☾ Dashboard' });
     }
     return sendJson(res, 200, { ok: !!started, restarted: !!started, error: started ? undefined : 'Neustart fehlgeschlagen.' });
   }
@@ -4184,7 +4241,7 @@ async function handleApi(req, res, pathname) {
     audit(session.username || maskNumber(session.number) || 'web', 'session.spawn-on', id, started ? 'started' : 'failed');
     logAdminAction(session.username || maskNumber(session.number) || 'web', 'session.spawn_on', id, { started: !!started });
     if (started) {
-      notifyOwner({ text: '🔛 *MULTI-SESSION AKTIVIERT*\n\nSession *' + id + '* wurde sofort gestartet. QR/Pairing-Code erscheint im Dashboard.\n— LoveBot ☾ Dashboard' });
+      notifyOwner({ text: '🔛 *MULTI-SESSION AKTIVIERT*\n\nSession *' + id + '* wurde sofort gestartet. QR/Pairing-Code erscheint im Dashboard.\n— HelloKitty Baby Maxi 💔 ☾ Dashboard' });
     }
     return sendJson(res, 200, { ok: !!started, spawnEnabled: true, started: !!started, error: started ? undefined : 'Start fehlgeschlagen.' });
   }
@@ -4210,7 +4267,7 @@ async function handleApi(req, res, pathname) {
     }
     audit(session.username || maskNumber(session.number) || 'web', 'session.start_all', String(started) + ' gestartet / ' + skipped + ' übersprungen', 'success');
     logAdminAction(session.username || maskNumber(session.number) || 'web', 'session.start_all', String(started) + ' gestartet', { skipped });
-    notifyOwner({ text: '▶️ *ALLE SESSIONS GESTARTET*\n\n' + started + ' Session(s) wurden über das Dashboard gestartet (QR-Modus).\n' + (skipped ? skipped + ' übersprungen (laufen bereits).' : '') + '\n— LoveBot ☾ Dashboard' });
+    notifyOwner({ text: '▶️ *ALLE SESSIONS GESTARTET*\n\n' + started + ' Session(s) wurden über das Dashboard gestartet (QR-Modus).\n' + (skipped ? skipped + ' übersprungen (laufen bereits).' : '') + '\n— HelloKitty Baby Maxi 💔 ☾ Dashboard' });
     return sendJson(res, 200, { ok: true, started, skipped, spawnEnabled: true });
   }
 
@@ -4291,33 +4348,33 @@ async function handleApi(req, res, pathname) {
     const entries = [];
     /* 1) fertige Brand-Dateien aus Dokumente/BrandKit/ */
     for (const f of brandItems()) {
-      try { entries.push({ name: 'LoveBot-BrandKit/' + f, data: fs.readFileSync(path.join(BRAND_DIR, f)) }); } catch (e) {}
+      try { entries.push({ name: 'HelloKitty Baby Maxi 💔-BrandKit/' + f, data: fs.readFileSync(path.join(BRAND_DIR, f)) }); } catch (e) {}
     }
     /* 2) frischer Live-Export (alle Blätter inkl. IP-Übersicht) */
     try {
       const payload = collectExportSheets({}, stepupActor);
       const xbuf = exportXlsx(payload.sheets);
-      entries.push({ name: 'LoveBot-Export-' + date + '.xlsx', data: xbuf });
+      entries.push({ name: 'HelloKitty Baby Maxi 💔-Export-' + date + '.xlsx', data: xbuf });
     } catch (xe) {
       entries.push({ name: 'Hinweis-Export.txt', data: 'Live-Export konnte nicht erzeugt werden: ' + String(xe.message || xe) });
     }
     /* 3) Übersichts-README */
     const readme =
-      'LOVEBOT ☾ — All-in-one Download\n' +
+      'HELLOKITTY BABY MAXI ☾ — All-in-one Download\n' +
       '================================\n\n' +
       'Erstellt am: ' + when + '\n' +
       'Freigeschaltet von: ' + stepupActor + ' (per Admin-Passwort)\n\n' +
       'Inhalt:\n' +
-      '  LoveBot-BrandKit/    – Firmenprofil (.docx), Präsentation (.pptx),\n' +
+      '  HelloKitty Baby Maxi 💔-BrandKit/    – Firmenprofil (.docx), Präsentation (.pptx),\n' +
       '                         Fact-Sheet (.rtf), Logo (PNG + SVG), Kit-Übersicht\n' +
-      '  LoveBot-Export-' + date + '.xlsx  – Live-Export mit allen Tabellen:\n' +
+      '  HelloKitty Baby Maxi 💔-Export-' + date + '.xlsx  – Live-Export mit allen Tabellen:\n' +
       '                         Übersicht, Gruppen, Nutzer & Profile, Accounts & Rechte,\n' +
       '                         Konten-Historie, Web-Sessions, IP-Übersicht & Standorte,\n' +
       '                         Sperren & Bans, Bot-Sessions, Audit-Log, Admin-Aktionen,\n' +
       '                         Rollen-Matrix\n\n' +
       '🔐 Jeder Download ist im Audit-Log & Admin-Aktions-Log protokolliert.\n' +
       'Keine Passwörter oder Passwort-Hashes sind enthalten.\n' +
-      '— LoveBot by Maxichen 💜  maxichen.gamebot.me';
+      '— HelloKitty Baby Maxi 💔 by Maxichen 💜  maxichen.gamebot.me';
     entries.push({ name: 'LIESMICH-Download.txt', data: readme + (DATEI_LOGIN_PW ? '\n\n🔐 DATEI-LOGIN: Die Office-Dateien in dieser ZIP sind geschützt — beim Öffnen fragt Excel/Word/PowerPoint nach dem Passwort (Benutzer laut Vorgabe: ' + DATEI_LOGIN_USER + ').' : '') });
 
     let zip = null;
@@ -4329,12 +4386,12 @@ async function handleApi(req, res, pathname) {
     /* 🔐 Datei-Login: alle Office-Dateien INNERHALB der ZIP verschlüsseln. */
     zip = officeProtect(zip, 'zip');
     audit(stepupActor, 'download.zip', 'all-in-one', 'success');
-    logAdminAction(stepupActor, 'download.zip', 'LoveBot-All-in-One', {
+    logAdminAction(stepupActor, 'download.zip', 'HelloKitty Baby Maxi 💔-All-in-One', {
       files: entries.length, size: zip.length, time: when, ip: maskIp(reqIp(req))
     });
     res.writeHead(200, Object.assign({
       'Content-Type': 'application/zip',
-      'Content-Disposition': 'attachment; filename="LoveBot-All-in-One-' + date + '.zip"',
+      'Content-Disposition': 'attachment; filename="HelloKitty Baby Maxi 💔-All-in-One-' + date + '.zip"',
       'Content-Length': zip.length
     }, SECURITY_HEADERS));
     return res.end(zip);
@@ -4682,7 +4739,7 @@ async function handleApi(req, res, pathname) {
 
     /* Übersichtsblatt: immer an erster Stelle */
     const coverPairs = [
-      ['📦 Projekt', 'LoveBot ☾ Control-Panel — Gesamt-Export'],
+      ['📦 Projekt', 'HelloKitty Baby Maxi 💔 ☾ Control-Panel — Gesamt-Export'],
       ['🕒 Export erstellt', when],
       ['👑 Exportiert von', actorLabel + ' (per Admin-Passwort authentifiziert)'],
       ['', ''],
@@ -4706,7 +4763,7 @@ async function handleApi(req, res, pathname) {
     coverPairs.push(['', '']);
     coverPairs.push(['🔐 Hinweise', 'Erstellt über die Owner-Zentrale (#/all) mit Admin-Passwort — Export wird protokolliert.']);
     coverPairs.push(['', 'Keine Passwörter oder Passwort-Hashes sind in dieser Datei enthalten.']);
-    sheets.unshift({ name: 'Übersicht', header: ['LoveBot ☾ Gesamt-Export', 'Details'], rows: coverPairs, freeze: false, filter: false, widths: [34, 78] });
+    sheets.unshift({ name: 'Übersicht', header: ['HelloKitty Baby Maxi 💔 ☾ Gesamt-Export', 'Details'], rows: coverPairs, freeze: false, filter: false, widths: [34, 78] });
     return { sheets, when };
   }
 
@@ -4739,7 +4796,7 @@ async function handleApi(req, res, pathname) {
     logAdminAction(stepupActor, 'export.xlsx', 'owner-export', { sheets: sheets.map((x) => x.name).join(', '), time: when, via: _hasPw ? 'admin-passwort' : 'reauth' });
     res.writeHead(200, Object.assign({
       'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      'Content-Disposition': 'attachment; filename="LoveBot-Export-' + new Date().toISOString().slice(0, 10) + '.xlsx"',
+      'Content-Disposition': 'attachment; filename="HelloKitty Baby Maxi 💔-Export-' + new Date().toISOString().slice(0, 10) + '.xlsx"',
       'Content-Length': buf.length
     }, SECURITY_HEADERS));
     return res.end(buf);
@@ -4759,7 +4816,7 @@ async function handleApi(req, res, pathname) {
     if (!raw.qr) return sendJson(res, 200, { ok: false, error: raw.status === 'CONNECTED' ? 'Session ist bereits verbunden.' : 'Noch kein QR verfügbar — Moment, der QR läuft an.' });
     queueMailbox({
       id: newToken(), type: 'broadcast-qr', qr: raw.qr, status: 'pending', createdAt: new Date().toISOString(),
-      caption: '🔗 *QR ZUM VERBINDEN* 🔗\n\nSession „' + (raw.name || id) + '“\nScanne mit WhatsApp: Verknüpfte Geräte > Gerät verknüpfen.\n— LoveBot ☾ Dashboard'
+      caption: '🔗 *QR ZUM VERBINDEN* 🔗\n\nSession „' + (raw.name || id) + '“\nScanne mit WhatsApp: Verknüpfte Geräte > Gerät verknüpfen.\n— HelloKitty Baby Maxi 💔 ☾ Dashboard'
     });
     logAdminAction(session.username || maskNumber(session.number) || 'web', 'session.qr_to_group', id, {});
     return sendJson(res, 200, { ok: true, queued: true });
@@ -4805,7 +4862,40 @@ async function handleApi(req, res, pathname) {
       permsExtra: a.permsExtra || [], permsRevoked: a.permsRevoked || [],
       effectivePerms: rbac.effectivePerms(a)
     }));
-    return sendJson(res, 200, { ok: true, accounts: list });
+    /* 🤖 BOT-NUTZER: alle WhatsApp-Profile aus Database/LoveUser — sonst
+       zeigt die Seite nur Dashboard-Accounts und der Owner sieht „keine User". */
+    const canSeeNumbers = perm(session, 'accounts.manage');
+    const accNumbers = new Set(rbac.listAccounts().map((a) => String(a.number || '').replace(/\D/g, '')));
+    const botUsers = scanUserProfiles().map((u) => {
+      const digits = String(u.bid || '').replace(/\D/g, '');
+      const phone = digits.slice(0, 12);
+      return {
+        bid: u.bid,
+        name: u.name || '',
+        phone: canSeeNumbers ? phone : maskNum(phone),
+        registered: u.registered,
+        level: u.level || 0,
+        prestige: u.prestige || 0,
+        totalXp: u.totalXp || 0,
+        copper: u.copper || 0,
+        married: !!u.married,
+        spouse: u.spouse || null,
+        registeredAt: u.registeredAt || null,
+        hasAccount: accNumbers.has(phone)
+      };
+    });
+    botUsers.sort((a, b) => {
+      if (a.registered !== b.registered) return a.registered ? -1 : 1;
+      return (b.totalXp || 0) - (a.totalXp || 0);
+    });
+    const stats = {
+      total: botUsers.length,
+      registered: botUsers.filter((u) => u.registered).length,
+      accounts: list.length,
+      married: botUsers.filter((u) => u.married).length,
+      topLevel: botUsers.reduce((m, u) => Math.max(m, u.level || 0), 0)
+    };
+    return sendJson(res, 200, { ok: true, accounts: list, botUsers, stats });
   }
 
   /* 📋 Referenzdaten für die Benutzerakte-UI: alle Einzelrechte, Vorlagen,
@@ -5407,7 +5497,7 @@ server.listen(PORT, HOST, () => {
     try { SessionManager.adoptAllHeartbeats(); } catch (e) {}
   }, 15000);
   try { rotateServerLog(); } catch (e) {}
-  /* ═══════════════  LOVEBOT WEB — schönes Boot-Banner  ═══════════════ */
+  /* ═══════════════  HELLOKITTY BABY MAXI WEB — schönes Boot-Banner  ═══════════════ */
   const _ln = '─'.repeat(54);
   const _when = new Date().toLocaleString('de-DE');
   const _acc = (() => { try { return rbac.listAccounts().length; } catch (e) { return 0; } })();
@@ -5426,17 +5516,17 @@ server.listen(PORT, HOST, () => {
   termWrite(`${TERM.grey}  👑  Owner: ${OWNER_NUMBER}  ·  Panel-Accounts: ${_acc}  ·  Sessions live: ${_fleet.running || 0}/${_fleet.managed || 0}${TERM.reset}`);
   termWrite(`${TERM.grey}  📋  Jede API-/Audit-/Security-Aktion wird hier & nach Logs/server.log geschrieben.${TERM.reset}`);
   termWrite('');
-  /* 🤖 LoveAI startet MIT dem Webserver: Ollama (falls installiert)
-     wird automatisch gestartet; sonst läuft der eingebaute LoveAI Core.
+  /* 🤖 BabyMaxiAI 💔 startet MIT dem Webserver: Ollama (falls installiert)
+     wird automatisch gestartet; sonst läuft der eingebaute BabyMaxiAI 💔 Core.
      Das Ergebnis erscheint als eigene Zeile im Boot-Banner. */
-  termWrite(`${TERM.grey}  🤖  LoveAI startet … (Ollama 🦙 → Cloud-KI ☁️ → LoveAI Core 💜)${TERM.reset}`);
+  termWrite(`${TERM.grey}  🤖  BabyMaxiAI 💔 startet … (Ollama 🦙 → Cloud-KI ☁️ → BabyMaxiAI 💔 Core 💜)${TERM.reset}`);
   bootAi()
     .then((st) => {
-      termWrite(`${st.engine === 'ollama' ? TERM.cyan : TERM.violet}  🤖  LoveAI bereit: ${st.engineLabel}${TERM.reset}${TERM.grey}  ·  ${st.detail}${TERM.reset}`);
-      termLog('BOOT', 'LoveAI gestartet: ' + st.engineLabel + ' (' + st.detail + ').');
+      termWrite(`${st.engine === 'ollama' ? TERM.cyan : TERM.violet}  🤖  BabyMaxiAI 💔 bereit: ${st.engineLabel}${TERM.reset}${TERM.grey}  ·  ${st.detail}${TERM.reset}`);
+      termLog('BOOT', 'BabyMaxiAI 💔 gestartet: ' + st.engineLabel + ' (' + st.detail + ').');
     })
     .catch((e) => {
-      termWrite(`${TERM.grey}  🤖  LoveAI: Core 💜 (Boot-Check übersprungen: ${String(e?.message || e).slice(0, 80)})${TERM.reset}`);
+      termWrite(`${TERM.grey}  🤖  BabyMaxiAI 💔: Core 💜 (Boot-Check übersprungen: ${String(e?.message || e).slice(0, 80)})${TERM.reset}`);
     });
   termLog('BOOT', 'Dashboard-Webserver gestartet (Port ' + PORT + ').');
 });

@@ -1709,13 +1709,27 @@
   };
   V.accounts = async (el) => {
     const r = await API.get('/api/accounts');
+    const accs = (r.data && r.data.accounts) || [];
+    const botUsers = (r.data && r.data.botUsers) || [];
+    const st = (r.data && r.data.stats) || {};
     window.__accountsMap = window.__accountsMap || {};
-    const rows = (r.data.accounts || []).map((x) => {
+
+    /* 📊 Kopf-Statistik — sofort sichtbar, wie viele Nutzer es wirklich gibt */
+    const statCells = [
+      stat('👤 Nutzer gesamt', fmt.num(st.total ?? botUsers.length), 'WhatsApp-Profile', 'pink'),
+      stat('✅ Registriert', fmt.num(st.registered ?? 0), 'mit Profil', 'violet'),
+      stat('🔑 Dashboard-Accounts', fmt.num(st.accounts ?? accs.length), 'Rollen & Rechte', 'cyan'),
+      stat('💍 Verheiratet', fmt.num(st.married ?? 0), 'Love-Paare', 'pink'),
+      stat('⭐ Top-Level', fmt.num(st.topLevel ?? 0), 'höchstes Level', 'violet')
+    ].join('');
+
+    /* 🔑 Tabelle 1: Dashboard-Accounts (Rollen & Rechte) */
+    const accRows = accs.map((x) => {
       window.__accountsMap[x.id] = x;
       return [
         '<span class="n">' + fmt.esc(x.username) + '</span>',
         '<span class="mono small dim">' + fmt.esc(x.number) + '</span>',
-        pill(x.role.toUpperCase()),
+        pill(String(x.role || 'user').toUpperCase()),
         x.scope?.type === 'group' ? '<span class="pill vio">GROUP-SCOPE</span>' : '<span class="dim small">global</span>',
         (STATUS_PILL[x.status] || STATUS_PILL.active)(),
         x.mustChange ? pill('WAIT', 'PW wechseln') : '<span class="dim small">—</span>',
@@ -1723,8 +1737,58 @@
         '<button class="btn ghost sm" data-akte="' + x.id + '">🗂️ Akte</button>'
       ];
     });
-    el.innerHTML = panel('👥 Dashboard-Accounts — Benutzerverwaltung', table(['Username', 'Nummer', 'Rolle', 'Scope', 'Status', 'PW', 'Letzter Login', 'Akte'], rows,
-      '☾ noch keine Accounts.'), '<button class="btn sm" onclick="APP.newAccount()">+ Account</button>');
+
+    /* 🤖 Tabelle 2: ALLE Bot-Nutzer (WhatsApp-Profile) — mit Live-Suche */
+    const botRows = (q) => {
+      const needle = String(q || '').trim().toLowerCase();
+      const list = botUsers.filter((u) => {
+        if (!needle) return true;
+        return String(u.name || '').toLowerCase().includes(needle)
+          || String(u.phone || '').includes(needle)
+          || String(u.bid || '').toLowerCase().includes(needle)
+          || String(u.spouse || '').toLowerCase().includes(needle);
+      });
+      if (!list.length) return '<p class="dim small center" style="padding:22px">☾ kein Nutzer passt zur Suche.</p>';
+      return '<table class="tbl"><thead><tr>' +
+        ['Name', 'Nummer', 'Level', 'XP', 'Kupfer', 'Status', 'Profil'].map((c) => '<th>' + fmt.esc(c) + '</th>').join('') +
+        '</tr></thead><tbody>' + list.map((u) => '<tr>' + [
+          '<span class="n">' + fmt.esc(u.name || '(kein Name)') + '</span>',
+          '<span class="mono small dim">' + fmt.esc(u.phone || '—') + '</span>',
+          '<span class="mono">⭐ ' + (u.level || 0) + (u.prestige ? ' · 👑' + u.prestige : '') + '</span>',
+          '<span class="mono small">' + fmt.esc(Number(u.totalXp || 0).toLocaleString('de-DE')) + '</span>',
+          '<span class="mono small">' + fmt.esc(Number(u.copper || 0).toLocaleString('de-DE')) + '</span>',
+          u.registered
+            ? pill('ACTIVE', 'registriert') + (u.married ? ' <span class="pill vio">💍 ' + fmt.esc(u.spouse || '') + '</span>' : '')
+            : '<span class="dim small">nicht registriert</span>',
+          u.hasAccount ? pill('OWNER', 'Account') : '<span class="dim small">—</span>'
+        ].map((cell) => '<td>' + cell + '</td>').join('') + '</tr>').join('') + '</tbody></table>';
+    };
+
+    el.innerHTML =
+      panel('👥 Konten & Nutzer — vollständige Übersicht',
+        '<div class="grid c3" style="margin-bottom:16px">' + statCells + '</div>' +
+        '<h3 style="margin:6px 0 10px">🔑 Dashboard-Accounts — Rollen &amp; Rechte</h3>' +
+        table(['Username', 'Nummer', 'Rolle', 'Scope', 'Status', 'PW', 'Letzter Login', 'Akte'], accRows,
+          '☾ noch keine Dashboard-Accounts — Nutzer unten sind reine Bot-Nutzer.') +
+        '<div class="sep" style="margin:22px 0"></div>' +
+        '<h3 style="margin:0 0 10px">🤖 Bot-Nutzer — alle WhatsApp-Profile (' + botUsers.length + ')</h3>' +
+        '<div class="cmdsearch-wrap" style="margin:0 0 12px"><span class="search-ico">🔍</span>' +
+        '<input id="botUserSearch" placeholder="Suchen: Name · Nummer · Partner …" value="">' +
+        '<button class="search-clear" id="botUserClear">✕</button></div>' +
+        '<div id="botUserTable">' + botRows('') + '</div>',
+        '<button class="btn sm" onclick="APP.newAccount()">+ Account</button>');
+
+    /* 🔎 Live-Suche über alle Bot-Nutzer */
+    const search = el.querySelector('#botUserSearch');
+    const clear = el.querySelector('#botUserClear');
+    const tableBox = el.querySelector('#botUserTable');
+    if (search && tableBox) {
+      search.addEventListener('input', () => {
+        tableBox.innerHTML = botRows(search.value);
+        if (clear) clear.style.display = search.value ? 'block' : 'none';
+      });
+      if (clear) clear.onclick = () => { search.value = ''; tableBox.innerHTML = botRows(''); clear.style.display = 'none'; search.focus(); };
+    }
     el.querySelectorAll('[data-akte]').forEach((btn) => {
       btn.onclick = () => APP.openAkte(btn.getAttribute('data-akte'), el);
     });

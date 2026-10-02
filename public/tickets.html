@@ -4,17 +4,16 @@
 <script src="/js/maintgate.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tickets — LoveBot Dashboard</title>
+<title>Tickets — HelloKitty Baby Maxi 💔 Dashboard</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎫</text></svg>">
 <link rel="stylesheet" href="/css/style.css">
-<link rel="stylesheet" href="/css/consent.css">
 </head>
 <body data-page="tickets">
 <div class="hearts" id="hearts"></div>
 <div class="app show">
   <aside class="sidebar" id="sidebar"></aside>
   <main class="main">
-    <div class="crumb">LoveBot / Team</div>
+    <div class="crumb">HelloKitty Baby Maxi 💔 / Team</div>
     <h1>🎫 Ticket-Center</h1>
     <p class="subline">Support-Tickets der Nutzer — beantworten, schließen, im Blick behalten.</p>
     <div id="gate"><p>Lädt …</p></div>
@@ -84,7 +83,7 @@ function render() {
 
   const list = document.getElementById('list');
   if (!DATA.tickets.length) {
-    list.innerHTML = '<div class="panel"><p>Keine Tickets in dieser Ansicht — alles ruhig hier 💜</p></div>';
+    list.innerHTML = '<div class="panel"><p>Keine Tickets in dieser Ansicht — alles ruhig hier </p></div>';
     return;
   }
   list.innerHTML = DATA.tickets.map((t) => {

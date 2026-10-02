@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════
-   💜 LoveBot 7.0 — AI LIMITS (ai/limits.js)
+   💜 HelloKitty Baby Maxi 💔 7.0 — AI LIMITS (ai/limits.js)
 
    Rate-Limits pro User (Minuten/Stunden-Fenster in-memory, Tages-Zähler
    persistent via ai.json-Stats). Schützt CPU/RAM des Hosts.

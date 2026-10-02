@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════
-   💜 LoveBot 7.0 — AI ENGINE (ai/engine.js)
+   💜 HelloKitty Baby Maxi 💔 7.0 — AI ENGINE (ai/engine.js)
 
    Zentrale Chat-Orchestrierung:
    Limits → Provider-Health (30 s Cache) → Modell-Check → Memory → ReAct.
@@ -28,7 +28,7 @@ export function getProvider() {
 export function refreshProvider() {
   const cfg = aiConfig();
   /* Mock bleibt nur erhalten, wenn explizit injiziert (Tests) — nie aus Config.
-     Standard ist die Chain: Ollama, wenn bereit — sonst LoveAI Core. */
+     Standard ist die Chain: Ollama, wenn bereit — sonst BabyMaxiAI 💔 Core. */
   if (!provider || provider.name !== 'mock') provider = createProvider('chain', cfg);
   return provider;
 }

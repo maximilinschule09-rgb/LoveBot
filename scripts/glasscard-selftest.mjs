@@ -110,19 +110,20 @@ async function verify(file, checks) {
    Balken beginnt bei x=58 → Pixelkoordinaten = SVG × 2 (Scale 2).     */
 const failsPing = await verify('/tmp/ping-card.png', [
   ['Vollflächiger dunkler Hintergrund', ({ px }) => px(200, 40)[3] === 255 && px(200, 40)[0] < 90],
-  ['Titel „PING-REPORT“ gerendert', ({ count }) => count(150, 160, 1700, 230, 170) > 200],
-  ['Herz-Marke gerendert (violett/pink)', ({ px }) => Math.abs(px(120, 128)[0] - 221) < 60],
-  ['Health-Balken gefüllt (Gradient-Anfang violett)', ({ px }) => px(140, 450)[2] > 200 && px(140, 450)[0] > 120],
-  ['Score-Text gerendert', ({ count }) => count(1200, 340, 1780, 430, 150) > 200],
+  ['Titel „ping-report.“ gerendert (ausgeblichen)', ({ count }) => count(150, 160, 1700, 230, 140) > 200],
+  ['Gebrochene Herz-Marke: beide Hälften wund-rose', ({ px }) => px(110, 120)[0] > 100 && px(110, 120)[1] < 110 && px(130, 120)[0] > 100 && px(130, 120)[1] < 120],
+  ['… und der Riss dazwischen ist dunkel', ({ px }) => px(120, 128)[0] < 60 && px(120, 128)[1] < 60],
+  ['Health-Balken gefüllt (Prellungsviolett)', ({ px }) => px(140, 450)[2] > 110 && px(140, 450)[0] > 80 && px(140, 450)[2] > px(140, 450)[1]],
+  ['Score-Text gerendert', ({ count }) => count(1200, 340, 1780, 430, 120) > 200],
   ['Section-Header + Zeilen gerendert', ({ count }) => count(60, 560, 1740, 950, 100) > 1000]
 ]);
 const failsSys = await verify('/tmp/sys-card.png', [
-  ['Titel „SYSTEM STATUS“ gerendert', ({ count }) => count(150, 160, 1700, 230, 170) > 200],
+  ['Titel „system-status.“ gerendert', ({ count }) => count(150, 160, 1700, 230, 140) > 200],
   ['Abschnitte + Zeilen gerendert', ({ count }) => count(60, 400, 1740, 1400, 100) > 800],
   ['Datei plausibel groß', ({ meta }) => meta.width === 1800 && meta.height > 2000]
 ]);
 const failsWeb = await verify('/tmp/web-card.png', [
-  ['Titel „WEBSITE-PING“ gerendert', ({ count }) => count(150, 160, 1700, 230, 170) > 200],
+  ['Titel „website-ping.“ gerendert', ({ count }) => count(150, 160, 1700, 230, 140) > 200],
   ['Host in Meta-Zeile', ({ count }) => count(150, 250, 1700, 290, 55) > 100],
   ['Zeilen gerendert', ({ count }) => count(60, 320, 1740, 1600, 100) > 800]
 ]);

@@ -4,13 +4,12 @@
 <script src="/js/maintgate.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Live-Status 💜 — LoveBot</title>
-<meta name="description" content="Läuft der LoveBot gerade? Live-Status, Nutzer, Gruppen und Heartbeat-Daten — alle 5 Sekunden aktualisiert.">
+<title>Live-Status  — HelloKitty Baby Maxi 💔</title>
+<meta name="description" content="Läuft der HelloKitty Baby Maxi 💔 gerade? Live-Status, Nutzer, Gruppen und Heartbeat-Daten — alle 5 Sekunden aktualisiert.">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png">
 <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
 <meta name="theme-color" content="#07050f">
 <link rel="stylesheet" href="/css/style.css">
-<link rel="stylesheet" href="/css/consent.css">
 </head>
 <body>
 <div class="aurora"></div>
@@ -18,7 +17,7 @@
 <div class="hearts" id="hearts"></div>
 
 <header class="topnav">
-  <a class="brand" href="/"><span class="h">💜</span><b>LOVEBOT</b></a>
+  <a class="brand" href="/"><img class="h" src="/assets/img/Menu.png" alt="🥀 HelloKitty Baby Maxi"><b>HELLOKITTY BABY MAXI</b></a>
   <button class="nav-burger" onclick="this.nextElementSibling.classList.toggle('open')" aria-label="Menü">☰</button>
   <nav class="nav-links">
     <a href="/">Start</a>
@@ -49,7 +48,7 @@
       <div class="cell"><div class="num" id="sCmds">…</div><div class="lbl">Befehle</div></div>
     </div>
     <div class="livebar" style="margin:0 auto 30px">
-      <div class="cell"><div class="num" id="sCouples">…</div><div class="lbl">💞 Paare</div></div>
+      <div class="cell"><div class="num" id="sCouples">…</div><div class="lbl">💔 Paare</div></div>
       <div class="cell"><div class="num" id="sLoveXp">…</div><div class="lbl">💗 Love-XP</div></div>
       <div class="cell"><div class="num" id="sPets">…</div><div class="lbl">🐶 Haustiere</div></div>
       <div class="cell"><div class="num" id="sAch">…</div><div class="lbl">🏆 Achievements</div></div>
@@ -63,7 +62,7 @@
       <div class="kv">
         <div class="k">Website</div><div class="v"><a href="https://maxichen.de" target="_blank" rel="noopener">maxichen.de</a></div>
         <div class="k">Dashboard</div><div class="v"><a href="https://maxichen.gamebot.me" target="_blank" rel="noopener">maxichen.gamebot.me</a></div>
-        <div class="k">Version</div><div class="v">💜 LoveBot by Maxichen 2026</div>
+        <div class="k">Version</div><div class="v"> HelloKitty Baby Maxi 💔 by Maxichen 2026</div>
       </div>
     </div>
   </section>
@@ -73,7 +72,7 @@
 <footer>
   <div class="foot-inner">
     <div>
-      <div class="foot-brand"><span class="h">💜</span><b>LOVEBOT</b></div>
+      <div class="foot-brand"><img class="h" src="/assets/img/Menu.png" alt="🥀 HelloKitty Baby Maxi"><b>HELLOKITTY BABY MAXI</b></div>
       <p class="foot-desc">Läuft gerade oder gerade nicht — hier siehst du es live. Keine Schönfärberei.</p>
     </div>
     <div>
@@ -97,7 +96,7 @@
     </div>
   </div>
   <div class="foot-bottom">
-    <p>© <span id="year">2026</span> LoveBot by Maxichen 2026 · <a href="https://maxichen.gamebot.me" target="_blank" rel="noopener">maxichen.gamebot.me</a> · <a href="https://maxichen.de" target="_blank" rel="noopener">maxichen.de</a> · Made with 💜</p>
+    <p>© <span id="year">2026</span> HelloKitty Baby Maxi 💔 by Maxichen 2026 · <a href="https://maxichen.gamebot.me" target="_blank" rel="noopener">maxichen.gamebot.me</a> · <a href="https://maxichen.de" target="_blank" rel="noopener">maxichen.de</a> · Made with </p>
   </div>
 </footer>
 
@@ -108,8 +107,8 @@
 document.getElementById('year').textContent = new Date().getFullYear();
 /* Fallback, wenn keine API erreichbar ist (statische Vorschau) */
 setTimeout(async () => {
-  if (document.getElementById('sCmds').textContent === '…' && window.LOVEBOT_COMMANDS) {
-    document.getElementById('sCmds').textContent = window.LOVEBOT_COMMANDS.reduce((a, c) => a + c.cmds.length, 0);
+  if (document.getElementById('sCmds').textContent === '…' && window.BABYMAXI_COMMANDS) {
+    document.getElementById('sCmds').textContent = window.BABYMAXI_COMMANDS.reduce((a, c) => a + c.cmds.length, 0);
   }
 }, 1200);
 </script>

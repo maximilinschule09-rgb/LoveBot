@@ -1,4 +1,4 @@
-/* LoveBot — Admin-Panel (alle Dashboard-Seiten, CDE-Style) */
+/* HelloKitty Baby Maxi 💔 — Admin-Panel (alle Dashboard-Seiten, CDE-Style) */
 if (!guardApp()) throw new Error('redirect');
 const PAGE = document.body.dataset.page || 'dashboard';
 makeHearts(10);
@@ -25,10 +25,10 @@ async function loadOverview(target) {
   el.innerHTML =
     '<div class="ov-hero" id="ovHero">' +
       '<div class="ov-hero-left">' +
-        '<div class="ov-hero-brand">💜 LoveBot <span class="pill on" id="heroPill">🟢 …</span></div>' +
+        '<div class="ov-hero-brand"> HelloKitty Baby Maxi 💔 <span class="pill on" id="heroPill">🟢 …</span></div>' +
         '<div class="ov-hero-hi" id="ovHi">Willkommen zurück 👋</div>' +
         '<div class="ov-hero-sub" id="ovSub">Alles live aus deiner Bot-Datenbank &amp; dem Heartbeat — kein Mock.</div>' +
-        '<div class="ov-hero-by">💜 LoveBot by Maxichen 2026 · maxichen.gamebot.me · maxichen.de</div>' +
+        '<div class="ov-hero-by"> HelloKitty Baby Maxi 💔 by Maxichen 2026 · maxichen.gamebot.me · maxichen.de</div>' +
       '</div>' +
       '<div class="ov-hero-right">' +
         '<a class="btn ghost sm" href="/cmd.html">📜 Befehle</a>' +
@@ -50,7 +50,7 @@ async function loadOverview(target) {
     '<div class="stat"><div class="ico">🚫</div><div class="num" id="statBans">…</div><div class="lbl">Bans</div></div>' +
     '<div class="stat"><div class="ico">⚡</div><div class="num" id="statCmds">…</div><div class="lbl">Befehle im Bot</div></div>' +
     '<div class="stat"><div class="ico">🧠</div><div class="num" id="statRam">…</div><div class="lbl">Bot-RAM</div></div>' +
-    '<div class="stat"><div class="ico">💞</div><div class="num" id="statCouples">…</div><div class="lbl">Verliebte Paare</div></div>' +
+    '<div class="stat"><div class="ico">💔</div><div class="num" id="statCouples">…</div><div class="lbl">Verliebte Paare</div></div>' +
     '<div class="stat"><div class="ico">💗</div><div class="num" id="statLoveXp">…</div><div class="lbl">Love-XP gesamt</div></div>' +
     '<div class="stat"><div class="ico">🐶</div><div class="num" id="statPets">…</div><div class="lbl">Haustiere</div></div>' +
     '<div class="stat"><div class="ico">🏆</div><div class="num" id="statAch">…</div><div class="lbl">Achievements freigeschaltet</div></div>' +
@@ -76,11 +76,11 @@ async function loadOverview(target) {
     '<div class="box"><h3>📅 Aktivität der letzten 14 Tage</h3><div class="mini-act" id="miniAct"></div></div>' +
     '<div class="box"><h3>🔥 Meistgenutzte Befehle</h3><div class="mini-cmdbar" id="miniCmds"></div></div>' +
     '</div>' +
-    '<div class="box" style="margin-top:16px"><h3>🔗 LoveBot überall erreichbar</h3>' +
+    '<div class="box" style="margin-top:16px"><h3>🔗 HelloKitty Baby Maxi 💔 überall erreichbar</h3>' +
     '<div class="kv">' +
     '<div class="k">Website</div><div class="v"><a href="https://maxichen.de" target="_blank" rel="noopener">maxichen.de</a></div>' +
     '<div class="k">Dashboard</div><div class="v"><a href="https://maxichen.gamebot.me" target="_blank" rel="noopener">maxichen.gamebot.me</a></div>' +
-    '<div class="k">Version</div><div class="v">💜 LoveBot by Maxichen 2026</div>' +
+    '<div class="k">Version</div><div class="v"> HelloKitty Baby Maxi 💔 by Maxichen 2026</div>' +
     '</div></div>';
   await refreshOverview();
 }
@@ -103,7 +103,7 @@ async function refreshOverview() {
   const ovHi = document.getElementById('ovHi');
   if (ovHi) ovHi.textContent = greet + ', ' + (getName() || 'Nutzer') + ' 👋';
   const ovSub = document.getElementById('ovSub');
-  if (ovSub && cmdStats.commands != null) ovSub.innerHTML = 'Alles live aus deiner Bot-Datenbank &amp; dem Heartbeat — kein Mock. ' + cmdStats.commands + '+ Befehle, ein Herz. 💜';
+  if (ovSub && cmdStats.commands != null) ovSub.innerHTML = 'Alles live aus deiner Bot-Datenbank &amp; dem Heartbeat — kein Mock. ' + cmdStats.commands + '+ Befehle, ein Herz. ';
 
   document.getElementById('statUsers').textContent = stats.users;
   document.getElementById('statGroups').textContent = stats.groups;
@@ -143,7 +143,7 @@ async function refreshOverview() {
 
   const tc = lp.topCouples || [];
   document.getElementById('topCouples').innerHTML = tc.length
-    ? tc.map((c, i) => '<div class="k">#' + (i + 1) + '</div><div class="v">💞 ' + esc(c.n1) + ' &amp; ' + esc(c.n2) + ' — ' + Number(c.loveXp).toLocaleString('de-DE') + ' XP (Lv. ' + c.level + ')</div>').join('')
+    ? tc.map((c, i) => '<div class="k">#' + (i + 1) + '</div><div class="v">💔 ' + esc(c.n1) + ' &amp; ' + esc(c.n2) + ' — ' + Number(c.loveXp).toLocaleString('de-DE') + ' XP (Lv. ' + c.level + ')</div>').join('')
     : '<div class="k">—</div><div class="v">Noch keine Paare registriert.</div>';
 
   /* Aktivitäts-Chart + Top-Befehle stammen aus der öffentlichen Statistik-API,
@@ -183,7 +183,7 @@ async function refreshOverview() {
 /* ═══════════ SESSION ═══════════ */
 async function loadSession() {
   view.innerHTML = '<div class="box"><h3>📡 WhatsApp-Session (aus Sessions/creds.json)</h3><div id="sessInfo" class="kv">Lade …</div></div>' +
-    '<div class="box"><h3>💡 Hinweis</h3><p class="desc" style="margin:0;font-size:13px">Die Session gehört zum LoveBot-Prozess (Love.js). Hier siehst du die echten Verbindungs-Daten — keine Fake-Infos.</p></div>';
+    '<div class="box"><h3>💡 Hinweis</h3><p class="desc" style="margin:0;font-size:13px">Die Session gehört zum HelloKitty Baby Maxi 💔-Prozess (Love.js). Hier siehst du die echten Verbindungs-Daten — keine Fake-Infos.</p></div>';
   const s = await api('/api/session');
   const el = document.getElementById('sessInfo');
   if (!s || !s.found) { el.innerHTML = '<div class="k">Status</div><div class="v">❌ Keine creds.json gefunden.</div>'; return; }
@@ -315,7 +315,7 @@ async function refreshBans() {
   if (!data) return;
   document.getElementById('banTable').innerHTML = data.bans.length
     ? data.bans.map((b) => '<tr><td class="mono">' + esc(b.key) + '</td><td class="mono">' + esc(b.jid || '—') + '</td><td>' + esc(b.reason || '—') + '</td><td>' + esc(b.bannedByName || 'Automod') + '</td><td><button class="mini" onclick="unban(\'' + esc(b.key) + '\')">Entbannen</button></td></tr>').join('')
-    : '<tr><td colspan="5" style="color:var(--muted)">Niemand ist gebannt. 💜</td></tr>';
+    : '<tr><td colspan="5" style="color:var(--muted)">Niemand ist gebannt. </td></tr>';
 }
 async function banUserFromDashboard() {
   const jid = document.getElementById('banTarget').value.trim();
@@ -364,7 +364,7 @@ async function sendBroadcast() {
 async function loadProfiles() {
   view.innerHTML =
     '<div class="box"><div class="row"><input id="profileSearch" placeholder="🔎 Suche: Name oder Nummer …" oninput="refreshProfiles()"></div></div>' +
-    '<div class="box"><h3>👤 LoveBot-Profile</h3><table><thead><tr><th>Name</th><th>BID</th><th>Level</th><th>Liebe</th><th>Wallet</th></tr></thead><tbody id="profileTable"></tbody></table></div>';
+    '<div class="box"><h3>👤 HelloKitty Baby Maxi 💔-Profile</h3><table><thead><tr><th>Name</th><th>BID</th><th>Level</th><th>Liebe</th><th>Wallet</th></tr></thead><tbody id="profileTable"></tbody></table></div>';
   await refreshProfiles();
 }
 async function refreshProfiles() {
@@ -378,7 +378,7 @@ async function refreshProfiles() {
 
 /* ═══════════ LOGS ═══════════ */
 async function loadLogs() {
-  view.innerHTML = '<div class="box"><h3>📜 Bot-Logs (Logs/lovebot.log)</h3><pre class="logs" id="logView">Lade …</pre></div><button class="mini" onclick="refreshLogs()">🔄 Aktualisieren</button>';
+  view.innerHTML = '<div class="box"><h3>📜 Bot-Logs (Logs/hellokitty baby maxi.log)</h3><pre class="logs" id="logView">Lade …</pre></div><button class="mini" onclick="refreshLogs()">🔄 Aktualisieren</button>';
   await refreshLogs();
 }
 async function refreshLogs() {
@@ -488,7 +488,7 @@ async function loadDashTickets() {
     [['open', '🟢 Offen'], ['closed', '🔒 Geschlossen'], ['all', '📋 Alle']].map(([f, l]) =>
       '<button class="ai-chip' + (dashTkFilter === f ? ' on' : '') + '" onclick="dashTkFilterSet(\'' + f + '\')">' + l + '</button>').join('') +
     '</div>' +
-    (cards || '<div class="panel"><p>Keine Tickets in dieser Ansicht. 💜</p></div>') +
+    (cards || '<div class="panel"><p>Keine Tickets in dieser Ansicht. </p></div>') +
     '<p class="hint" style="margin-top:10px">🎫 Vollansicht mit Verlauf: <a href="/tickets.html">Ticket-Center</a> · als Owner auch Ränge vergeben: <a href="#" onclick="dashGoTeam();return false">Team-Tab</a></p>';
 }
 

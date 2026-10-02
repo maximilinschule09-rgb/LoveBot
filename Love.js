@@ -70,12 +70,8 @@ import makeWASocket, {
   qrcode,
   Boom
 } from './waApi.js';
-import { qrToPng } from './qrpng.js';
 import { handleLovePlus, LOVEPLUS_HELP_CMDS, LOVEBOT_GAME_COMMANDS, getLoveSnapshot, onMarriageAccepted, awardProgressionAchievements, unlockAchievementFor, loadStore } from './loveplus.js';
-import { buildProfileCenter, buildPersonalStats, buildActivity, buildRecords, buildMilestones, buildRewards, buildProgress, buildStreakCard, buildBadgeShowcase, buildTitleOverview, socialCounters, buildXpSources, buildWeeklyReport, buildMonthlyReport, buildPrestige, buildCompare, buildCoins, buildBalance, buildBank, buildEconomy, buildTransactions, buildDailySummary, buildYearlyReport, buildDayReport, buildReport, buildLifetimeReport, buildXpMultiplier, buildPeriodsLine, buildEconomySection, buildAccount, buildTopCoins, economyHidden, buildMeActivity } from './progressstats.js';
-import { startUnregister, confirmUnregister, cancelUnregister, getPendingInfo, restoreUnregister, listUnregisterBackups, auditAdmin } from './account.js';
 import { ensureGroupExtras, getGset, setGset, groupAudit, applyGroupMessage, groupLevelInfo, topMembers, activeEvents, startGroupEvent, treasuryAdd, gbanAdd, gbanRemove, isGbanned, checkFlood, checkSpam, escalationFor, validateGroup } from './groups.js';
-import { buildGroupCenter, buildGroupInfo, buildGroupSettings, buildGxp, buildGlevel, buildGtop, buildGroupGoal, buildGroupAudit, buildMembersCard, buildGroupEconomy, buildGroupEvents } from './groupstats.js';
 import { ensureEconomy, addCoins, removeCoins, transferCoins, getBalance, capacityFor, deposit, withdraw, claimInterest, claimDaily, adminAdjustCoins, coinRollback, economyRules } from './economy.js';
 import {
   grantXp as grantLevelXp,
@@ -113,37 +109,15 @@ import {
 } from './levelsystem.js';
 import { NOTIF_TYPES, updatePrefs } from './notifications.js';
 import { notify as notifyLove } from './notifications.js';
-import { handleMediaCommand } from './mediacmds.js';
 import ytSearch from 'yt-search';
-
-/* ═══ 🏓 PING (echte Messwerte) + 🧭 ALLTAGS-TOOLS ═══ */
-import { handlePingCommand } from './pingcmd.js';
-import { buildSystemReport, renderSystemReport } from './systemReport.js';
 import { renderSysCard } from './glassCard.js';
-import { handleToolCommand } from './toolcmds.js';
-import { handleExtraCommand } from './extracmds.js';
-
-/* ═══ 📡 KANAL-SPIEGEL (WhatsApp-Kanal → aktive Chat-Ziele) ═══ */
-import { handleChannelRelay, rememberOwnerGroup, seedChannelRelay, channelRelayStatusText, ensureNewsletterLive, handleChannelRelayCommand } from './channelrelay.js';
-
-/* ═══ ❤️ LOVE CORE 2.0 · 🔒 PRIVACY · 🛡️ RATE-LIMIT ═══ */
-import * as rateLimit from './ratelimit.js';
 import { securityEvent as botSecurityEvent } from './night/security-log.js';
 import { getMaintenance, setMaintenanceOn, setMaintenanceOff } from './night/maintenance.js';
 import {
   normalizeRegistration, migrateRegistration, handlePrivacyCommand,
-  ageLabel, cityLabel, maskCity
+  ageLabel, cityLabel, maskCity, isMinor
 } from './privacy.js';
-import {
-  renderLoveProfile, renderPartner, renderDailyLove, claimDailyLove,
-  LOVE_ACTIONS, bumpLoveAction, isLoveAction, countBreakup, coupleKeyForProfile, getCore
-} from './lovecore.js';
-
-/* ═══ 📡 SESSION-SYSTEM (SessionManager + Owner-Befehle) ═══ */
-import * as SessionManager from './sessionManager.js';
-import { handleSessionCommand } from './sessioncmds.js';
 import { getHelpCategories } from './commandRegistry.js';
-
 import {
   readDb,
   writeDb,
@@ -181,17 +155,6707 @@ import {
   randomUUID
 } from './nodeApi.js';
 import c from './colorApi.js';
-import { DEFAULT_BADWORDS, findBadword, censorWord } from './badwords.js';
 import { logNightMood, nightBanner } from './night/terminal.js';
 import { nightReply } from './night/commands.js';
-import * as rbac from './night/rbac.js';
 import {
   createTicket, getTicket, listTickets, ticketStats,
   ticketDevMessage, ticketAnswerDm, ticketClosedDm, ticketListText, ticketInfoText,
   answerTicket, closeTicket, reopenTicket
 } from './tickets.js';
-import { parseDuration, muteUser, unmuteUser, getMute, listMutes, formatDuration as fmtMuteDuration } from './mute.js';
 import { startNightConsole } from './night/console.js';
+import crypto from 'crypto';
+import { fileURLToPath } from 'url';
+import { loadStore as loadPlus, saveStore as savePlus } from './loveplus.js';
+import {
+  readDatabaseStore, writeDatabaseStore } from './waApi.js';
+import {     goalTarget, GROUP_ACHIEVEMENTS, GROUP_BADGES } from './groups.js';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
+import WebP from 'node-webpmux';
+import {
+  icmpPing, tcpPing, dnsPing, httpProbe, wsPing, iqPing, sendEchoPing,
+  speedTest, edgeTrace, sysSnapshot, statsOf, sample
+} from './netping.js';
+import { renderPingCard, renderWebsiteCard } from './glassCard.js';
+import {
+      nextTitleFor, activeTitleFor, TITLES,
+  availableTitles, SPECIAL_TITLES,
+  BADGES, BADGE_AREAS, badgeProgress,
+   isoWeekKey, neededXp,  weekXpSum,
+  monthXpSum, yearXpSum, monthStatsSum, yearStatsSum, monthKey, xpMultiplierBreakdown
+} from './levelsystem.js';
+import {    sourceLabel, ecoWeekKey } from './economy.js';
+import { achievementProgress,  achievementMetrics, ACHIEVEMENT_TIERS } from './loveplus.js';
+import zlib from 'node:zlib';
+import { resolve as regResolve, search as regSearch, stats as regStats } from './commandRegistry.js';
+import process from 'node:process';
+import { collectSystem } from './health.js';
+
+/* ═══ 💔 EHEMALS EIGENE DATEIEN — jetzt hier verewigt, weil niemand sie vermisst ═══ */
+
+/* ── MERGE-START badwords ── */
+/* ============================================================================
+ * HelloKitty Baby Maxi 💔 — Badword-Filter (badwords.js)
+ * ----------------------------------------------------------------------------
+ * Hier liegt die Standard-Liste der verbotenen Wörter. Der Owner kann zur
+ * Laufzeit weitere Wörter hinzufügen ($badword add <wort>) oder entfernen
+ * ($badword remove <wort>) — das landet in Database/Database.json unter
+ * meta.badwords und wird mit dieser Liste kombiniert.
+ * ==========================================================================*/
+
+/* Standard-Liste (wird vom Owner über den Bot erweitert).               */
+const DEFAULT_BADWORDS = [
+  'arschloch',
+  'arsch',
+  'arschficker',
+  'arschgesicht',
+  'arschlecker',
+  'hurensohn',
+  'hurenshon',
+  'hure',
+  'hurenkind',
+  'fick dich',
+  'fick',
+  'ficke',
+  'fickt',
+  'gefickt',
+  'ficken',
+  'ficker',
+  'fotze',
+  'fotzengesicht',
+  'wichser',
+  'wixer',
+  'missgeburt',
+  'schlampe',
+  'dreckstück',
+  'dreckssau',
+  'dreckskerl',
+  'bastard',
+  'idiot',
+  'depp',
+  'spast',
+  'spasti',
+  'mongo',
+  'behindi',
+  'opfer',
+  'lappen',
+  'vollpfosten',
+  'nullchecker',
+  'hoden',
+  'schwanz',
+  'schwuchtel',
+  'schwuli',
+  'kanake',
+  'neger',
+  'nigga',
+  'nigger',
+  'bitch',
+  'bastard',
+  'nazi',
+  'hitler',
+  'verpiss dich',
+  'leck mich',
+  'blödmann',
+  'drecksau'
+];
+
+/* Leetspeak-/Sonderzeichen-Normalisierung, damit "4rschl0ch" & Co.     */
+/* trotzdem erkannt werden.                                             */
+const LEET_MAP = {
+  '0': 'o',
+  '1': 'i',
+  '3': 'e',
+  '4': 'a',
+  '@': 'a',
+  '5': 's',
+  '$': 's',
+  '7': 't',
+  '8': 'b',
+  '9': 'g'
+};
+
+function normalizeBadwordText(text) {
+  return String(text || '')
+    .toLowerCase()
+    .split('')
+    .map((ch) => LEET_MAP[ch] || ch)
+    .join('')
+    .replace(/[\u0300-\u036f]/g, '') // Akzente entfernen
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[*_~`|]+/g, ' ')       // Markdown-Zeichen trennen Wörter
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function matchWordList(normalized, allWords, removedSet) {
+  for (const rawWord of allWords) {
+    const word = normalizeBadwordText(rawWord);
+    if (!word || removedSet.has(word)) continue;
+
+    if (word.includes(' ')) {
+      /* Mehrwort-Phrasen: einfache Teilstringsuche */
+      if (normalized.includes(word)) return rawWord;
+      continue;
+    }
+
+    /* Einzelwörter: nur ganze Wörter zählen (mit Umlaut-/Grenzen-Check) */
+    const escaped = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const re = new RegExp(`(^|[^a-zäöüß])${escaped}([^a-zäöüß]|$)`, 'i');
+    if (re.test(normalized)) return rawWord;
+  }
+  return null;
+}
+
+/* Prüft einen Text gegen die Wortliste (+ Extra-Wörter, - entfernte).  */
+/* Liefert das gefundene Wort zurück oder null.                          */
+function findBadword(text, addedWords = [], removedWords = []) {
+  const normalized = normalizeBadwordText(text);
+  if (!normalized) return null;
+
+  const removedSet = new Set(
+    (removedWords || []).map((w) => normalizeBadwordText(w)).filter(Boolean)
+  );
+  const allWords = [...DEFAULT_BADWORDS, ...(addedWords || [])];
+
+  /* Pass 1: normale Erkennung mit Wortgrenzen */
+  const hit = matchWordList(normalized, allWords, removedSet);
+  if (hit) return hit;
+
+  /* Pass 2: Umgehungs-Versuch "f i c k d i c h" / "h u r e n s o h n" —
+     nur wenn mindestens 3 einzelne, durch Leerzeichen getrennte
+     Buchstaben im Text stehen (sonst False-Positives). */
+  if (/(?:^|\s)[a-zäöüß](?:\s[a-zäöüß]){2,}(?:\s|$)/i.test(normalized)) {
+    const collapsed = normalized.replace(/\s+/g, '');
+    for (const rawWord of allWords) {
+      const word = normalizeBadwordText(rawWord).replace(/\s+/g, '');
+      if (!word || removedSet.has(word)) continue;
+      if (collapsed.includes(word)) return rawWord;
+    }
+  }
+  return null;
+}
+
+/* Zensiert ein Wort für öffentliche Nachrichten: "hurensohn" → "h***"  */
+function censorWord(word) {
+  const w = String(word || '').trim();
+  if (w.length <= 2) return '***';
+  return `${w[0]}${'*'.repeat(Math.min(w.length - 1, 7))}`;
+}
+/* ── MERGE-END badwords ── */
+
+/* ── MERGE-START mute ── */
+/* ═══════════════════════════════════════════════════════════════════
+   🔇 HelloKitty Baby Maxi 💔 7.1.4 — MUTE-SYSTEM (mute.js)
+
+   $mute @user [zeit] [grund]  — nur Owner. Ohne Zeit = PERMANENT,
+   bis $unmute. Stumme User werden komplett ignoriert und ihre
+   Nachrichten vom Bot gelöscht (in Gruppen, sofern der Bot Admin ist).
+
+   · Speicher: Database/mutes.json  { jid: { until, by, byName, reason, at } }
+   · until = ISO-String | null (null = permanent)
+   · getMute() räumt abgelaufene Mutes automatisch weg.
+   ═══════════════════════════════════════════════════════════════════ */
+
+
+
+const FILE = path.join('Database', 'mutes.json');
+
+function load() {
+  try {
+    const st = JSON.parse(fs.readFileSync(FILE, 'utf8'));
+    return st && typeof st === 'object' ? st : {};
+  } catch (e) { return {}; }
+}
+
+function save(st) {
+  try {
+    fs.mkdirSync('Database', { recursive: true });
+    fs.writeFileSync(FILE, JSON.stringify(st, null, 2), 'utf8');
+  } catch (e) {}
+}
+
+function cleanKey(jid = '') {
+  /* Device-Suffix entfernen („4912…:5@s.whatsapp.net" → „4912…@s.whatsapp.net"),
+     aber die Domain behalten. */
+  return String(jid || '').trim().replace(/:(\d+)(?=@)/, '');
+}
+
+/* ── Zeit-Parser: „30s" · „10m"/„10min" · „2h"/„2std" · „1d" · „2w" ──
+   Plain-Zahl = Minuten. „permanent"/„perm" → null. Unbekannt → undefined. */
+function parseDuration(str = '') {
+  const s = String(str || '').trim().toLowerCase();
+  if (!s) return undefined;
+  if (['permanent', 'perm', 'unbegrenzt', 'für immer', 'fuer immer', 'forever'].includes(s)) return null;
+  const m = s.match(/^(\d+(?:[.,]\d+)?)\s*(sek|sec|s|sekunden?|m|min|minuten?|h|std|stunden?|st|d|tage?|t|w|wochen?)?$/);
+  if (!m) return undefined;
+  let n = parseFloat(m[1].replace(',', '.'));
+  if (!Number.isFinite(n) || n <= 0) return undefined;
+  const unit = m[2] || 'm';
+  if (/^(sek|sec|s|sekunden?)$/.test(unit)) n *= 1000;
+  else if (/^(m|min|minuten?)$/.test(unit)) n *= 60000;
+  else if (/^(h|std|stunden?|st)$/.test(unit)) n *= 3600000;
+  else if (/^(d|tage?|t)$/.test(unit)) n *= 86400000;
+  else if (/^(w|wochen?)$/.test(unit)) n *= 604800000;
+  return Math.round(n);
+}
+
+/* ── Mute setzen (untilMs = null → permanent) ─────────────────────── */
+function muteUser({ jid = '', by = '', byName = 'Owner', untilMs = null, reason = '' } = {}) {
+  const key = cleanKey(jid);
+  if (!key || !/@(s\.whatsapp\.net|lid|g\.us)$/.test(key)) return { ok: false, error: 'invalid-jid' };
+  const st = load();
+  const entry = {
+    jid: key,
+    until: untilMs ? new Date(Date.now() + untilMs).toISOString() : null,
+    by: cleanKey(by), byName: String(byName).slice(0, 60) || 'Owner',
+    reason: String(reason || '').slice(0, 300),
+    at: new Date().toISOString()
+  };
+  st[key] = entry;
+  save(st);
+  return { ok: true, entry };
+}
+
+function unmuteUser(jid = '') {
+  const key = cleanKey(jid);
+  const st = load();
+  if (!st[key]) return { ok: false, error: 'not-muted' };
+  const entry = st[key];
+  delete st[key];
+  save(st);
+  return { ok: true, entry };
+}
+
+/* ── Aktiver Mute? (abgelaufene werden automatisch entfernt) ──────── */
+function getMute(jid = '') {
+  const key = cleanKey(jid);
+  if (!key) return null;
+  const st = load();
+  const e = st[key];
+  if (!e) return null;
+  if (e.until && new Date(e.until).getTime() <= Date.now()) {
+    delete st[key];
+    save(st);
+    return null;
+  }
+  return e;
+}
+
+function listMutes() {
+  const st = load();
+  const out = [];
+  for (const [jid, e] of Object.entries(st)) {
+    if (e.until && new Date(e.until).getTime() <= Date.now()) continue; /* abgelaufen */
+    out.push(e);
+  }
+  return out;
+}
+
+/* Schöne Dauer-Anzeige für Bestätigungen */
+function formatDuration__mmute(ms = 0) {
+  if (ms == null) return 'permanent';
+  const s = Math.round(ms / 1000);
+  if (s < 60) return s + ' Sekunden';
+  const m = Math.round(s / 60);
+  if (m < 60) return m + ' Minuten';
+  const h = Math.round(m / 60);
+  if (h < 24) return h + ' Stunden';
+  const d = Math.round(h / 24);
+  if (d < 7) return d + ' Tage';
+  return Math.round(d / 7) + ' Wochen';
+}
+
+/* Für Tests */
+function _resetMutes() {
+  try { fs.unlinkSync(FILE); } catch (e) {}
+}
+function _mutesFile() { return FILE; }
+/* ── MERGE-END mute ── */
+
+/* ── MERGE-START groupstats ── */
+/* ═══════════════════════════════════════════════════════════════════
+   💜 HelloKitty Baby Maxi 💔 7.0 — GROUP BUILDERS (groupstats.js)
+
+   WhatsApp-Karten für das Gruppen-System. Reine Anzeige — Daten kommen
+   aus groups.js + live groupMetadata. Keine Fake-Werte: fehlende Daten
+   werden als „–" gezeigt.
+   ═══════════════════════════════════════════════════════════════════ */
+
+
+const fmt = (n) => Number(n || 0).toLocaleString('de-DE');
+const onOff = (v) => (v ? '✅' : '❌');
+const bar = (have, need, w = 14) => {
+  const p = need > 0 ? Math.min(1, have / need) : 0;
+  const f = Math.round(p * w);
+  return '█'.repeat(f) + '░'.repeat(w - f);
+};
+
+/* ── 👥 GROUP CENTER ($am) ────────────────────────────────────────── */
+function buildGroupCenter(g, meta = {}, { pref = '$' } = {}) {
+  const s = getGset(g);
+  const li = groupLevelInfo(g);
+  const top = topMembers(g, 'xp', 1)[0];
+  const ev = activeEvents(g);
+  return '╭──── 👥 *GROUP CENTER* ────╮\n\n' +
+    '🏠 *GROUP*\n' +
+    `Name: ${meta.subject || '–'}\n` +
+    `Mitglieder: ${fmt(meta.count)} · Admins: ${fmt(meta.admins)}\n` +
+    `Owner: ${meta.owner || '–'}\n` +
+    `Erstellt: ${meta.creation || '–'}\n` +
+    `Status: ${ev.length ? '🔥 Event aktiv' : '💜 Aktiv'}\n\n` +
+    '━━━━━━━━━━━━━━━━━━\n\n' +
+    '🛡 *SECURITY*\n' +
+    `Anti-Spam ${onOff(s.antispam)} · Anti-Link ${onOff(s.antilink)}\n` +
+    `Anti-Flood ${onOff(s.antiflood)} · Mention ${onOff(s.mentionGuard)}\n` +
+    `Cmd-Schutz ${onOff(s.commandProtection)} · AutoMod ${onOff(s.automod)}\n\n` +
+    '━━━━━━━━━━━━━━━━━━\n\n' +
+    '🤖 *AUTOMATION*\n' +
+    `Welcome ${onOff(s.welcome)} · Goodbye ${onOff(s.goodbye)}\n` +
+    `Auto-Reply ${onOff(s.autoreply)} · AI ${onOff(s.aiEnabled)}\n\n` +
+    '━━━━━━━━━━━━━━━━━━\n\n' +
+    '🏆 *GROUP PROGRESSION*\n' +
+    `Level ${li.level} · ${fmt(li.total)} XP\n` +
+    `Nachrichten: ${fmt(g?.xp?.msgs)} · Spiele: ${fmt(g?.xp?.games)}\n` +
+    `Top: ${top ? fmt(top.xp) + ' XP' : '–'}\n` +
+    `Ziele: ${g?.goals?.daily?.claimed ? '✅' : '🎯'} Daily · ${g?.goals?.weekly?.claimed ? '✅' : '🎯'} Weekly\n\n` +
+    '━━━━━━━━━━━━━━━━━━\n\n' +
+    '💰 *GROUP ECONOMY*\n' +
+    `Kasse: ${fmt(g?.gtreasury?.balance)} Kupfer\n` +
+    `Events: ${ev.length ? ev.map((e) => e.name).join(', ') : '–'}\n\n` +
+    `╰── ${pref}gsettings · ${pref}gxp · ${pref}gtop ──╯`;
+}
+
+/* ── 👥 GROUP INFO ($groupinfo massiv) ────────────────────────────── */
+function buildGroupInfo(g, meta = {}, { pref = '$', topNames = {} } = {}) {
+  const s = getGset(g);
+  const li = groupLevelInfo(g);
+  const achN = Object.keys(g?.gach || {}).length;
+  const bdg = Object.keys(g?.gbadges || {});
+  const top = topMembers(g, 'xp', 3);
+  const medal = ['🥇', '🥈', '🥉'];
+  const topTxt = top.length
+    ? top.map((t, i) => `${medal[i]} ${topNames[t.bid] || '–'} — ${fmt(t.xp)} XP`).join('\n')
+    : 'Noch keine Aktivität.';
+  const bdgTxt = bdg.length
+    ? bdg.map((id) => { const d = GROUP_BADGES.find((b) => b.id === id); return d ? `${d.emoji} ${d.name}` : id; }).join(' · ')
+    : '–';
+  const activity = (g?.xp?.streak?.c || 0) >= 7 ? '🔥 Hoch' : (g?.xp?.msgs || 0) > 100 ? '💜 Normal' : '🌱 Startet';
+  return '╭──── 👥 *GROUP INFO* ────╮\n\n' +
+    `🏠 *${meta.subject || '–'}*\n` +
+    (meta.desc ? `${String(meta.desc).slice(0, 120)}\n` : '') +
+    `\n👥 Mitglieder: ${fmt(meta.count)}\n` +
+    `👑 Owner: ${meta.owner || '–'}\n` +
+    `🛡 Admins: ${fmt(meta.admins)}\n` +
+    `📅 Erstellt: ${meta.creation || '–'}\n` +
+    `🔥 Aktivität: ${activity}\n` +
+    `🏆 Group Level: ${li.level}\n` +
+    `✨ Group XP: ${fmt(li.total)}\n\n` +
+    '━━━━━━━━━━━━━━━━━━\n\n' +
+    '🛡 *SECURITY*\n' +
+    `Anti-Spam ${onOff(s.antispam)} · Anti-Link ${onOff(s.antilink)} · Anti-Flood ${onOff(s.antiflood)}\n\n` +
+    '━━━━━━━━━━━━━━━━━━\n\n' +
+    '🏆 *TOP MEMBERS*\n' + topTxt + '\n\n' +
+    '━━━━━━━━━━━━━━━━━━\n\n' +
+    '💰 *GROUP ECONOMY*\n' +
+    `Kasse: ${fmt(g?.gtreasury?.balance)} Kupfer\n\n` +
+    '━━━━━━━━━━━━━━━━━━\n\n' +
+    '🤖 *AI*\n' +
+    `AI ${onOff(s.aiEnabled)} · XP ${onOff(s.progressionEnabled)} · Economy ${onOff(s.economyEnabled)}\n\n` +
+    `🏅 ${achN}/${GROUP_ACHIEVEMENTS.length} Achievements · ${bdgTxt}\n\n` +
+    `╰── ${pref}am · ${pref}gtop · ${pref}glevel ──╯`;
+}
+
+/* ── ⚙️ GROUP SETTINGS ────────────────────────────────────────────── */
+function buildGroupSettings(g, { pref = '$' } = {}) {
+  const s = getGset(g);
+  const row = (k, label) => `${onOff(s[k])} *${label}* — \`${pref}gsettings ${k} on/off\``;
+  return '👥 *GROUP SETTINGS*\n\n' +
+    row('antilink', 'Anti-Link') + '\n' +
+    row('antispam', 'Anti-Spam') + '\n' +
+    row('antiflood', 'Anti-Flood') + '\n' +
+    row('mentionGuard', 'Mention-Guard') + '\n' +
+    row('commandProtection', 'Command-Schutz') + '\n' +
+    row('automod', 'Auto-Mod') + '\n' +
+    row('welcome', 'Welcome') + '\n' +
+    row('goodbye', 'Goodbye') + '\n' +
+    row('autoreply', 'Auto-Reply') + '\n' +
+    row('aiEnabled', 'AI') + '\n' +
+    row('economyEnabled', 'Economy') + '\n' +
+    row('progressionEnabled', 'Group-XP') + '\n' +
+    row('logsEnabled', 'Audit-Log') + '\n' +
+    `\nNur Gruppen-Admins können ändern. Stand: ${new Date().toLocaleDateString('de-DE')}`;
+}
+
+/* ── 🏆 GXP / GLEVEL / GTOP ───────────────────────────────────────── */
+function buildGxp(g, memberCount = 0) {
+  const li = groupLevelInfo(g);
+  return '🏆 *GROUP XP*\n\n' +
+    `✨ Gesamt: ${fmt(li.total)} XP (Level ${li.level})\n` +
+    `💬 Nachrichten: ${fmt(g?.xp?.msgs)}\n` +
+    `👥 Aktive Mitglieder: ${fmt(Object.keys(g?.xp?.members || {}).length)}${memberCount ? ` / ${fmt(memberCount)}` : ''}\n` +
+    `🔥 Serie: ${fmt(g?.xp?.streak?.c)} Tage\n` +
+    `📆 Wochen-XP: ${fmt(g?.xp?.week?.xp)}\n` +
+    `🗓 Monats-XP: ${fmt(g?.xp?.month?.xp)}`;
+}
+
+function buildGlevel(g) {
+  const li = groupLevelInfo(g);
+  const nextBonus = 100 + (li.level + 1) * 10;
+  return '👥 *GROUP LEVEL*\n\n' +
+    `*Level ${li.level}*\n\n` +
+    `${fmt(li.have)} / ${fmt(li.need)} XP\n` +
+    bar(li.have, li.need) + '\n\n' +
+    `Nächster Reward: +${fmt(nextBonus)} Kupfer in die Gruppenkasse`;
+}
+
+function buildGtop(rows, names = {}, mode = 'xp') {
+  const label = mode === 'messages' ? 'Nachrichten' : mode === 'games' ? 'Spiele' : 'Group-XP';
+  const medal = ['🥇', '🥈', '🥉'];
+  const lines = rows.map((r, i) => {
+    const v = mode === 'messages' ? r.m : mode === 'games' ? r.games : r.xp;
+    const pre = medal[i] || `*${i + 1}.*`;
+    return `${pre} ${names[r.bid] || '–'} — ${fmt(v)}`;
+  });
+  return `🏆 *GROUP TOP — ${label}*\n\n` + (lines.join('\n') || 'Noch keine Aktivität.') +
+    '\n\n Modi: `xp` · `messages` · `games`';
+}
+
+/* ── 🎯 GROUP GOALS ───────────────────────────────────────────────── */
+function buildGroupGoal(g, memberCount = 0) {
+  const d = g?.goals?.daily, w = g?.goals?.weekly;
+  const dt = goalTarget('daily', memberCount), wt = goalTarget('weekly', memberCount);
+  const dp = d?.progress || 0, wp = w?.progress || 0;
+  return '🎯 *GROUP GOALS*\n\n' +
+    `*Daily:* ${fmt(dp)} / ${fmt(dt)} Nachrichten\n` + bar(dp, dt) + '\n' +
+    `Reward: +250 Kupfer ${d?.claimed ? '✅' : ''}\n\n` +
+    `*Weekly:* ${fmt(wp)} / ${fmt(wt)} XP\n` + bar(wp, wt) + '\n' +
+    `Reward: +1.000 Kupfer ${w?.claimed ? '✅' : ''}`;
+}
+
+/* ── 🧾 AUDIT ─────────────────────────────────────────────────────── */
+function buildGroupAudit(g, n = 8) {
+  const rows = (g?.gaudit || []).slice(-n).reverse();
+  if (!rows.length) return '🧾 *GROUP AUDIT*\n\nNoch keine Einträge.';
+  const lines = rows.map((e) => {
+    const t = new Date(e.ts).toLocaleString('de-DE', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+    return `• ${t} — *${e.action}* (${e.actor || 'system'})${e.detail ? `\n  ${e.detail}` : ''}`;
+  });
+  return '🧾 *GROUP AUDIT*\n\n' + lines.join('\n');
+}
+
+/* ── 👥 MEMBERS / ADMINS ──────────────────────────────────────────── */
+function buildMembersCard(parts = [], admins = [], { limit = 30 } = {}) {
+  const adminSet = new Set(admins);
+  const shown = parts.slice(0, limit);
+  const lines = shown.map((p) => `${adminSet.has(p.id) ? '👑' : '•'} ${p.name || p.id}`);
+  return `👥 *MEMBERS (${parts.length})*\n\n` + (lines.join('\n') || '–') +
+    (parts.length > limit ? `\n\n… +${parts.length - limit} weitere` : '');
+}
+
+/* ── 💰 GROUP ECONOMY ─────────────────────────────────────────────── */
+function buildGroupEconomy(g) {
+  const t = g?.gtreasury || { balance: 0, log: [] };
+  const last = (t.log || []).slice(-5).reverse()
+    .map((e) => `• ${e.delta > 0 ? '+' : ''}${fmt(e.delta)} — ${e.reason || ''}`).join('\n');
+  return '💰 *GROUP ECONOMY*\n\n' +
+    `🏦 Kasse: *${fmt(t.balance)}* Kupfer\n\n` +
+    '*Letzte Bewegungen:*\n' + (last || '–');
+}
+
+/* ── 🔥 EVENTS ────────────────────────────────────────────────────── */
+function buildGroupEvents(g, now = Date.now()) {
+  const ev = activeEvents(g, now);
+  if (!ev.length) return '🔥 *GROUP EVENTS*\n\nGerade läuft kein Event.\nAdmins: `$gevent 2 60` startet 2× XP für 60 Min.';
+  const lines = ev.map((e) => {
+    const mins = Math.max(1, Math.round((e.endsAt - now) / 60000));
+    return `🔥 *${e.name}* — ×${e.mult} XP\n   noch ~${mins} Min. (von ${e.startedBy || '–'})`;
+  });
+  return '🔥 *GROUP EVENTS*\n\n' + lines.join('\n\n');
+}
+/* ── MERGE-END groupstats ── */
+
+/* ── MERGE-START qrpng ── */
+/* ============================================================================
+   HelloKitty Baby Maxi 💔 — QR → PNG (ohne zusätzliche Abhängigkeit)
+   Nutzt die bereits vorhandene qrcode-terminal-Bibliothek nur für die
+   QR-Matrix-Berechnung und codiert das Ergebnis selbst als PNG (node:zlib).
+   Liefert einen Buffer, der z. B. als WhatsApp-Bild in Gruppen gesendet wird.
+   ==========================================================================*/
+
+
+
+const require2 = createRequire(import.meta.url);
+
+/* Zugriff auf den internen QRCode-Generator der installierten
+   qrcode-terminal-Bibliothek (liegt fest im Paket). */
+function qrMatrix(text) {
+  let QRCode = null;
+  try {
+    QRCode = require2('qrcode-terminal/vendor/QRCode');
+  } catch (e) {
+    return null;
+  }
+  try {
+    /* Error-Correct-Level L = 1 (wie qrcode-terminal es nutzt) */
+    const qr = new QRCode(-1, 1);
+    qr.addData(String(text || ''));
+    qr.make();
+    const n = qr.getModuleCount();
+    const rows = [];
+    for (let y = 0; y < n; y++) {
+      const row = [];
+      for (let x = 0; x < n; x++) {
+        row.push(qr.isDark ? !!qr.isDark(y, x) : !!(qr.modules && qr.modules[y] && qr.modules[y][x]));
+      }
+      rows.push(row);
+    }
+    return rows;
+  } catch (e) {
+    return null;
+  }
+}
+
+/* ---------- minimales PNG-Encoding (ohne Libs) ------------------------- */
+const CRC_TABLE = (() => {
+  const t = new Uint32Array(256);
+  for (let n = 0; n < 256; n++) {
+    let c = n;
+    for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
+    t[n] = c >>> 0;
+  }
+  return t;
+})();
+
+function crc32(buf) {
+  let c = 0xffffffff;
+  for (let i = 0; i < buf.length; i++) c = CRC_TABLE[(c ^ buf[i]) & 0xff] ^ (c >>> 8);
+  return (c ^ 0xffffffff) >>> 0;
+}
+
+function chunk(type, data) {
+  const len = Buffer.alloc(4);
+  len.writeUInt32BE(data.length, 0);
+  const body = Buffer.concat([Buffer.from(type, 'ascii'), data]);
+  const crc = Buffer.alloc(4);
+  crc.writeUInt32BE(crc32(body), 0);
+  return Buffer.concat([len, body, crc]);
+}
+
+function encodePng(rows, scale) {
+  const q = 3; /* Ruhezone (quiet zone) */
+  const n = rows.length;
+  const dim = (n + q * 2) * scale;
+  const stride = dim * 3; /* RGB, 3 Byte je Pixel */
+  /* Jede Bildzeile: 1 Filter-Byte (0) + RGB-Pixel */
+  const raw = Buffer.alloc(dim * (1 + stride));
+  for (let y = 0; y < dim; y++) {
+    const rowStart = y * (1 + stride);
+    raw[rowStart] = 0; /* Filter None */
+    for (let x = 0; x < dim; x++) {
+      const mx = Math.floor(x / scale) - q;
+      const my = Math.floor(y / scale) - q;
+      const dark = !(mx < 0 || my < 0 || mx >= n || my >= n) && !!rows[my][mx];
+      const off = rowStart + 1 + x * 3;
+      if (dark) {
+        raw[off] = 0; raw[off + 1] = 0; raw[off + 2] = 0;
+      } else {
+        raw[off] = 255; raw[off + 1] = 255; raw[off + 2] = 255;
+      }
+    }
+  }
+  const ihdr = Buffer.alloc(13);
+  ihdr.writeUInt32BE(dim, 0);
+  ihdr.writeUInt32BE(dim, 4);
+  ihdr[8] = 8;  /* bit depth */
+  ihdr[9] = 2;  /* color type: RGB */
+  const idat = zlib.deflateSync(raw);
+  return Buffer.concat([
+    Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
+    chunk('IHDR', ihdr),
+    chunk('IDAT', idat),
+    chunk('IEND', Buffer.alloc(0))
+  ]);
+}
+
+/* QR-Text → PNG-Buffer (schwarze Module auf weißem Grund). */
+function qrToPng(text, opts = {}) {
+  const rows = qrMatrix(text);
+  if (!rows || !rows.length) return null;
+  const scale = Math.max(2, Math.min(12, opts.scale || 6));
+  try {
+    return encodePng(rows, scale);
+  } catch (e) {
+    return null;
+  }
+}
+/* ── MERGE-END qrpng ── */
+
+/* ── MERGE-START ratelimit ── */
+/* ═══════════════════════════════════════════════════════════════════════
+   🛡️ L O V E B O T   R A T E - L I M I T   (ratelimit.js)
+   ─────────────────────────────────────────────────────────────────────
+   Schutz gegen Command-Flooding (offene Gruppen!) — gleitendes Zeitfenster
+   pro Nutzer, mit eskalierender Sperre bei Wiederholung.
+
+   Regeln:
+     · max        Befehle innerhalb windowMs erlaubt
+     · danach     Sperre von cooldownMs × Strikes (1×, 2×, 3×, 4× … max 4×)
+     · Strikes    verfallen nach strikeWindowMs ohne Verstoß
+     · Owner/Host werden in Love.js ausgenommen (exemptHosts)
+
+   Alles im Speicher — kein Datenbankzugriff, kein leak (State wird
+   automatisch aufgeräumt).
+   ═══════════════════════════════════════════════════════════════════════ */
+
+const CONFIG = {
+  max: 10,              /* Befehle pro Fenster            */
+  windowMs: 10_000,     /* Fenstergröße (10 s)            */
+  cooldownMs: 4_000,    /* Grundsperre (4 s)              */
+  maxMultiplier: 4,     /* Sperre maximal 4× cooldownMs   */
+  strikeWindowMs: 60_000, /* Strikes verfallen nach 60 s  */
+  cleanupMs: 60_000,    /* Aufräumintervall               */
+  enabled: true
+};
+
+const state = new Map(); /* key → { hits:[], strikes, lastStrike, blockedUntil, lastSeen } */
+
+function configure(partial = {}) {
+  Object.assign(CONFIG, partial || {});
+  return { ...CONFIG };
+}
+
+function getConfig() {
+  return { ...CONFIG };
+}
+
+/**
+ * Prüft, ob ein Nutzer jetzt einen Befehl ausführen darf.
+ * @returns {{allowed:boolean, remaining:number, retryMs:number, strikes:number, reason:string}}
+ */
+function check(key, opts = {}) {
+  const id = String(key || 'global');
+  if (CONFIG.enabled === false) {
+    return { allowed: true, remaining: CONFIG.max, retryMs: 0, strikes: 0, reason: 'disabled' };
+  }
+
+  const now = Date.now();
+  const max = Number(opts.max || CONFIG.max);
+  const windowMs = Number(opts.windowMs || CONFIG.windowMs);
+
+  let entry = state.get(id);
+  if (!entry) {
+    entry = { hits: [], strikes: 0, lastStrike: 0, blockedUntil: 0, lastSeen: now };
+    state.set(id, entry);
+  }
+  entry.lastSeen = now;
+
+  /* Noch gesperrt? */
+  if (entry.blockedUntil > now) {
+    return {
+      allowed: false,
+      remaining: 0,
+      retryMs: entry.blockedUntil - now,
+      strikes: entry.strikes,
+      reason: 'cooldown'
+    };
+  }
+
+  /* Strikes verfallen lassen */
+  if (entry.strikes > 0 && now - entry.lastStrike > CONFIG.strikeWindowMs) {
+    entry.strikes = 0;
+  }
+
+  /* Fenster bereinigen */
+  entry.hits = entry.hits.filter((t) => now - t < windowMs);
+
+  if (entry.hits.length >= max) {
+    entry.strikes = Math.min(99, entry.strikes + 1);
+    entry.lastStrike = now;
+    const mult = Math.min(CONFIG.maxMultiplier, entry.strikes);
+    const blockMs = CONFIG.cooldownMs * mult;
+    entry.blockedUntil = now + blockMs;
+    entry.hits = [];
+    return {
+      allowed: false,
+      remaining: 0,
+      retryMs: blockMs,
+      strikes: entry.strikes,
+      reason: 'flood'
+    };
+  }
+
+  entry.hits.push(now);
+  return {
+    allowed: true,
+    remaining: Math.max(0, max - entry.hits.length),
+    retryMs: 0,
+    strikes: entry.strikes,
+    reason: 'ok'
+  };
+}
+
+/** Sperre eines Nutzers aufheben (z. B. nach Owner-Eingriff). */
+function reset(key) {
+  const id = String(key || '');
+  if (!id) return false;
+  return state.delete(id);
+}
+
+/** Statistik für $system / Admin-Panel. */
+function stats() {
+  const now = Date.now();
+  let blocked = 0;
+  let tracked = 0;
+  for (const [, e] of state) {
+    tracked++;
+    if (e.blockedUntil > now) blocked++;
+  }
+  return { tracked, blocked, config: { ...CONFIG } };
+}
+
+/* Aufräumen: vergessene Einträge fliegen raus (kein Memory-Leak) */
+const cleaner = setInterval(() => {
+  const now = Date.now();
+  for (const [k, e] of state) {
+    const idle = now - (e.lastSeen || 0);
+    const stillBlocked = (e.blockedUntil || 0) > now;
+    if (!stillBlocked && idle > Math.max(CONFIG.windowMs, CONFIG.strikeWindowMs)) state.delete(k);
+  }
+}, CONFIG.cleanupMs);
+if (typeof cleaner.unref === 'function') cleaner.unref();
+/* ── MERGE-END ratelimit ── */
+
+/* ── MERGE-START channelrelay ── */
+/* ═══════════════════════════════════════════════════════════════════════
+   📡 K A N A L - S P I E G E L   (channelrelay.js)
+   ─────────────────────────────────────────────────────────────────────
+   Spiegelt JEDE neue Veröffentlichung aus deinem WhatsApp-Kanal
+   (@newsletter) automatisch in die Chats, in denen HelloKitty Baby Maxi 💔 mit dem
+   OWNER aktiv ist — „jede Nachricht kommt an den Ort, wo er soll“:
+
+     · Privater Chat des Owners  → Post kommt NUR dort an
+     · Gruppe, in der der Owner mit HelloKitty Baby Maxi 💔 schreibt → wird automatisch
+       angemeldet, Post kommt NUR in genau dieser Gruppe an
+     · KEINE doppelte Zustellung · läuft IMMER (kein Befehl nötig)
+
+   Weitergeleitet wird ALLES aus dem Kanal:
+     📷 Bilder · 🎬 Videos · 🎵 Audios/Sprachnachrichten · 🏷️ Sticker ·
+     📄 Dokumente · 💬 Texte · 👤 Kontakte · 📍 Standorte u. v. m.
+
+   Konfiguration liegt in  Database/Database.json → meta.channelRelay:
+     enabled  – true/false (Standard: true)
+     sources  – Kanal-JIDs, die gespiegelt werden
+                (Standard: der HelloKitty Baby Maxi 💔-Kanal von Maxichen)
+     targets  – zusätzliche feste Ziel-JIDs (z. B. Gruppen)
+   Der private Owner-Chat ist IMMER Ziel und lässt sich nicht entfernen.
+
+   ═══════════════════════════════════════════════════════════════════════ */
+
+
+
+
+
+/* ─────────────────────────────────────────────────────────────────────
+   Konstanten (mit Love.js OWNER_CONFIG synchron halten)
+   ───────────────────────────────────────────────────────────────────── */
+/* 🧹 LOG-BEREINIGUNG: libsignal spamt bei JEDER Nachricht „Closing session:
+   SessionEntry { …kryptografische Schlüssel… }“ in die Konsole. Weg damit —
+   LoveBot-Logs bleiben schön und lesbar. */
+const __origInfo = console.info.bind(console);
+const __origWarn = console.warn.bind(console);
+const __noise = (a0) => {
+  const t = String(a0 || '');
+  return t.startsWith('Closing session:') || t.startsWith('Opening session:') || t.startsWith('Session already open') || t.startsWith('Closing session ') || t.startsWith('Opening session ');
+};
+console.info = (...args) => { if (__noise(args[0])) return; return __origInfo(...args); };
+console.warn = (...args) => { if (__noise(args[0])) return; return __origWarn(...args); };
+
+let pendingSecurityAlert = '';   /* 🛡️ Sicherheitswarnung, die beim Connect zugestellt wird */
+
+const OWNER_NUMBER = '4915155894714';
+const OWNER_JID = `${OWNER_NUMBER}@s.whatsapp.net`;
+const OWNER_LID = '269574108926096@lid';
+
+/* Standard-Quelle: der HelloKitty Baby Maxi 💔-Kanal von Maxichen. Weitere Kanäle können
+   in der Datenbank unter meta.channelRelay.sources ergänzt werden. */
+const DEFAULT_CHANNEL_SOURCES = ['120363412417736179@newsletter'];
+
+/* Keine Weiterleitung für System-/Protokoll-Hüllen (Edits, Reaktionen,
+   Stubs, Verschlüsselungs-, Verlauf-Sync usw.) — nur echte Inhalte. */
+const SKIP_CONTENT_TYPES = new Set([
+  'protocolMessage',
+  'reactionMessage',
+  'encReactionMessage',
+  'pollUpdateMessage',
+  'senderKeyDistributionMessage',
+  'historySyncNotification',
+  'stickerSyncRerequestMessage',
+  'chat',
+  'messageContextInfo',
+  'keepInChatMessage',
+  'unavailableMessage',
+  'eventMessage',
+  'peersMessage'
+]);
+
+/* Kurzzeit-Gedächtnis für Message-IDs → verhindert doppelte Zustellung,
+   falls WhatsApp einen Post mehrfach als Upsert liefert. */
+const recentMessageIds = new Map(); // key.id → Zeitstempel (ms)
+
+/* ─────────────────────────────────────────────────────────────────────
+   Konfiguration (Database.json → meta.channelRelay)
+   ───────────────────────────────────────────────────────────────────── */
+function normalizeConfig(cfg) {
+  if (!cfg || typeof cfg !== 'object') cfg = {};
+  if (typeof cfg.enabled !== 'boolean') cfg.enabled = true;
+  if (!Array.isArray(cfg.sources)) cfg.sources = DEFAULT_CHANNEL_SOURCES.slice();
+  if (!Array.isArray(cfg.targets)) cfg.targets = [];
+  cfg.sources = cfg.sources.map((s) => String(s).trim()).filter(Boolean);
+  cfg.targets = cfg.targets.map((s) => String(s).trim()).filter(Boolean);
+  return cfg;
+}
+
+function readConfig() {
+  try {
+    const db = readDb();
+    if (!db.meta || typeof db.meta !== 'object') return normalizeConfig({});
+    const cfg = normalizeConfig(db.meta.channelRelay);
+    db.meta.channelRelay = cfg;
+    return cfg;
+  } catch (e) {
+    return normalizeConfig({});
+  }
+}
+
+/* Setzt die Standard-Konfiguration, falls noch keine existiert.
+   Beim ersten Start werden die bereits bekannten Gruppen (aus der DB,
+   in denen HelloKitty Baby Maxi 💔 Mitglied ist) als Spiegel-Ziele vorgemerkt —
+   zusätzlich melden sich Gruppen automatisch an, sobald der Owner dort
+   schreibt. Wird beim Bot-Start einmal aufgerufen. */
+function seedChannelRelay() {
+  try {
+    const db = readDb();
+    if (db.meta && db.meta.channelRelay && typeof db.meta.channelRelay === 'object') {
+      db.meta.channelRelay = normalizeConfig(db.meta.channelRelay);
+      return db.meta.channelRelay;
+    }
+    const cfg = normalizeConfig({});
+    /* Bestehende echte Gruppen als Start-Ziele (DB speichert teils nur
+       die reine Gruppen-ID ohne Suffix → zu voller JID ergänzen). */
+    const knownGroups = Object.keys(db.groups || {})
+      .map((g) => String(g).trim())
+      .map((g) => (/@g\.us$/i.test(g) ? g : (/^\d{10,}$/.test(g) ? `${g}@g.us` : null)))
+      .filter(Boolean);
+    for (const g of knownGroups) {
+      const norm = jidNormalizedUser(g) || g;
+      if (!cfg.targets.includes(norm)) cfg.targets.push(norm);
+    }
+    db.meta.channelRelay = cfg;
+    writeDb(db);
+    return cfg;
+  } catch (e) {
+    return normalizeConfig({});
+  }
+}
+
+/* Kurzer Status-Text fürs Konsolen-Log beim Start. */
+function channelRelayStatusText() {
+  const cfg = readConfig();
+  const targets = resolveTargetJids(cfg);
+  if (cfg.enabled === false) {
+    return '📡 Kanal-Spiegel: AUS (meta.channelRelay.enabled = false)';
+  }
+  const channels = cfg.sources.length ? cfg.sources.join(', ') : '(keine)';
+  return `📡 Kanal-Spiegel AKTIV → Kanal(e): ${channels} · Ziel(e): ${targets.length}`;
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   Ziel-Ermittlung
+   Der Owner-Chat ist IMMER dabei; dazu alle gemerkten Ziel-JIDs
+   (Gruppen, in denen der Owner mit dem Bot schreibt, sowie manuell
+   eingetragene Ziele). Zurück in den Kanal wird nie gesendet.
+   ───────────────────────────────────────────────────────────────────── */
+function resolveTargetJids(cfg) {
+  const set = new Set();
+  set.add(OWNER_JID); // privater Owner-Chat — immer Ziel
+  for (const raw of cfg.targets || []) {
+    const s = String(raw || '').trim();
+    if (!s) continue;
+    const low = s.toLowerCase();
+    if (low.endsWith('@newsletter')) continue; // nie in den Kanal zurück
+    if (low === 'status@broadcast') continue;
+    set.add(jidNormalizedUser(s) || s);
+  }
+  return Array.from(set);
+}
+
+function isOwnerSenderKey(msg) {
+  try {
+    const candidates = [
+      msg?.key?.participant,
+      msg?.key?.participantAlt,
+      msg?.key?.remoteJid
+    ];
+    for (const cand of candidates) {
+      const s = String(cand || '').trim();
+      if (!s) continue;
+      if (s === OWNER_LID) return true;
+      try {
+        if (areJidsSameUser(s, OWNER_JID)) return true;
+      } catch (e) {}
+      /* Nummer exakt (z. B. „4915155894714@s.whatsapp.net“, mit/ohne
+         Vorwahl/Formatierungen) — aber niemals bei @lid, dort ist die
+         Nummer nicht die Telefonnummer. */
+      if (s.toLowerCase().endsWith('@lid')) continue;
+      const digits = s.split('@')[0].split(':')[0].replace(/\D+/g, '');
+      if (digits.length >= 8 && digits === OWNER_NUMBER) return true;
+    }
+  } catch (e) {}
+  return false;
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   Owner-Gruppe automatisch als Ziel merken
+   Läuft für JEDE eingehende Nachricht (kostet fast nichts — prüft erst
+   billige Key-Felder, DB-Zugriff nur bei Treffer). Sobald der OWNER in
+   einer Gruppe mit dem Bot schreibt, wird diese Gruppe als Spiegel-Ziel
+   in der Datenbank gespeichert („wenn in der Gruppe → auch nur dort“).
+   ───────────────────────────────────────────────────────────────────── */
+function rememberOwnerGroup(msg) {
+  try {
+    if (!msg || !msg.key) return;
+    if (msg.key.fromMe) return; // Bot selbst zählt nicht
+    const chat = getChatId(msg.key);
+    if (!chat || !String(chat).toLowerCase().endsWith('@g.us')) return;
+    if (!isOwnerSenderKey(msg)) return;
+    if (!seenOnce(msg)) return;
+
+    const db = readDb();
+    const cfg = normalizeConfig(db.meta.channelRelay);
+    if (cfg.enabled === false) return;
+    const norm = jidNormalizedUser(chat) || chat;
+    if (!cfg.targets.includes(norm)) {
+      cfg.targets.push(norm);
+      db.meta.channelRelay = cfg;
+      writeDb(db);
+      console.log(c.bold + c.brightCyan + '[relay] 📡 Gruppe als Spiegel-Ziel angemeldet: ' + c.reset + norm + c.reset);
+    }
+  } catch (e) {
+    console.log(c.bold + c.brightYellow + '[relay] rememberOwnerGroup: ' + c.reset + (e?.message || e));
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   Duplikat-Schutz (Kurzzeit-Set)
+   ───────────────────────────────────────────────────────────────────── */
+function seenOnce(msg) {
+  try {
+    const id = msg?.key?.id;
+    if (!id) return true;
+    const now = Date.now();
+    const last = recentMessageIds.get(id);
+    if (last != null && now - last < 120000) return false;
+    recentMessageIds.set(id, now);
+    if (recentMessageIds.size > 200) {
+      const oldestKey = recentMessageIds.keys().next().value;
+      if (oldestKey != null) recentMessageIds.delete(oldestKey);
+    }
+    return true;
+  } catch (e) {
+    return true;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   Inhalt prüfen: echte, weiterleitbare Nachricht?
+   ───────────────────────────────────────────────────────────────────── */
+function getRelayableContent(msg) {
+  try {
+    if (!msg?.message) return null;
+    const real = normalizeMessageContent(msg.message);
+    if (!real) return null;
+    const type = getContentType(real);
+    if (!type || SKIP_CONTENT_TYPES.has(type)) return null;
+
+    /* View-Once (nur einmal ansehen) kann WhatsApp nicht weiterleiten. */
+    const media =
+      real.imageMessage ||
+      real.videoMessage ||
+      real.audioMessage ||
+      real.stickerMessage ||
+      real.documentMessage ||
+      real.documentWithCaptionMessage?.message?.documentMessage;
+    if (media && media.viewOnce) return null;
+
+    return { type, real };
+  } catch (e) {
+    return null;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   Haupt-Funktion: Kanal-Nachricht → alle aktiven Chat-Ziele
+   Gibt true zurück, wenn die Nachricht aus einem gespiegelten Kanal
+   stammt und behandelt wurde (egal ob Zustellung klappte) — dann darf
+   der Aufrufer die normale Befehlsverarbeitung überspringen.
+   ───────────────────────────────────────────────────────────────────── */
+async function handleChannelRelay(sock, msg, opts = {}) {
+  const from = String(getChatId(msg?.key) || (msg?.key && msg.key.remoteJid) || '').trim();
+  if (!String(from).toLowerCase().endsWith('@newsletter')) return false;
+
+  const db = readDb();
+  const cfg = normalizeConfig(db.meta.channelRelay);
+  db.meta.channelRelay = cfg;
+
+  /* Kanal nicht in der Spiegel-Liste → nicht behandeln. */
+  const isSource = cfg.sources.some((s) => s && String(s).toLowerCase() === from.toLowerCase());
+  if (!isSource) return false;
+
+  if (cfg.enabled === false) return true; // Spiegel aus → trotzdem Kanal-Interna ignorieren
+
+  const content = getRelayableContent(msg);
+  if (!content) return true; // z. B. Reaktion/System → nichts zu spiegeln
+
+  if (!seenOnce(msg)) return true; // Duplikat → nichts
+
+  const targets = resolveTargetJids(cfg).filter((t) => String(t).toLowerCase() !== from.toLowerCase());
+  if (!targets.length) return true;
+
+  console.log(c.bold + c.brightCyan + `[relay] 📡 Kanal-Post (${content.type}) → ${targets.length} Ziel(e)` + c.reset);
+
+  let delivered = 0;
+  for (const target of targets) {
+    try {
+      await sendToTarget(sock, target, msg);
+      delivered++;
+    } catch (forwardErr) {
+      /* Plan B: Medium herunterladen & neu hochladen (bei abgelaufener
+         Medien-URL o. Ä.). Wenn auch das scheitert → Ziel überspringen. */
+      try {
+        await resendMediaToTarget(sock, target, msg);
+        delivered++;
+      } catch (resendErr) {
+        console.log(c.bold + c.brightYellow +
+          `[relay] Zustellung an ${target} fehlgeschlagen: ${forwardErr?.message || forwardErr}` + c.reset);
+      }
+    }
+  }
+
+  if (delivered > 0) {
+    console.log(c.bold + c.brightGreen + `[relay] ✅ Kanal-Post an ${delivered}/${targets.length} Ziel(e) gespiegelt` + c.reset);
+  }
+  return true;
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   Zustellung (Plan A): original weiterleiten (wie WhatsApp „Weiterleiten“)
+   ───────────────────────────────────────────────────────────────────── */
+async function sendToTarget(sock, targetJid, msg) {
+  await sock.sendMessage(targetJid, { forward: msg }, { quoted: undefined });
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   Zustellung (Plan B): Medium laden und frisch senden
+   ───────────────────────────────────────────────────────────────────── */
+async function resendMediaToTarget(sock, targetJid, msg) {
+  const content = getRelayableContent(msg);
+  if (!content) return;
+  const { type, real } = content;
+
+  let buffer;
+  try {
+    const ctx = { logger: undefined, reuploadRequest: typeof sock.updateMediaMessage === 'function' ? sock.updateMediaMessage.bind(sock) : undefined };
+    buffer = await downloadMediaMessage(msg, 'buffer', {}, ctx);
+  } catch (dlErr) {
+    buffer = await downloadMediaMessage(msg, 'buffer', {});
+  }
+  if (!buffer || !buffer.length) throw new Error('Medien-Download leer');
+
+  let payload;
+  switch (type) {
+    case 'imageMessage': {
+      const m = real.imageMessage || {};
+      payload = {
+        image: buffer,
+        mimetype: m.mimetype || 'image/jpeg',
+        caption: m.caption || ''
+      };
+      break;
+    }
+    case 'videoMessage': {
+      const m = real.videoMessage || {};
+      payload = {
+        video: buffer,
+        mimetype: m.mimetype || 'video/mp4',
+        caption: m.caption || '',
+        gifPlayback: !!m.gifPlayback
+      };
+      break;
+    }
+    case 'audioMessage': {
+      const m = real.audioMessage || {};
+      payload = {
+        audio: buffer,
+        mimetype: m.mimetype || 'audio/mpeg',
+        ptt: !!m.ptt
+      };
+      break;
+    }
+    case 'documentMessage': {
+      const m = real.documentMessage || real.documentWithCaptionMessage?.message?.documentMessage || {};
+      payload = {
+        document: buffer,
+        mimetype: m.mimetype || 'application/octet-stream',
+        fileName: m.fileName || 'Datei',
+        caption: m.caption || ''
+      };
+      break;
+    }
+    case 'stickerMessage': {
+      const m = real.stickerMessage || {};
+      payload = { sticker: buffer };
+      if (m.mimetype) payload.mimetype = m.mimetype;
+      break;
+    }
+    default:
+      throw new Error(`Plan-B nur für Medien, nicht für ${type}`);
+  }
+
+  await sock.sendMessage(targetJid, payload, { quoted: undefined });
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   🔴 LIVE-ABO für gespiegelte Kanäle
+   WhatsApp liefert neue Kanal-Posts nur dann zuverlässig „live“, wenn
+   das Konto den Kanal verfolgt (newsletterFollow) UND die Live-Updates
+   abonniert sind (subscribeNewsletterUpdates). Das Abo läuft nach einer
+   gewissen Zeit ab → deshalb in einem Intervall erneuern. Wird bei jedem
+   Verbindungsaufbau (connection.open) aufgerufen.
+   ───────────────────────────────────────────────────────────────────── */
+let newsletterLiveTimer = null;
+let newsletterLiveSock = null;
+
+function ensureNewsletterLive(sock) {
+  try {
+    if (!sock) return;
+    newsletterLiveSock = sock;
+
+    const cfg = readConfig();
+    const jids = (cfg.sources && cfg.sources.length ? cfg.sources : DEFAULT_CHANNEL_SOURCES.slice());
+
+    const subscribeOne = async (jid) => {
+      try {
+        if (typeof sock.newsletterFollow === 'function') {
+          await sock.newsletterFollow(jid);
+        }
+      } catch (followErr) {}
+      try {
+        if (typeof sock.subscribeNewsletterUpdates === 'function') {
+          const res = await sock.subscribeNewsletterUpdates(jid);
+          const dur = res && res.duration ? Number(res.duration) : null;
+          console.log(c.bold + c.brightGreen +
+            `[relay] 🔴 Live-Abo aktiv für Kanal ${jid}` + (dur ? ` (Dauer ${dur} s)` : '') + c.reset);
+        } else {
+          console.log(c.bold + c.brightYellow + '[relay] ⚠️ subscribeNewsletterUpdates nicht verfügbar (Baileys-Version?)' + c.reset);
+        }
+      } catch (subErr) {
+        console.log(c.bold + c.brightYellow + '[relay] Live-Abo fehlgeschlagen: ' + c.reset + (subErr?.message || subErr));
+      }
+    };
+
+    /* Sofort abonnieren … */
+    for (const jid of jids) {
+      subscribeOne(jid);
+    }
+    /* … und regelmäßig erneuern (Abo läuft ab). */
+    if (newsletterLiveTimer) {
+      clearInterval(newsletterLiveTimer);
+      newsletterLiveTimer = null;
+    }
+    newsletterLiveTimer = setInterval(() => {
+      const live = newsletterLiveSock;
+      if (!live) return;
+      const cfgNow = readConfig();
+      const active = (cfgNow.sources && cfgNow.sources.length ? cfgNow.sources : DEFAULT_CHANNEL_SOURCES.slice());
+      for (const jid of active) {
+        subscribeOne(jid);
+      }
+    }, 4 * 60 * 1000);
+    if (newsletterLiveTimer && typeof newsletterLiveTimer.unref === 'function') {
+      newsletterLiveTimer.unref();
+    }
+  } catch (e) {
+    console.log(c.bold + c.brightYellow + '[relay] ensureNewsletterLive: ' + c.reset + (e?.message || e));
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   👑 $kanal — Owner-Befehl (Status / on / off / test)
+   ───────────────────────────────────────────────────────────────────── */
+async function handleChannelRelayCommand({ sock, msg, from, args = [], isHost, pref = '$' }) {
+  const reply = (text) => sock.sendMessage(from, { text }, { quoted: msg });
+  if (!isHost) {
+    await reply('> ❌ *Nur der Owner* kann `' + pref + 'kanal` nutzen.');
+    return;
+  }
+
+  const sub = String(args[0] || 'status').toLowerCase();
+  const db = readDb();
+  const cfg = normalizeConfig(db.meta.channelRelay);
+
+  if (sub === 'on' || sub === 'an' || sub === 'start' || sub === 'ein') {
+    cfg.enabled = true;
+    db.meta.channelRelay = cfg;
+    writeDb(db);
+    await reply('> 📡 *KANAL-SPIEGEL: AN* ✅\n\n' +
+      'Alles aus ' + (cfg.sources.length ? cfg.sources.join(', ') : 'dem Kanal') +
+      ' wird jetzt automatisch an alle aktiven Chats weitergeleitet.');
+    return;
+  }
+
+  if (sub === 'off' || sub === 'aus' || sub === 'stop' || sub === 'ausschalten') {
+    cfg.enabled = false;
+    db.meta.channelRelay = cfg;
+    writeDb(db);
+    await reply('> 📡 *KANAL-SPIEGEL: AUS* ⏸️\n\nWeiterleitung gestoppt.');
+    return;
+  }
+
+  if (sub === 'test' || sub === 'ping') {
+    await reply('> 🧪 *KANAL-TEST*\n\n' +
+      'Wenn diese Nachricht bei dir mit der Kanal-Kennzeichnung „HelloKitty Baby Maxi 💔“ ankommt, ' +
+      'läuft die Kanal-Markierung auf **jeder** Bot-Nachricht.\n\n' +
+      'Poste danach in deinem Kanal ein Bild, Audio, Sticker & Text — ' +
+      'alles sollte automatisch hier ankommen.');
+    return;
+  }
+
+  /* ── Status (Standard) ─────────────────────────────────────────── */
+  const targets = resolveTargetJids(cfg);
+  const lines = [];
+  lines.push('> 📡 *KANAL-SPIEGEL — STATUS*');
+  lines.push('');
+  lines.push('*Spiegel:* ' + (cfg.enabled !== false ? 'AN ✅' : 'AUS ⏸️'));
+  lines.push('*Kanal/Quelle:* ' + (cfg.sources.length ? cfg.sources.join(', ') : '(keine)'));
+  lines.push('*Ziel-Chats:* ' + targets.length);
+  lines.push('   • ' + OWNER_JID + '  _(Owner-Chat — immer)_');
+  for (const t of cfg.targets || []) {
+    lines.push('   • ' + t + (String(t).endsWith('@g.us') ? '  _(Gruppe)_' : ''));
+  }
+  lines.push('');
+  lines.push('💡 _Gruppen, in denen du schreibst, werden automatisch als Ziel angemeldet._');
+  lines.push('💡 _' + pref + 'kanal on/off · ' + pref + 'kanal test · Status live_');
+  await reply(lines.join('\n'));
+}
+
+{
+  handleChannelRelay,
+  rememberOwnerGroup,
+  seedChannelRelay,
+  channelRelayStatusText,
+  ensureNewsletterLive,
+  handleChannelRelayCommand
+};
+/* ── MERGE-END channelrelay ── */
+
+/* ── MERGE-START extracmds ── */
+/* ═══════════════════════════════════════════════════════════════════════
+   🎉  L O V E B O T   E X T R A - B E F E H L E   (extracmds.js)
+   ─────────────────────────────────────────────────────────────────────
+   Weitere Befehle für HelloKitty Baby Maxi 💔 by Maxichen 2026 — gemischt aus drei
+   Bereichen: Spaß & Spiele, nützliche Tools mit echten APIs, und kleine
+   Love-Erweiterungen. Genau wie toolcmds.js: echte Daten, ehrliche
+   Fehlermeldungen statt erfundener Werte.
+
+     Spaß & Spiele:
+       $shipname @a @b            · Kompatibilitäts-Prozentrechner für zwei Namen
+       $tarot                 · zieht eine Zufalls-Tarotkarte
+       $wortkette <wort>      · findet ein Folgewort (letzter Buchstabe = erster)
+       $anagram <wort>        · prüft/mischt Buchstaben zum Rätsel
+       $palindrom <text>      · prüft, ob ein Text ein Palindrom ist
+       $mathequiz             · kleine Kopfrechenaufgabe mit Timer-Hinweis
+       $duell @user           · Zufalls-Duell zwischen zwei Personen
+       $wuerfelduell @user    · Würfelduell 1-6 gegen eine andere Person
+       $sternzeichen <datum>  · berechnet das Sternzeichen aus einem Datum
+       $emoji <text>          · übersetzt Wörter in eine Emoji-Kette
+
+     Nützliche Tools (echte APIs):
+       $advice                · zufälliger Lebensrat (adviceslip.com)
+       $chucknorris           · Chuck-Norris-Witz (api.chucknorris.io)
+       $kanye                 · Zufalls-Zitat (api.kanye.rest)
+       $activity              · Zufalls-Aktivität gegen Langeweile (appbrewery)
+       $iss                   · aktuelle Position der ISS (open-notify.org)
+       $meineip                · öffentliche IP des Bot-Servers (ipify.org)
+       $githubzen              · zufälliger GitHub-Design-Leitsatz
+       $bmi <kg> <cm>          · Body-Mass-Index berechnen
+       $countdown <datum>      · Tage bis zu einem Datum
+       $tagderwoche <datum>    · Wochentag eines Datums berechnen
+       $zeitzone <stadt>       · aktuelle Uhrzeit in einer Zeitzone
+
+     Love-Erweiterungen:
+       $liebescheck @user      · süßer Zufalls-Kompatibilitäts-Report (Fun, kein echtes Match)
+       $kuschelvorschlag       · Zufallsvorschlag für ein Kuschel-/Date-Ritual
+       $komplimentgenerator @user · generiert ein zufälliges Kompliment
+
+   Alle Befehle sind für JEDEN nutzbar (perms: all), außer explizit anders
+   markiert. Fehler bei externen APIs werden ehrlich gemeldet.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+
+
+
+
+const EXTRA_COMMANDS = new Set([
+  'shipname', 'tarot', 'wortkette', 'anagram', 'palindrom', 'mathequiz',
+  'duell', 'wuerfelduell', 'würfelduell', 'sternzeichen', 'emoji',
+  'advice', 'lebensrat', 'chucknorris', 'kanye', 'activity', 'langeweile',
+  'iss', 'meineip', 'meinip', 'githubzen', 'bmi', 'countdown', 'tagderwoche',
+  'zeitzone', 'liebescheck', 'kuschelvorschlag', 'komplimentgenerator',
+  /* ✨ FULL-UPDATE: neue Offline-Befehle (Spiele, Fun, Wellness) */
+  'münzwurf', 'muenzwurf', 'würfel', 'wuerfel',
+  'scheresteinpapier', 'sps', 'steinpapierschere',
+  'wahrheitoderpflicht', 'wop',
+  'mantra', 'affirmation', 'affirmationen',
+  'lottoschein', 'lotto', 'zufallszahl', 'zufall',
+  'morse', 'morsen', 'schicksal', 'omen',
+  'geschenkidee', 'geschenk', 'essen', 'kochen',
+  'entspannung', 'entspanne', 'atemuebung'
+]);
+
+/* ───────────────────────────── Helfer ────────────────────────────── */
+
+async function jget(url, timeoutMs = 12000) {
+  const res = await fetch(url, {
+    signal: AbortSignal.timeout(timeoutMs),
+    headers: { 'user-agent': 'HelloKitty Baby Maxi 💔/1.0 (+extras)', accept: 'application/json' }
+  });
+  if (!res.ok) throw new Error('HTTP ' + res.status);
+  return res.json();
+}
+
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+
+function parseDate(input) {
+  const s = String(input || '').trim();
+  const m = s.match(/^(\d{1,2})[.\/-](\d{1,2})(?:[.\/-](\d{2,4}))?$/);
+  if (m) {
+    const day = Number(m[1]);
+    const month = Number(m[2]);
+    const year = m[3] ? (m[3].length === 2 ? 2000 + Number(m[3]) : Number(m[3])) : new Date().getFullYear();
+    const d = new Date(year, month - 1, day);
+    if (!Number.isNaN(d.getTime()) && d.getDate() === day) return d;
+  }
+  const d2 = new Date(s);
+  return Number.isNaN(d2.getTime()) ? null : d2;
+}
+
+const ZODIAC = [
+  [[1, 20], [2, 18], '♒ Wassermann'], [[2, 19], [3, 20], '♓ Fische'],
+  [[3, 21], [4, 19], '♈ Widder'], [[4, 20], [5, 20], '♉ Stier'],
+  [[5, 21], [6, 20], '♊ Zwillinge'], [[6, 21], [7, 22], '♋ Krebs'],
+  [[7, 23], [8, 22], '♌ Löwe'], [[8, 23], [9, 22], '♍ Jungfrau'],
+  [[9, 23], [10, 22], '♎ Waage'], [[10, 23], [11, 21], '♏ Skorpion'],
+  [[11, 22], [12, 21], '♐ Schütze']
+];
+function zodiacOf(day, month) {
+  for (const [[fm, fd], [tm, td], name] of ZODIAC) {
+    if ((month === fm && day >= fd) || (month === tm && day <= td)) return name;
+  }
+  return '♑ Steinbock';
+}
+
+const WEEKDAYS_DE = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
+
+const TIMEZONE_CITIES = {
+  berlin: 'Europe/Berlin', wien: 'Europe/Vienna', zuerich: 'Europe/Zurich', zürich: 'Europe/Zurich',
+  london: 'Europe/London', paris: 'Europe/Paris', madrid: 'Europe/Madrid', rom: 'Europe/Rome',
+  moskau: 'Europe/Moscow', istanbul: 'Europe/Istanbul', dubai: 'Asia/Dubai', tokio: 'Asia/Tokyo',
+  peking: 'Asia/Shanghai', shanghai: 'Asia/Shanghai', delhi: 'Asia/Kolkata', mumbai: 'Asia/Kolkata',
+  bangkok: 'Asia/Bangkok', singapur: 'Asia/Singapore', sydney: 'Australia/Sydney',
+  newyork: 'America/New_York', 'new york': 'America/New_York', losangeles: 'America/Los_Angeles',
+  'los angeles': 'America/Los_Angeles', chicago: 'America/Chicago', toronto: 'America/Toronto',
+  saopaulo: 'America/Sao_Paulo', 'sao paulo': 'America/Sao_Paulo', kairo: 'Africa/Cairo', cairo: 'Africa/Cairo'
+};
+
+const TAROT_CARDS = [
+  ['🃏 Der Narr', 'Ein Neuanfang liegt vor dir — trau dich, den ersten Schritt zu machen.'],
+  ['🎩 Der Magier', 'Du hast gerade alle Werkzeuge, die du brauchst — nutze sie.'],
+  ['🌙 Die Hohepriesterin', 'Hör auf dein Bauchgefühl, nicht nur auf Logik.'],
+  ['👑 Die Herrscherin', 'Fülle und Fürsorge stehen im Vordergrund — auch für dich selbst.'],
+  ['🏛️ Der Herrscher', 'Struktur und Klarheit bringen dich jetzt weiter.'],
+  ['💕 Die Liebenden', 'Eine wichtige Entscheidung im Herzen steht an.'],
+  ['🛡️ Die Kraft', 'Sanfte Stärke schlägt rohe Gewalt — bleib ruhig.'],
+  ['🎡 Rad des Schicksals', 'Ein Wendepunkt ist nah — bleib flexibel.'],
+  ['⚖️ Die Gerechtigkeit', 'Fairness und Wahrheit setzen sich durch.'],
+  ['🌟 Der Stern', 'Hoffnung und ein ruhiger Moment nach stürmischer Zeit.'],
+  ['🌞 Die Sonne', 'Freude, Erfolg und Leichtigkeit liegen in der Luft.'],
+  ['🌍 Die Welt', 'Ein Kapitel schließt sich rund und erfüllt ab.']
+];
+
+/* ───────────────────────────── Handler ───────────────────────────── */
+
+async function cmdShipname({ sock, msg, from, args }) {
+  const text = args.join(' ').trim();
+  const names = text.split(/\s*(?:&|und|\+|,)\s*/).filter(Boolean);
+  const a = names[0] || 'Person A';
+  const b = names[1] || 'Person B';
+  const seed = crypto.createHash('md5').update(a.toLowerCase() + '|' + b.toLowerCase()).digest();
+  const pct = seed[0] % 101;
+  const bar = '█'.repeat(Math.round(pct / 10)) + '░'.repeat(10 - Math.round(pct / 10));
+  const verdict = pct >= 85 ? '💍 Seelenverwandte!' : pct >= 60 ? '💞 Da geht was!' : pct >= 35 ? '🤔 Könnte klappen …' : '😅 Eher als Freunde.';
+  const shipName = (a.slice(0, Math.ceil(a.length / 2)) + b.slice(Math.floor(b.length / 2))).replace(/\s+/g, '');
+  await sock.sendMessage(from, {
+    text: `> 💘 *SHIP-RECHNER*\n\n${a} 💜 ${b}\n${bar} *${pct}%*\n\n✨ *Ship-Name:* ${shipName}\n${verdict}\n\n_Nur zum Spaß — kein echtes Matching._`
+  }, { quoted: msg });
+}
+
+async function cmdTarot({ sock, msg, from }) {
+  const [name, meaning] = pick(TAROT_CARDS);
+  await sock.sendMessage(from, {
+    text: `> 🔮 *TAROT-ZIEHUNG*\n\n${name}\n\n_${meaning}_\n\n💡 Nur zur Unterhaltung.`
+  }, { quoted: msg });
+}
+
+const WORDLIST_DE = ['apfel', 'nase', 'elefant', 'tiger', 'rakete', 'ente', 'esel', 'liebe', 'ei', 'igel', 'lampe', 'mond', 'nest', 'tomate', 'tasse', 'ente'];
+async function cmdWortkette({ sock, msg, from, args, pref }) {
+  const word = String(args[0] || '').trim().toLowerCase();
+  if (!word) {
+    await sock.sendMessage(from, { text: `> 🔤 *WORTKETTE*\n\nNutze: *${pref}wortkette <wort>*\nDas Folgewort beginnt mit deinem letzten Buchstaben.` }, { quoted: msg });
+    return;
+  }
+  const lastChar = word.slice(-1);
+  const candidates = WORDLIST_DE.filter((w) => w[0] === lastChar && w !== word);
+  const next = candidates.length ? pick(candidates) : null;
+  await sock.sendMessage(from, {
+    text: next
+      ? `> 🔤 *WORTKETTE*\n\nDein Wort: *${word}*\nMein Folgewort: *${next}* (beginnt mit „${lastChar}“)\n\n💡 Jetzt bist du dran: finde ein Wort mit „${next.slice(-1)}“!`
+      : `> 🔤 *WORTKETTE*\n\nDein Wort: *${word}*\nMir fällt gerade kein Wort mit „${lastChar}“ ein — du gewinnst diese Runde! 🏆`
+  }, { quoted: msg });
+}
+
+async function cmdAnagram({ sock, msg, from, args, pref }) {
+  const word = String(args.join('')).trim();
+  if (!word) {
+    await sock.sendMessage(from, { text: `> 🔀 *ANAGRAMM*\n\nNutze: *${pref}anagram <wort>* — ich mische die Buchstaben, du rätst das Original!` }, { quoted: msg });
+    return;
+  }
+  const letters = word.split('');
+  for (let i = letters.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [letters[i], letters[j]] = [letters[j], letters[i]];
+  }
+  const scrambled = letters.join('');
+  await sock.sendMessage(from, {
+    text: `> 🔀 *ANAGRAMM-RÄTSEL*\n\nGemischt: *${scrambled}*\n\n💡 Finde das Originalwort! (${word.length} Buchstaben)`
+  }, { quoted: msg });
+}
+
+async function cmdPalindrom({ sock, msg, from, args, pref }) {
+  const raw = args.join(' ').trim();
+  if (!raw) {
+    await sock.sendMessage(from, { text: `> 🪞 *PALINDROM-CHECK*\n\nNutze: *${pref}palindrom <text>*` }, { quoted: msg });
+    return;
+  }
+  const clean = raw.toLowerCase().replace(/[^a-zäöüß0-9]/g, '');
+  const reversed = clean.split('').reverse().join('');
+  const isPalindrom = clean === reversed && clean.length > 0;
+  await sock.sendMessage(from, {
+    text: `> 🪞 *PALINDROM-CHECK*\n\nText: „${raw}“\n${isPalindrom ? '✅ Das ist ein Palindrom!' : '❌ Kein Palindrom.'}`
+  }, { quoted: msg });
+}
+
+async function cmdMathequiz({ sock, msg, from }) {
+  const a = randInt(2, 20);
+  const b = randInt(2, 20);
+  const op = pick(['+', '-', '×']);
+  const result = op === '+' ? a + b : op === '-' ? a - b : a * b;
+  await sock.sendMessage(from, {
+    text: `> 🧮 *KOPFRECHNEN-QUIZ*\n\n*${a} ${op} ${b} = ?*\n\n⏳ Denk kurz nach … die Lösung: *${result}*\n\n💡 Willst du das selbst lösen, bevor du scrollst? 😉`
+  }, { quoted: msg });
+}
+
+async function cmdDuell({ sock, msg, from, args, pref, mentionedJid, senderName }) {
+  const target = mentionedJid || (args.join(' ').trim() || null);
+  const opponent = target ? String(target).replace(/@s\.whatsapp\.net$/, '').replace(/^@/, '') : 'ein Herausforderer';
+  const you = senderName || 'Du';
+  const winner = pick([you, opponent]);
+  const move = pick(['⚔️ Schwerthieb', '🛡️ Blockade', '🔥 Feuerball', '❄️ Eisschlag', '⚡ Blitzschlag', '🌪️ Wirbelsturm']);
+  await sock.sendMessage(from, {
+    text: `> ⚔️ *ZUFALLS-DUELL*\n\n${you} vs. ${opponent}\n\n${move}!\n\n🏆 *Gewinner:* ${winner}\n\n_Nur Spaß — kein echter Kampf._`
+  }, { quoted: msg });
+}
+
+async function cmdWuerfelduell({ sock, msg, from, senderName, mentionedJid, args }) {
+  const you = senderName || 'Du';
+  const target = mentionedJid || (args.join(' ').trim() || null);
+  const opponent = target ? String(target).replace(/@s\.whatsapp\.net$/, '').replace(/^@/, '') : 'der Bot';
+  const rollA = randInt(1, 6);
+  const rollB = randInt(1, 6);
+  const result = rollA === rollB ? '🤝 Unentschieden!' : rollA > rollB ? `🏆 ${you} gewinnt!` : `🏆 ${opponent} gewinnt!`;
+  await sock.sendMessage(from, {
+    text: `> 🎲 *WÜRFELDUELL*\n\n${you}: 🎲 ${rollA}\n${opponent}: 🎲 ${rollB}\n\n${result}`
+  }, { quoted: msg });
+}
+
+async function cmdSternzeichen({ sock, msg, from, args, pref }) {
+  const date = parseDate(args.join(' '));
+  if (!date) {
+    await sock.sendMessage(from, { text: `> ♈ *STERNZEICHEN*\n\nNutze: *${pref}sternzeichen TT.MM.[JJJJ]*\nBeispiel: *${pref}sternzeichen 24.12*` }, { quoted: msg });
+    return;
+  }
+  const sign = zodiacOf(date.getDate(), date.getMonth() + 1);
+  await sock.sendMessage(from, {
+    text: `> ♈ *STERNZEICHEN*\n\nGeburtsdatum: ${date.toLocaleDateString('de-DE')}\n\nDein Sternzeichen: *${sign}*`
+  }, { quoted: msg });
+}
+
+const EMOJI_MAP = {
+  liebe: '❤️', herz: '💜', glücklich: '😄', traurig: '😢', wütend: '😠', müde: '😴',
+  hund: '🐶', katze: '🐱', essen: '🍽️', pizza: '🍕', kaffee: '☕', bier: '🍺',
+  sonne: '☀️', mond: '🌙', stern: '⭐', regen: '🌧️', schnee: '❄️', feuer: '🔥',
+  geld: '💰', musik: '🎵', tanzen: '💃', lachen: '😂', küssen: '😘', schlafen: '😴',
+  auto: '🚗', haus: '🏠', baum: '🌳', blume: '🌸', geburtstag: '🎂', party: '🎉'
+};
+async function cmdEmoji({ sock, msg, from, args, pref }) {
+  const text = args.join(' ').trim();
+  if (!text) {
+    await sock.sendMessage(from, { text: `> 😀 *EMOJI-ÜBERSETZER*\n\nNutze: *${pref}emoji <text>* — einzelne Wörter werden zu Emojis.` }, { quoted: msg });
+    return;
+  }
+  const translated = text.split(/\s+/).map((w) => EMOJI_MAP[w.toLowerCase()] || w).join(' ');
+  await sock.sendMessage(from, { text: `> 😀 *EMOJI-ÜBERSETZUNG*\n\n${translated}` }, { quoted: msg });
+}
+
+async function cmdAdvice({ sock, msg, from }) {
+  const data = await jget('https://api.adviceslip.com/advice');
+  await sock.sendMessage(from, { text: `> 💡 *LEBENSRAT*\n\n_${data.slip?.advice || 'Kein Rat gefunden.'}_` }, { quoted: msg });
+}
+
+async function cmdChuckNorris({ sock, msg, from }) {
+  const data = await jget('https://api.chucknorris.io/jokes/random');
+  await sock.sendMessage(from, { text: `> 🥋 *CHUCK NORRIS*\n\n${data.value || 'Kein Witz gefunden.'}` }, { quoted: msg });
+}
+
+async function cmdKanye({ sock, msg, from }) {
+  const data = await jget('https://api.kanye.rest');
+  await sock.sendMessage(from, { text: `> 🎤 *ZUFALLS-ZITAT*\n\n_"${data.quote || '—'}"_` }, { quoted: msg });
+}
+
+async function cmdActivity({ sock, msg, from }) {
+  const data = await jget('https://bored-api.appbrewery.com/random');
+  await sock.sendMessage(from, {
+    text: `> 🎯 *GEGEN LANGEWEILE*\n\n${data.activity || 'Keine Aktivität gefunden.'}\n\n` +
+      `👥 Teilnehmer: ${data.participants ?? '—'}\n💰 Kosten: ${data.price === 0 ? 'kostenlos' : 'kostet etwas'}\n🎈 Kinderfreundlich: ${data.kidFriendly ? 'ja' : 'nein'}`
+  }, { quoted: msg });
+}
+
+async function cmdIss({ sock, msg, from }) {
+  const data = await jget('http://api.open-notify.org/iss-now.json');
+  const pos = data.iss_position || {};
+  await sock.sendMessage(from, {
+    text: `> 🛰️ *ISS LIVE-POSITION*\n\n🌍 Breitengrad: ${pos.latitude}\n🌍 Längengrad: ${pos.longitude}\n🕐 Stand: ${new Date((data.timestamp || 0) * 1000).toLocaleString('de-DE')}\n\n🔗 Karte: https://www.google.com/maps?q=${pos.latitude},${pos.longitude}`
+  }, { quoted: msg });
+}
+
+async function cmdMeineIp({ sock, msg, from }) {
+  const data = await jget('https://api.ipify.org?format=json');
+  await sock.sendMessage(from, { text: `> 🌐 *ÖFFENTLICHE IP (BOT-SERVER)*\n\n${data.ip || '—'}\n\n💡 Das ist die IP des Bot-Servers, nicht deine eigene.` }, { quoted: msg });
+}
+
+async function cmdGithubZen({ sock, msg, from }) {
+  const res = await fetch('https://api.github.com/zen', { signal: AbortSignal.timeout(12000), headers: { 'user-agent': 'HelloKitty Baby Maxi 💔' } });
+  if (!res.ok) throw new Error('HTTP ' + res.status);
+  const text = (await res.text()).trim();
+  await sock.sendMessage(from, { text: `> 🐙 *GITHUB ZEN*\n\n_"${text}"_` }, { quoted: msg });
+}
+
+async function cmdBmi({ sock, msg, from, args, pref }) {
+  const kg = Number(args[0]);
+  const cm = Number(args[1]);
+  if (!kg || !cm) {
+    await sock.sendMessage(from, { text: `> ⚖️ *BMI-RECHNER*\n\nNutze: *${pref}bmi <kg> <cm>*\nBeispiel: *${pref}bmi 70 175*` }, { quoted: msg });
+    return;
+  }
+  const m = cm / 100;
+  const bmi = kg / (m * m);
+  const cat = bmi < 18.5 ? 'Untergewicht' : bmi < 25 ? 'Normalgewicht' : bmi < 30 ? 'Übergewicht' : 'Adipositas';
+  await sock.sendMessage(from, {
+    text: `> ⚖️ *BMI-RECHNER*\n\nGewicht: ${kg} kg\nGröße: ${cm} cm\n\n*BMI: ${bmi.toFixed(1)}*\nKategorie: ${cat}\n\n_Nur ein grober Richtwert, keine medizinische Beratung._`
+  }, { quoted: msg });
+}
+
+async function cmdCountdown({ sock, msg, from, args, pref }) {
+  const date = parseDate(args.join(' '));
+  if (!date) {
+    await sock.sendMessage(from, { text: `> ⏳ *COUNTDOWN*\n\nNutze: *${pref}countdown TT.MM.JJJJ*\nBeispiel: *${pref}countdown 24.12.2026*` }, { quoted: msg });
+    return;
+  }
+  const now = new Date();
+  const diffMs = date.setHours(23, 59, 59, 999) - now.getTime();
+  const days = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+  await sock.sendMessage(from, {
+    text: days >= 0
+      ? `> ⏳ *COUNTDOWN*\n\nBis zum ${new Date(date).toLocaleDateString('de-DE')} sind es noch:\n\n*${days} Tag${days === 1 ? '' : 'e'}* 🎉`
+      : `> ⏳ *COUNTDOWN*\n\nDas Datum liegt bereits *${Math.abs(days)} Tag${Math.abs(days) === 1 ? '' : 'e'}* in der Vergangenheit.`
+  }, { quoted: msg });
+}
+
+async function cmdTagDerWoche({ sock, msg, from, args, pref }) {
+  const date = parseDate(args.join(' '));
+  if (!date) {
+    await sock.sendMessage(from, { text: `> 📅 *WOCHENTAG*\n\nNutze: *${pref}tagderwoche TT.MM.JJJJ*` }, { quoted: msg });
+    return;
+  }
+  const weekday = WEEKDAYS_DE[date.getDay()];
+  await sock.sendMessage(from, {
+    text: `> 📅 *WOCHENTAG-RECHNER*\n\n${date.toLocaleDateString('de-DE')} war/ist ein *${weekday}*.`
+  }, { quoted: msg });
+}
+
+async function cmdZeitzone({ sock, msg, from, args, pref }) {
+  const city = args.join(' ').trim().toLowerCase();
+  const tz = TIMEZONE_CITIES[city];
+  if (!tz) {
+    const list = Object.keys(TIMEZONE_CITIES).slice(0, 12).join(', ');
+    await sock.sendMessage(from, {
+      text: `> 🕐 *ZEITZONE*\n\nNutze: *${pref}zeitzone <stadt>*\nBeispiele: ${list} …`
+    }, { quoted: msg });
+    return;
+  }
+  const time = new Intl.DateTimeFormat('de-DE', { timeZone: tz, hour: '2-digit', minute: '2-digit', second: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' }).format(new Date());
+  await sock.sendMessage(from, { text: `> 🕐 *ZEITZONE*\n\n${args.join(' ')} (${tz}):\n*${time}*` }, { quoted: msg });
+}
+
+const LOVE_TIPS = [
+  'Kleine Aufmerksamkeiten im Alltag zählen mehr als große Gesten selten.',
+  'Ehrliche Kommunikation schlägt jedes Rätselraten.',
+  'Zusammen lachen verbindet mehr, als man denkt.',
+  'Zeit ohne Handy — bewusst füreinander da sein.',
+  'Auch in Beziehungen: Sich gegenseitig Raum zum Wachsen lassen.',
+  'Ein „Danke“ für Selbstverständliches wirkt oft Wunder.'
+];
+async function cmdLiebescheck({ sock, msg, from, senderName, mentionedJid, args }) {
+  const you = senderName || 'Du';
+  const target = mentionedJid || (args.join(' ').trim() || null);
+  const partner = target ? String(target).replace(/@s\.whatsapp\.net$/, '').replace(/^@/, '') : 'dein Schwarm';
+  const seed = crypto.createHash('md5').update(you.toLowerCase() + '|' + String(partner).toLowerCase() + new Date().toDateString()).digest();
+  const pct = 40 + (seed[0] % 61);
+  const tip = pick(LOVE_TIPS);
+  await sock.sendMessage(from, {
+    text: `> 💞 *LIEBES-CHECK DES TAGES*\n\n${you} 💜 ${partner}\n\nHeutige Verbindung: *${pct}%*\n\n💡 Tipp des Tages:\n_${tip}_\n\n_Nur zur Unterhaltung — kein echtes Matching._`
+  }, { quoted: msg });
+}
+
+const CUDDLE_IDEAS = [
+  '🎬 Filmabend mit Kuscheldecke und Popcorn',
+  '🍳 Gemeinsam kochen und dabei Musik hören',
+  '🚶 Abendspaziergang Hand in Hand',
+  '📖 Sich gegenseitig aus einem Buch vorlesen',
+  '🌌 Sternenhimmel angucken und dabei quatschen',
+  '🎲 Brettspiel-Abend nur zu zweit',
+  '📸 Alte Fotos zusammen anschauen und Erinnerungen teilen',
+  '🛁 Entspannter Wellness-Abend zuhause'
+];
+async function cmdKuschelvorschlag({ sock, msg, from }) {
+  await sock.sendMessage(from, { text: `> 🛋️ *KUSCHEL-VORSCHLAG*\n\n${pick(CUDDLE_IDEAS)}` }, { quoted: msg });
+}
+
+const COMPLIMENTS = [
+  'hat ein Lächeln, das jeden Raum heller macht ✨',
+  'bringt andere immer zum Lachen 😄',
+  'ist einfach eine warmherzige Person 💜',
+  'hat ein großes Herz für andere 🌸',
+  'strahlt pure gute Laune aus ☀️',
+  'ist wirklich ein toller Mensch 🌟'
+];
+async function cmdKomplimentgenerator({ sock, msg, from, senderName, mentionedJid, args }) {
+  const target = mentionedJid || (args.join(' ').trim() || null);
+  const name = target ? String(target).replace(/@s\.whatsapp\.net$/, '').replace(/^@/, '') : (senderName || 'Du');
+  await sock.sendMessage(from, { text: `> 💌 *KOMPLIMENT-GENERATOR*\n\n${name} ${pick(COMPLIMENTS)}` }, { quoted: msg });
+}
+
+/* ✨ FULL-UPDATE 2026 — neue Offline-Befehle (keine externen APIs) */
+
+async function cmdMuenzwurf({ sock, msg, from }) {
+  const side = pick(['KOPF', 'ZAHL']);
+  const emoji = side === 'KOPF' ? '🪙👑' : '🪙🔢';
+  await sock.sendMessage(from, { text: `> 🪙 *MÜNZWURF*\n\nDie Münze dreht sich... ${emoji}\n\n🎲 Ergebnis: *${side}*\n\n${randInt(1, 100) <= 3 ? '👀 Boah — die Münze ist auf der Kante gelandet?! Neu werfen: nochmal $münzwurf!' : '_Nochmal? Einfach $münzwurf tippen._'}` }, { quoted: msg });
+}
+
+async function cmdWuerfel({ sock, msg, from, args }) {
+  const n = Math.max(1, Math.min(6, Number.parseInt(String(args[0] || '1'), 10) || 1));
+  const rolls = Array.from({ length: n }, () => randInt(1, 6));
+  const faces = { 1: '⚀', 2: '⚁', 3: '⚂', 4: '⚃', 5: '⚄', 6: '⚅' };
+  const sum = rolls.reduce((a, b) => a + b, 0);
+  const special = n === 1 && rolls[0] === 6 ? '\n🎉 Sechser! Glückswurf!' : (sum >= (n * 3.5 + 0.5) ? '\n✨ Stark gewürfelt!' : '');
+  await sock.sendMessage(from, { text: `> 🎲 *WÜRFEL${n > 1 ? ' x' + n : ''}*\n\n${rolls.map((r) => faces[r] + ' ' + r).join('   ·   ')}${n > 1 ? '\n\n➗ Summe: *' + sum + '*' : ''}${special}` }, { quoted: msg });
+}
+
+async function cmdSchereSteinPapier({ sock, msg, from, args }) {
+  const u = String((args[0] || '')).toLowerCase().replace(/[äöüß]/g, (x) => ({ ä: 'ae', ö: 'oe', ü: 'ue', ß: 'ss' }[x]));
+  const map = { schere: '✂️ Schere', stein: '🪨 Stein', papier: '📄 Papier' };
+  const norm = (s) => ({ scissors: 'schere', rock: 'stein', paper: 'papier', s: 'schere', r: 'stein', p: 'papier' }[s] || s);
+  const u2 = norm(u);
+  if (!map[u2]) {
+    return sock.sendMessage(from, { text: `> ✂️🪨📄 *SCHERE-STEIN-PAPIER*\n\nBenutzung: \`$scheresteinpapier schere|stein|papier\`\n\nDu gegen den Bot — wer gewinnt? 👀` }, { quoted: msg });
+  }
+  const b = pick(['schere', 'stein', 'papier']);
+  const beat = { schere: 'papier', stein: 'schere', papier: 'stein' };
+  let out;
+  if (u2 === b) out = '🤝 *Unentschieden!* Beide zeigen ' + map[u2] + '.';
+  else if (beat[u2] === b) out = '🎉 *Du gewinnst!* ' + map[u2] + ' schlägt ' + map[b] + '.';
+  else out = '🤖 *Bot gewinnt!* ' + map[b] + ' schlägt ' + map[u2] + '.';
+  await sock.sendMessage(from, { text: `> ✂️🪨📄 *SCHERE-STEIN-PAPIER*\n\nDu: ${map[u2]}   ·   Bot: ${map[b]}\n\n${out}\n\n_Revanche? $scheresteinpapier papier_` }, { quoted: msg });
+}
+
+async function cmdWahrheitOderPflicht({ sock, msg, from, senderName, mentionedJid, args }) {
+  const name = mentionedJid ? '@' + String(mentionedJid).replace(/@s\.whatsapp\.net$/, '') : (args.join(' ').trim() || (senderName || 'du'));
+  const wOp = pick(['wahrheit', 'pflicht']);
+  const TRUTHS = [
+    'Was ist das Peinlichste, das dir je passiert ist? 😳',
+    'Hattest du schon mal einen Promi-Crush? Wer? 🌟',
+    'Was war deine schlimmste Note und in welchem Fach?',
+    'Wen aus der Gruppe würdest du für 24h in ein Zimmer sperren? 🚪',
+    'Hast du schon mal jemandem eine Nachricht geschickt, die du sofort bereut hast?',
+    'Was ist dein größter „unpopular opinion“ in Sachen Musik? 🎵'
+  ];
+  const DARES = [
+    'Schick der Gruppe deinen letzten Suchbegriff bei Google! 🔍',
+    'Sing die erste Zeile deines Lieblingsliedes als Sprachnachricht 🎤',
+    'Nenne 3 Dinge, die du noch nie getan hast (und nie tun würdest).',
+    'Schick das witzigste Emoji-Pärchen, das dein Leben beschreibt. 😂',
+    'Erfinde sofort einen Werbeslogan für die Gruppe 🛒',
+    'Tippe 10 Sekunden mit geschlossenen Augen — Ergebnis posten! 🎹'
+  ];
+  const line = wOp === 'wahrheit' ? pick(TRUTHS) : pick(DARES);
+  await sock.sendMessage(from, { text: `> 🎭 *WAHRHEIT ODER PFLICHT*\n\nDran ist: ${name}\n\nDu wählst: *${wOp.toUpperCase()}*\n\n${line}` }, { quoted: msg });
+}
+
+const MANTRA_LIST = [
+  'Ich bin genug — genau so, wie ich bin. 💜',
+  'Heute ist ein guter Tag, um freundlich zu mir selbst zu sein.',
+  'Ich muss nicht perfekt sein, um wertvoll zu sein. ✨',
+  'Meine Gefühle sind willkommen — ich muss sie nicht wegschieben.',
+  'Kleine Schritte zählen auch. Ein Schritt genügt. 🐾',
+  'Ich darf Pausen machen und trotzdem stark sein. 🌿',
+  'Was ich heute tue, ist genug — der Rest darf warten.',
+  'Ich bin nicht allein, auch wenn es sich manchmal so anfühlt. ☾'
+];
+async function cmdMantra({ sock, msg, from }) {
+  await sock.sendMessage(from, { text: `> 🕯️ *DEIN MANTRA* (nimm es mit in den Tag)\n\n„${pick(MANTRA_LIST)}“\n\n_Ganz tief einatmen … ausatmen … wiederholen, wenn du magst._` }, { quoted: msg });
+}
+
+async function cmdLottoSchein({ sock, msg, from }) {
+  const nums = new Set();
+  while (nums.size < 6) nums.add(randInt(1, 49));
+  const six = [...nums].sort((a, b) => a - b);
+  const superzahl = randInt(0, 9);
+  const tip = '„Gewinnen ist schön, aber der Spaß am Tippen auch“ 💸';
+  await sock.sendMessage(from, { text: `> 🎟️ *LOTTOSCHEIN* (6 aus 49)\n\nZahlen: ${six.join(' · ')}\nSuperzahl: *${superzahl}*\n\n✨ Viel Glück! ${tip}` }, { quoted: msg });
+}
+
+async function cmdZufallszahl({ sock, msg, from, args }) {
+  let a = Number.parseInt(String(args[0] || ''), 10);
+  let b = Number.parseInt(String(args[1] || ''), 10);
+  if (!Number.isFinite(a) && !Number.isFinite(b)) { a = 1; b = 100; }
+  if (!Number.isFinite(a) || !Number.isFinite(b)) return sock.sendMessage(from, { text: `> 🔢 *ZUFALLSZAHL*\n\nBenutzung: \`$zufallszahl [min] [max]\`\n\nBeispiel: \`$zufallszahl 1 10\`` }, { quoted: msg });
+  if (a > b) [a, b] = [b, a];
+  if (b - a > 100000000) b = a + 100000000;
+  await sock.sendMessage(from, { text: `> 🔢 *ZUFALLSZAHL*\n\nVon *${a}* bis *${b}* → 🎱 *${randInt(a, b)}*` }, { quoted: msg });
+}
+
+const MORSE_MAP = {
+  a: '.-', b: '-...', c: '-.-.', d: '-..', e: '.', f: '..-.', g: '--.', h: '....',
+  i: '..', j: '.---', k: '-.-', l: '.-..', m: '--', n: '-.', o: '---', p: '.--.',
+  q: '--.-', r: '.-.', s: '...', t: '-', u: '..-', v: '...-', w: '.--', x: '-..-',
+  y: '-.--', z: '--..', 0: '-----', 1: '.----', 2: '..---', 3: '...--', 4: '....-',
+  5: '.....', 6: '-....', 7: '--...', 8: '---..', 9: '----.'
+};
+async function cmdMorse({ sock, msg, from, args }) {
+  const text = args.join(' ').trim();
+  if (!text) return sock.sendMessage(from, { text: `> 📡 *MORSE*\n\nBenutzung: \`$morse <text>\`\n\nWandelt Text in Morsecode um.\n_Beispiel: \`$morse HelloKitty Baby Maxi 💔\`_` }, { quoted: msg });
+  if (text.length > 120) return sock.sendMessage(from, { text: '> 📡 *MORSE*\n\nBitte maximal 120 Zeichen — sonst wird die Nachricht zu lang.' }, { quoted: msg });
+  const out = text.toLowerCase().split('').map((ch) => (/[a-z0-9]/.test(ch) ? MORSE_MAP[ch] : ch === ' ' ? '/' : '')).join(' ');
+  await sock.sendMessage(from, { text: `> 📡 *MORSE-CODE*\n\n\`${text}\`\n\n→ \`${out}\`` }, { quoted: msg });
+}
+
+async function cmdSchicksal({ sock, msg, from, args }) {
+  const frage = args.join(' ').trim();
+  const ANSWERS = [
+    '🍀 Ja — das Schicksal meint es gut mit dir.',
+    '🔮 Zeichen deuten auf ja hin.',
+    '🤔 Vielleicht. Frag in einer ruhigen Minute nochmal.',
+    '🌫️ Die Nebel sind dicht — komm später wieder.',
+    '❄️ Eher nein, tut mir leid.',
+    '🌑 Nein. Aber manchmal ist „nein“ der bessere Weg.',
+    '🎲 Frag die Würfel: heute sagt das Schicksal … ja!'
+  ];
+  const antwort = pick(ANSWERS);
+  await sock.sendMessage(from, { text: `> 🔮 *SCHICKSAL*\n\n${frage ? 'Frage: *' + frage + '*\n\n' : ''}${antwort}\n\n_Das Orakel hat gesprochen — entscheiden musst trotzdem du._` }, { quoted: msg });
+}
+
+const GIFT_IDEAS = [
+  '📖 Ein persönlich beschriftetes Buch, das sie/er mag — mit Widmung drin.',
+  '🌱 Eine kleine Pflanze mit einem selbst gebastelten Namensschild.',
+  '🎧 Ein Lieder-„Mix“ als Playlist mit einer Nachricht zu jedem Song.',
+  '📸 Ein gerahmtes Foto von einem gemeinsamen Moment.',
+  '🍫 Lieblingssüßigkeit im hübsch verpackten Geschenkbeutel.',
+  '🕯️ Ein Duftkerzen-Set + ein selbstgeschriebener Brief.',
+  '🎮 Ein Gutschein für einen gemeinsamen Spieleabend.',
+  '☕ Lieblingsgetränk im Mehrweg-Becher mit persönlichem Aufkleber.'
+];
+async function cmdGeschenkidee({ sock, msg, from, args }) {
+  const fuer = args.join(' ').trim();
+  await sock.sendMessage(from, { text: `> 🎁 *GESCHENK-IDEE*\n\n${fuer ? 'Für *' + fuer + '*: ' : ''}${pick(GIFT_IDEAS)}\n\n_Ideen sind wie Herzen — am schönsten, wenn sie persönlich sind. 💜_` }, { quoted: msg });
+}
+
+const FOOD_IDEAS = [
+  '🍝 Spaghetti mit selbstgemachter Tomatensoße + Parmesan',
+  '🥗 Bowl: Reis, gebratenes Gemüse, Hähnchen/Tofu, Erdnusssauce',
+  '🍲 Kartoffelsuppe mit Würstchen und frischem Brot',
+  '🍕 Pizza selber belegen — mit Rucola und Parmesan nach dem Backen',
+  '🥘 One-Pot-Pasta mit Cherrytomaten und Basilikum',
+  '🌮 Taco-Abend mit allen Füllungen (auch vegetarisch)',
+  '🍳 Shakshuka: Eier in Tomaten-Paprika-Soße mit Fladenbrot',
+  '🍚 Gebratener Reis mit Ei, Erbsen und Sojasoße',
+  '🥪 Clubsandwich mit Pommes — und ganz viel Ketchup',
+  '🍜 Nudelsuppe (Ramyeon-Style) mit Ei und Frühlingszwiebeln'
+];
+async function cmdEssen({ sock, msg, from }) {
+  const dish = pick(FOOD_IDEAS);
+  await sock.sendMessage(from, { text: `> 🍽️ *ESSENS-IDEE*\n\nHeute: ${dish}\n\n${randInt(1, 100) <= 20 ? '\n😋 (Koch-Vorschlag von HelloKitty Baby Maxi 💔 — guten Appetit!)' : '\n_Guten Appetit! 💜_ Noch eine Idee? Nochmal $essen.'}` }, { quoted: msg });
+}
+
+async function cmdEntspannung({ sock, msg, from }) {
+  await sock.sendMessage(from, { text: `> 🌿 *MINI-AUSZEIT* (ca. 1 Minute)\n\n1) Bequem hinsetzen oder liegen. 👟\n2) Augen schließen.\n3) 4 Sekunden durch die Nase einatmen …\n4) 4 Sekunden halten …\n5) 6 Sekunden langsam durch den Mund ausatmen.\n\nWiederhole das *5-mal*.\n\n_Du schaffst das. Der Rest kann warten. ☾_` }, { quoted: msg });
+}
+
+/* ───────────────────────────── Router ────────────────────────────── */
+
+const HANDLERS = {
+  shipname: cmdShipname,
+  tarot: cmdTarot,
+  wortkette: cmdWortkette,
+  anagram: cmdAnagram,
+  palindrom: cmdPalindrom,
+  mathequiz: cmdMathequiz,
+  duell: cmdDuell,
+  wuerfelduell: cmdWuerfelduell, 'würfelduell': cmdWuerfelduell,
+  sternzeichen: cmdSternzeichen,
+  emoji: cmdEmoji,
+  advice: cmdAdvice, lebensrat: cmdAdvice,
+  chucknorris: cmdChuckNorris,
+  kanye: cmdKanye,
+  activity: cmdActivity, langeweile: cmdActivity,
+  iss: cmdIss,
+  meineip: cmdMeineIp, meinip: cmdMeineIp,
+  githubzen: cmdGithubZen,
+  bmi: cmdBmi,
+  countdown: cmdCountdown,
+  tagderwoche: cmdTagDerWoche,
+  zeitzone: cmdZeitzone,
+  liebescheck: cmdLiebescheck,
+  kuschelvorschlag: cmdKuschelvorschlag,
+  komplimentgenerator: cmdKomplimentgenerator,
+  /* ✨ FULL-UPDATE */
+  'münzwurf': cmdMuenzwurf, muenzwurf: cmdMuenzwurf,
+  'würfel': cmdWuerfel, wuerfel: cmdWuerfel,
+  scheresteinpapier: cmdSchereSteinPapier, sps: cmdSchereSteinPapier, steinpapierschere: cmdSchereSteinPapier,
+  wahrheitoderpflicht: cmdWahrheitOderPflicht, wop: cmdWahrheitOderPflicht,
+  mantra: cmdMantra, affirmation: cmdMantra, affirmationen: cmdMantra,
+  lottoschein: cmdLottoSchein, lotto: cmdLottoSchein,
+  zufallszahl: cmdZufallszahl, zufall: cmdZufallszahl,
+  morse: cmdMorse, morsen: cmdMorse,
+  schicksal: cmdSchicksal, omen: cmdSchicksal,
+  geschenkidee: cmdGeschenkidee, geschenk: cmdGeschenkidee,
+  essen: cmdEssen, kochen: cmdEssen,
+  entspannung: cmdEntspannung, entspanne: cmdEntspannung, atemuebung: cmdEntspannung
+};
+
+/**
+ * Führt einen Extra-Befehl aus.
+ * @returns {Promise<boolean>} true, wenn der Befehl zu diesem Modul gehört
+ */
+async function handleExtraCommand({ sock, msg, from, args = [], command = '', pref = '$', quoted = null, senderName = '', mentionedJid = null }) {
+  const key = String(command || '').toLowerCase();
+  const handler = HANDLERS[key];
+  if (!handler) return false;
+
+  try {
+    await handler({ sock, msg, from, args, quoted, pref, senderName, mentionedJid });
+    await sendReaction(sock, from, reactions.completion.reactions.withoutAnyProblems, msg.key);
+    console.log(c.bold + c.brightCyan + `[extras] $${key} ausgeführt.` + c.reset);
+    return true;
+  } catch (err) {
+    const reason = String(err?.message || err).slice(0, 160);
+    try {
+      await sock.sendMessage(from, {
+        text: '> ❌ *BEFEHL-FEHLER*\n\n' +
+          `• Befehl: *$${key}*\n` +
+          `• Grund: _${reason}_\n\n` +
+          '💡 _Falls es an einer externen API liegt, versuch es gleich nochmal._'
+      }, { quoted: msg });
+      await sendReaction(sock, from, '❌', msg.key);
+    } catch (sendErr) {}
+    console.log(c.bold + c.brightYellow + `[extras] $${key} fehlgeschlagen: ${reason}` + c.reset);
+    return true;
+  }
+}
+/* ── MERGE-END extracmds ── */
+
+/* ── MERGE-START mediacmds ── */
+/* ═══════════════════════════════════════════════════════════════════════
+   🎬 L O V E B O T   M E D I A   C O M M A N D S
+   ───────────────────────────────────────────────────────────────────────
+   $toimg    — Sticker → Bild (WebP → JPEG)            · Alias $sticker2img
+   $tomp3    — Video → MP3 (ffmpeg, ohne Videospur)     · Alias $toaudio/$mp3
+   $tomp4    — Audio → MP4 (Standbild + Audiospur)      · Alias $video/$audio2video
+   $sticker  — Bild → Sticker (512×512 WebP)            · Alias $stiker/$s
+
+   Architektur: EIN gemeinsamer Konverter-Kern (ffmpeg-Resolver + Pipeline),
+   kein eigener FFmpeg-Code pro Befehl. Statistik & Logs: Database/media.json
+   (gleiche Daten speisen das Owner-Panel „🎬 Media“).
+
+   Ehrlich: Sticker-Paket/Autor („Pack: HelloKitty Baby Maxi 💔 / Author: <pushName>“)
+   stehen in der Bestätigungsnachricht — EXIF-Metadaten im WebP werden von
+   WhatsApp nur bei entsprechendem EXIF-Chunk angezeigt (hier NICHT gesetzt).
+   ═══════════════════════════════════════════════════════════════════════ */
+
+
+
+
+
+
+
+/* downloadContentFromMessage wird LAZY geladen (erst beim echten Download) —
+   damit der Konverter-Kern auch ohne Baileys-Stack testbar ist. */
+
+const execFileAsync__mmediacmds = promisify(execFile);
+const req = createRequire(import.meta.url);
+
+/* ---------- Speicher: Database/media.json ------------------------------ */
+const STORE_PATH = path.join('Database', 'media.json');
+
+function loadStore__mmediacmds() {
+  try { return JSON.parse(fs.readFileSync(STORE_PATH, 'utf8')); }
+  catch (e) { return { config: { staticImage: '' }, stats: {}, logs: [], live: [] }; }
+}
+function saveStore(store) {
+  try {
+    fs.mkdirSync(path.dirname(STORE_PATH), { recursive: true });
+    fs.writeFileSync(STORE_PATH, JSON.stringify(store, null, 2), 'utf8');
+  } catch (e) { console.error('[media] Speicherfehler:', e?.message || e); }
+}
+
+/* ---------- ffmpeg-Resolver (wie Love.js, ESM-sicher) ------------------ */
+let ffmpegCache = null;
+function ffmpegCandidates() {
+  const out = [];
+  if (process.env.FFMPEG_PATH) out.push(process.env.FFMPEG_PATH);
+  try { const s = req('ffmpeg-static'); if (s) out.push(s); } catch (e) {}
+  out.push(
+    path.join(process.cwd(), 'node_modules', 'ffmpeg-static', 'ffmpeg.exe'),
+    path.join(process.cwd(), 'node_modules', 'ffmpeg-static', 'ffmpeg'),
+    path.join(process.cwd(), 'node_modules', '.bin', 'ffmpeg'),
+    'ffmpeg'
+  );
+  return [...new Set(out.filter(Boolean))];
+}
+async function getFfmpeg() {
+  if (ffmpegCache) return ffmpegCache;
+  for (const c of ffmpegCandidates()) {
+    try { await execFileAsync__mmediacmds(c, ['-version'], { timeout: 8000, maxBuffer: 1024 * 1024 }); ffmpegCache = c; return c; }
+    catch (e) {}
+  }
+  throw new Error('ffmpeg nicht gefunden — `npm i ffmpeg-static` oder FFMPEG_PATH setzen.');
+}
+async function hasFfmpeg__mmediacmds() { try { await getFfmpeg(); return true; } catch (e) { return false; } }
+
+async function run(args, timeoutMs = 120000) {
+  const bin = await getFfmpeg();
+  try {
+    await execFileAsync__mmediacmds(bin, ['-y', ...args], { timeout: timeoutMs, maxBuffer: 32 * 1024 * 1024 });
+  } catch (err) {
+    throw new Error('FFmpeg: ' + String(err?.message || err).slice(0, 160));
+  }
+}
+
+/* ---------- Konverter-Kern (gemeinsam für alle Befehle) ---------------- */
+const TMP = () => path.join(process.cwd(), 'tmp', 'media', crypto.randomBytes(6).toString('hex'));
+const MAX_BYTES = 64 * 1024 * 1024;
+
+async function webpToJpg(buf) {
+  const d = TMP(); fs.mkdirSync(d, { recursive: true });
+  const i = path.join(d, 'in.webp'), o = path.join(d, 'out.jpg');
+  try {
+    fs.writeFileSync(i, buf);
+    await run(['-i', i, '-frames:v', '1', o]);
+    return fs.readFileSync(o);
+  } finally { fs.rmSync(d, { recursive: true, force: true }); }
+}
+
+async function mp4ToMp3(buf) {
+  const d = TMP(); fs.mkdirSync(d, { recursive: true });
+  const i = path.join(d, 'in.mp4'), o = path.join(d, 'out.mp3');
+  try {
+    fs.writeFileSync(i, buf);
+    await run(['-i', i, '-vn', '-acodec', 'libmp3lame', '-q:a', '4', o]);
+    return fs.readFileSync(o);
+  } finally { fs.rmSync(d, { recursive: true, force: true }); }
+}
+
+/* Standbild für $tomp4: konfigurierbar (Assets/Bilder/tmp), sonst dunkler Frame */
+function resolveStaticImage() {
+  const store = loadStore__mmediacmds();
+  const custom = String(store.config?.staticImage || '').trim();
+  const candidates = custom
+    ? [custom]
+    : ['Assets/max.jpeg', 'Bilder/max.jpeg', 'tmp/max.jpeg'].map((p) => path.join(process.cwd(), p));
+  for (const p of candidates) {
+    try { if (p && fs.existsSync(p) && fs.statSync(p).size > 0) return { path: p, fallback: false }; } catch (e) {}
+  }
+  return { path: null, fallback: true };
+}
+
+async function audioToMp4(buf, authorName = '') {
+  const d = TMP(); fs.mkdirSync(d, { recursive: true });
+  const i = path.join(d, 'in.audio'), o = path.join(d, 'out.mp4');
+  try {
+    fs.writeFileSync(i, buf);
+    const img = resolveStaticImage();
+    if (img.path) {
+      await run(['-loop', '1', '-i', img.path, '-i', i,
+        '-c:v', 'libx264', '-tune', 'stillimage', '-c:a', 'aac', '-b:a', '160k',
+        '-pix_fmt', 'yuv420p', '-shortest', o]);
+    } else {
+      /* Kein Standardbild vorhanden → dunkler HelloKitty Baby Maxi 💔-Rahmen (ehrlicher Fallback) */
+      await run(['-f', 'lavfi', '-i', 'color=c=0x0d0716:s=640x640:d=3600', '-i', i,
+        '-c:v', 'libx264', '-tune', 'stillimage', '-c:a', 'aac', '-b:a', '160k',
+        '-pix_fmt', 'yuv420p', '-shortest', o]);
+    }
+    void authorName;
+    return fs.readFileSync(o);
+  } finally { fs.rmSync(d, { recursive: true, force: true }); }
+}
+
+async function imageToStickerWebp(buf) {
+  const d = TMP(); fs.mkdirSync(d, { recursive: true });
+  const ext = 'in.img', o = path.join(d, 'out.webp');
+  const i = path.join(d, ext);
+  try {
+    fs.writeFileSync(i, buf);
+    await run(['-i', i,
+      '-vf', "scale=512:512:force_original_aspect_ratio=increase,crop=512:512",
+      '-vcodec', 'libwebp', '-lossless', '0', '-q:v', '70', '-frames:v', '1', o]);
+    return fs.readFileSync(o);
+  } finally { fs.rmSync(d, { recursive: true, force: true }); }
+}
+
+async function addStickerMetadata(buf, authorName) {
+  const image = new WebP.Image();
+  await image.load(buf);
+  const data = JSON.stringify({
+    'sticker-pack-id': 'com.lovebot.sticker',
+    'sticker-pack-name': 'HelloKitty Baby Maxi 💔',
+    'sticker-pack-publisher': String(authorName || 'HelloKitty Baby Maxi 💔').slice(0, 24),
+    emojis: []
+  });
+  const dataBuffer = Buffer.from(data, 'utf8');
+  const exif = Buffer.concat([
+    Buffer.from([
+      0x49, 0x49, 0x2a, 0x00, 0x08, 0x00, 0x00, 0x00, 0x01, 0x00, 0x41, 0x57,
+      0x07, 0x00, 0x00, 0x00, 0x00, 0x00, 0x16, 0x00, 0x00, 0x00
+    ]),
+    dataBuffer
+  ]);
+  exif.writeUInt32LE(dataBuffer.length, 14);
+  image.exif = exif;
+  return image.save(null);
+}
+
+/* ---------- Statistik & Logs (Owner-Panel liest dieselbe Datei) -------- */
+function liveUpdate(job, remove = false) {
+  const store = loadStore__mmediacmds();
+  store.live = (store.live || []).filter((x) => x?.id !== job.id);
+  if (!remove) store.live.unshift(job);
+  store.live = store.live.slice(0, 20);
+  saveStore(store);
+}
+
+function logMedia(entry) {
+  const store = loadStore__mmediacmds();
+  const s = store.stats[entry.command] ||= { count: 0, ok: 0, fail: 0, msTotal: 0 };
+  s.count++; if (entry.ok) s.ok++; else s.fail++;
+  s.msTotal = Math.round((s.msTotal || 0) + (entry.ms || 0));
+  store.logs = [entry, ...(store.logs || [])].slice(0, 300);
+  store.updated = new Date().toISOString();
+  saveStore(store);
+}
+
+/* ---------- quoted-Media erkennen & laden ------------------------------ */
+function quotedMedia(quoted) {
+  if (!quoted || typeof quoted !== 'object') return null;
+  if (quoted.stickerMessage) return { kind: 'sticker', obj: quoted.stickerMessage };
+  if (quoted.imageMessage) return { kind: 'image', obj: quoted.imageMessage };
+  if (quoted.videoMessage) return { kind: 'video', obj: quoted.videoMessage };
+  if (quoted.audioMessage) return { kind: 'audio', obj: quoted.audioMessage };
+  return null;
+}
+async function downloadQuoted(m) {
+  const { downloadContentFromMessage } = await import('./waApi.js');
+  const stream = await downloadContentFromMessage(m.obj, m.kind);
+  const chunks = [];
+  for await (const c of stream) chunks.push(c);
+  const buf = Buffer.concat(chunks);
+  if (!buf?.length) throw new Error('Download der zitierten Nachricht fehlgeschlagen.');
+  if (buf.length > MAX_BYTES) throw new Error('Datei zu groß (max. 64 MB).');
+  return buf;
+}
+
+/* ---------- Befehle ----------------------------------------------------- */
+const COMMANDS = new Map();
+function cmd(names, fn) { for (const n of names.split(' ')) COMMANDS.set(n, fn); }
+const fmtMB = (b) => (b / 1024 / 1024).toFixed(1) + ' MB';
+
+cmd('toimg sticker2img', async (ctx) => {
+  const m = quotedMedia(ctx.quoted);
+  if (!m || m.kind !== 'sticker') {
+    await ctx.send('> 🖼️ *STICKER → BILD*\n\nAntworte auf einen *Sticker* und schreibe *' + ctx.pref + 'toimg*.');
+    return true;
+  }
+  const job = { id: crypto.randomUUID(), command: ctx.command, user: ctx.userName, group: ctx.chatLabel, session: ctx.sessionId, status: 'läuft', ts: Date.now() };
+  liveUpdate(job);
+  const t0 = Date.now();
+  try {
+    const buf = await downloadQuoted(m);
+    const jpg = await webpToJpg(buf);
+    await ctx.sock.sendMessage(ctx.from, { image: jpg, mimetype: 'image/jpeg', caption: '🖼️ *Sticker → Bild*\n\n✅ Konvertierung abgeschlossen. · ' + fmtMB(jpg.length) }, { quoted: ctx.msg });
+    logMedia({ ts: new Date().toISOString(), command: 'toimg', user: job.user, group: job.group, session: job.session, input: 'Sticker ' + fmtMB(buf.length), output: 'JPEG ' + fmtMB(jpg.length), ms: Date.now() - t0, ok: true });
+    liveUpdate({ ...job, status: 'fertig', ms: Date.now() - t0 }, true);
+  } catch (e) {
+    logMedia({ ts: new Date().toISOString(), command: 'toimg', user: job.user, group: job.group, session: job.session, input: 'Sticker', output: '-', ms: Date.now() - t0, ok: false, error: String(e?.message || e).slice(0, 120) });
+    liveUpdate({ ...job, status: 'Fehler: ' + String(e?.message || e).slice(0, 60) }, true);
+    await ctx.send('> ⚠️ Konvertierung fehlgeschlagen: ' + String(e?.message || e).slice(0, 140));
+  }
+  return true;
+});
+
+cmd('tomp3 toaudio mp3', async (ctx) => {
+  const m = quotedMedia(ctx.quoted);
+  if (!m || m.kind !== 'video') {
+    await ctx.send('> 🎵 *VIDEO → MP3*\n\nAntworte auf ein *Video* und schreibe *' + ctx.pref + 'tomp3*.');
+    return true;
+  }
+  const job = { id: crypto.randomUUID(), command: ctx.command, user: ctx.userName, group: ctx.chatLabel, session: ctx.sessionId, status: 'läuft', ts: Date.now() };
+  liveUpdate(job);
+  const t0 = Date.now();
+  try {
+    const buf = await downloadQuoted(m);
+    await ctx.send('⏳ *Video → MP3* — konvertiere (' + fmtMB(buf.length) + ') …');
+    const mp3 = await mp4ToMp3(buf);
+    await ctx.sock.sendMessage(ctx.from, { audio: mp3, mimetype: 'audio/mpeg', ptt: false }, { quoted: ctx.msg });
+    await ctx.send('🎵 *Video → MP3* ✅\n\n📁 ' + fmtMB(buf.length) + ' Video → ' + fmtMB(mp3.length) + ' MP3 · ' + ((Date.now() - t0) / 1000).toFixed(1) + 's');
+    logMedia({ ts: new Date().toISOString(), command: 'tomp3', user: job.user, group: job.group, session: job.session, input: 'Video ' + fmtMB(buf.length), output: 'MP3 ' + fmtMB(mp3.length), ms: Date.now() - t0, ok: true });
+    liveUpdate({ ...job, status: 'fertig', ms: Date.now() - t0 }, true);
+  } catch (e) {
+    logMedia({ ts: new Date().toISOString(), command: 'tomp3', user: job.user, group: job.group, session: job.session, input: 'Video', output: '-', ms: Date.now() - t0, ok: false, error: String(e?.message || e).slice(0, 120) });
+    liveUpdate({ ...job, status: 'Fehler: ' + String(e?.message || e).slice(0, 60) }, true);
+    await ctx.send('> ⚠️ Konvertierung fehlgeschlagen: ' + String(e?.message || e).slice(0, 140));
+  }
+  return true;
+});
+
+cmd('tomp4 video audio2video', async (ctx) => {
+  const m = quotedMedia(ctx.quoted);
+  if (!m || m.kind !== 'audio') {
+    await ctx.send('> 🎬 *AUDIO → MP4*\n\nAntworte auf eine *Audio-/Sprachnachricht* und schreibe *' + ctx.pref + 'tomp4*.\n\nℹ️ Audio hat keine Videospur — der Bot legt ein Standbild darüber (Standardbild: Assets/max.jpeg, konfigurierbar).');
+    return true;
+  }
+  const job = { id: crypto.randomUUID(), command: ctx.command, user: ctx.userName, group: ctx.chatLabel, session: ctx.sessionId, status: 'läuft', ts: Date.now() };
+  liveUpdate(job);
+  const t0 = Date.now();
+  try {
+    const buf = await downloadQuoted(m);
+    const img = resolveStaticImage();
+    const mp4 = await audioToMp4(buf, ctx.userName);
+    await ctx.sock.sendMessage(ctx.from, { video: mp4, mimetype: 'video/mp4', caption: '🎬 *Audio → MP4* ✅\n\n🖼️ Standbild: ' + (img.fallback ? 'HelloKitty Baby Maxi 💔-Standardrahmen (kein max.jpeg gefunden)' : path.basename(img.path)) + '\n📁 ' + fmtMB(buf.length) + ' Audio → ' + fmtMB(mp4.length) + ' MP4' }, { quoted: ctx.msg });
+    logMedia({ ts: new Date().toISOString(), command: 'tomp4', user: job.user, group: job.group, session: job.session, input: 'Audio ' + fmtMB(buf.length), output: 'MP4 ' + fmtMB(mp4.length), ms: Date.now() - t0, ok: true, note: img.fallback ? 'Standbild-Fallback' : path.basename(img.path) });
+    liveUpdate({ ...job, status: 'fertig', ms: Date.now() - t0 }, true);
+  } catch (e) {
+    logMedia({ ts: new Date().toISOString(), command: 'tomp4', user: job.user, group: job.group, session: job.session, input: 'Audio', output: '-', ms: Date.now() - t0, ok: false, error: String(e?.message || e).slice(0, 120) });
+    liveUpdate({ ...job, status: 'Fehler: ' + String(e?.message || e).slice(0, 60) }, true);
+    await ctx.send('> ⚠️ Konvertierung fehlgeschlagen: ' + String(e?.message || e).slice(0, 140));
+  }
+  return true;
+});
+
+cmd('sticker stiker s', async (ctx) => {
+  const m = quotedMedia(ctx.quoted);
+  if (!m || (m.kind !== 'image' && m.kind !== 'sticker')) {
+    await ctx.send('> 🎨 *STICKER ERSTELLEN*\n\nAntworte auf ein *Bild* und schreibe *' + ctx.pref + 'sticker*.');
+    return true;
+  }
+  const job = { id: crypto.randomUUID(), command: ctx.command, user: ctx.userName, group: ctx.chatLabel, session: ctx.sessionId, status: 'läuft', ts: Date.now() };
+  liveUpdate(job);
+  const t0 = Date.now();
+  const author = String(ctx.userName || 'HelloKitty Baby Maxi 💔').slice(0, 24);
+  try {
+    await ctx.send('🎨 Sticker wird erstellt …');
+    const buf = await downloadQuoted(m);
+    /* Sticker-Zitat: WebP nur neu verpacken, damit die Metadaten aktualisiert werden. */
+    const webp = await addStickerMetadata(m.kind === 'sticker' ? buf : await imageToStickerWebp(buf), author);
+    await ctx.sock.sendMessage(ctx.from, { sticker: webp, mimetype: 'image/webp' }, { quoted: ctx.msg });
+    await ctx.send('✅ *Fertig!*\n\n📦 Pack: *HelloKitty Baby Maxi 💔*\n✍️ Author: *' + author + '*');
+    logMedia({ ts: new Date().toISOString(), command: 'sticker', user: job.user, group: job.group, session: job.session, input: m.kind === 'sticker' ? 'Sticker' : 'Bild ' + fmtMB(buf.length), output: 'WebP 512×512', ms: Date.now() - t0, ok: true });
+    liveUpdate({ ...job, status: 'fertig', ms: Date.now() - t0 }, true);
+  } catch (e) {
+    logMedia({ ts: new Date().toISOString(), command: 'sticker', user: job.user, group: job.group, session: job.session, input: m.kind === 'sticker' ? 'Sticker' : 'Bild', output: '-', ms: Date.now() - t0, ok: false, error: String(e?.message || e).slice(0, 120) });
+    liveUpdate({ ...job, status: 'Fehler: ' + String(e?.message || e).slice(0, 60) }, true);
+    await ctx.send('> ⚠️ Sticker-Erstellung fehlgeschlagen: ' + String(e?.message || e).slice(0, 140));
+  }
+  return true;
+});
+
+/* ---------- Entry (wie handleSessionCommand / handleLovePlus) ---------- */
+async function handleMediaCommand(ctx) {
+  const fn = COMMANDS.get(String(ctx.command || '').toLowerCase());
+  if (!fn) return false;
+  const enriched = {
+    ...ctx,
+    userName: ctx.userName || ctx.msg?.pushName || 'Unbekannt',
+    chatLabel: String(ctx.from || '').endsWith('@g.us') ? ctx.from : 'Privat',
+    sessionId: ctx.sessionId || 'main',
+    send: (text) => ctx.sock.sendMessage(ctx.from, { text }, { quoted: ctx.msg })
+  };
+  if (!(await hasFfmpeg__mmediacmds())) {
+    await enriched.send('> 🧰 *ffmpeg fehlt.*\n\nDie Media-Befehle brauchen ffmpeg:\n`npm i ffmpeg-static`\noder Umgebungsvariable *FFMPEG_PATH* setzen.');
+    return true;
+  }
+  return (await fn(enriched)) === true;
+}
+/* ── MERGE-END mediacmds ── */
+
+/* ── MERGE-START toolcmds ── */
+/* ═══════════════════════════════════════════════════════════════════════
+   🧭 L O V E B O T   A L L T A G S - T O O L S   (toolcmds.js)
+   ─────────────────────────────────────────────────────────────────────
+   Sechs nützliche Befehle für den Alltag — alle mit ECHTEN Daten aus
+   freien APIs (keine Platzhalter, keine erfundenen Werte):
+
+     $wetter <stadt>              · Open-Meteo (Geocoding + Forecast)
+     $währung <betrag> <von> [zu] · Frankfurter API (EZB-Referenzkurse)
+     $übersetze <zielsprache> …   · MyMemory Translation
+     $qr <text>                   · goqr.me (QR-Code als PNG)
+     $kurz <url>                  · TinyURL / is.gd (URL-Shortener)
+     $passwort [länge]            · crypto.randomBytes (echter Zufall)
+
+   Wenn eine API nicht erreichbar ist, sagt der Bot das ehrlich —
+   statt irgendwelche Werte zu erfinden.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+
+
+
+
+/* ─────────────────────────────────────────────────────────────────────
+   Befehlsnamen (müssen zu registry/commands.json passen)
+   ───────────────────────────────────────────────────────────────────── */
+
+const TOOL_COMMANDS = new Set([
+  'wetter', 'weather',
+  'währung', 'waehrung', 'currency', 'cur', 'wechselkurs',
+  'übersetze', 'uebersetze', 'translate', 'übersetzer', 'uebersetzer', 'tr',
+  'qr', 'qrcode',
+  'kurz', 'kuerz', 'short', 'shorten', 'tiny',
+  'passwort', 'password', 'pw', 'pwd'
+]);
+
+/* ─────────────────────────────────────────────────────────────────────
+   Kleine Helfer
+   ───────────────────────────────────────────────────────────────────── */
+
+async function jget__mtoolcmds(url, timeoutMs = 12000) {
+  const res = await fetch(url, {
+    signal: AbortSignal.timeout(timeoutMs),
+    headers: { 'user-agent': 'HelloKitty Baby Maxi 💔/1.0 (+tools)', accept: 'application/json' }
+  });
+  if (!res.ok) throw new Error('HTTP ' + res.status);
+  return res.json();
+}
+
+async function tget(url, timeoutMs = 12000) {
+  const res = await fetch(url, {
+    signal: AbortSignal.timeout(timeoutMs),
+    headers: { 'user-agent': 'HelloKitty Baby Maxi 💔/1.0 (+tools)', accept: '*/*' }
+  });
+  if (!res.ok) throw new Error('HTTP ' + res.status);
+  return (await res.text()).trim();
+}
+
+function quotedText(quoted) {
+  if (!quoted) return '';
+  return quoted.conversation || quoted.extendedTextMessage?.text || quoted.imageMessage?.caption || '';
+}
+
+/* WMO-Wettercodes → deutscher Text + Emoji (Open-Meteo) */
+const WMO = {
+  0: ['☀️', 'Klar'], 1: ['🌤️', 'Überwiegend klar'], 2: ['⛅', 'Teilweise bewölkt'], 3: ['☁️', 'Bedeckt'],
+  45: ['🌫️', 'Nebel'], 48: ['🌫️', 'Reifnebel'],
+  51: ['🌦️', 'Leichter Nieselregen'], 53: ['🌦️', 'Nieselregen'], 55: ['🌧️', 'Starker Nieselregen'],
+  56: ['🌧️', 'Gefrierender Nieselregen'], 57: ['🌧️', 'Starker gefrierender Nieselregen'],
+  61: ['🌦️', 'Leichter Regen'], 63: ['🌧️', 'Regen'], 65: ['🌧️', 'Starker Regen'],
+  66: ['🌧️', 'Gefrierender Regen'], 67: ['🌧️', 'Starker gefrierender Regen'],
+  71: ['🌨️', 'Leichter Schneefall'], 73: ['🌨️', 'Schneefall'], 75: ['❄️', 'Starker Schneefall'],
+  77: ['🌨️', 'Schneegriesel'],
+  80: ['🌦️', 'Leichte Regenschauer'], 81: ['🌧️', 'Regenschauer'], 82: ['🌧️', 'Heftige Regenschauer'],
+  85: ['🌨️', 'Leichte Schneeschauer'], 86: ['🌨️', 'Starke Schneeschauer'],
+  95: ['⛈️', 'Gewitter'], 96: ['⛈️', 'Gewitter mit Hagel'], 99: ['⛈️', 'Gewitter mit starkem Hagel']
+};
+const wmo = (code) => WMO[Number(code)] || ['🌡️', 'Unbekannt (' + code + ')'];
+
+const CURRENCY_NAMES = {
+  eur: 'Euro', usd: 'US-Dollar', chf: 'Schweizer Franken', gbp: 'Britisches Pfund',
+  try: 'Türkische Lira', tr: 'Türkische Lira', tl: 'Türkische Lira',
+  jpy: 'Japanischer Yen', cny: 'Chinesischer Yuan', aud: 'Australischer Dollar',
+  cad: 'Kanadischer Dollar', sek: 'Schwedische Krone', nok: 'Norwegische Krone',
+  dkk: 'Dänische Krone', pln: 'Polnischer Zloty', czk: 'Tschechische Krone',
+  huf: 'Ungarischer Forint', ron: 'Rumänischer Leu', bgn: 'Bulgarischer Lew',
+  ils: 'Israelischer Schekel', zar: 'Südafrikanischer Rand', brl: 'Brasilianischer Real',
+  mxn: 'Mexikanischer Peso', inr: 'Indische Rupie', krw: 'Südkoreanischer Won',
+  sgd: 'Singapur-Dollar', hkd: 'Hongkong-Dollar', nzd: 'Neuseeland-Dollar',
+  rub: 'Russischer Rubel', uah: 'Ukrainische Hrywnja', thb: 'Thai-Baht',
+  idr: 'Indonesische Rupiah', myr: 'Malaysischer Ringgit', php: 'Philippinischer Peso'
+};
+const SYMBOL_TO_CODE = { '€': 'EUR', '$': 'USD', '£': 'GBP', '¥': 'JPY', '₺': 'TRY', 'fr': 'CHF' };
+
+const LANG_NAMES = {
+  de: 'de', deutsch: 'de', german: 'de', ger: 'de',
+  en: 'en', englisch: 'en', english: 'en', eng: 'en',
+  tr: 'tr', türkisch: 'tr', tuerkisch: 'tr', turkish: 'tr',
+  es: 'es', spanisch: 'es', spanish: 'es',
+  fr: 'fr', französisch: 'fr', franzoesisch: 'fr', french: 'fr',
+  it: 'it', italienisch: 'it', italian: 'it',
+  nl: 'nl', niederländisch: 'nl', niederlaendisch: 'nl', holländisch: 'nl', dutch: 'nl',
+  pl: 'pl', polnisch: 'pl', polish: 'pl',
+  pt: 'pt', portugiesisch: 'pt', portuguese: 'pt',
+  ru: 'ru', russisch: 'ru', russian: 'ru',
+  ar: 'ar', arabisch: 'ar', arabic: 'ar',
+  ja: 'ja', japanisch: 'ja', japanese: 'ja',
+  zh: 'zh', chinesisch: 'zh', chinese: 'zh'
+};
+function langName(code) {
+  const k = String(code || '').toLowerCase();
+  return LANG_NAMES[k] || (k.length === 2 ? k : null);
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   1) $wetter
+   ───────────────────────────────────────────────────────────────────── */
+
+async function cmdWetter({ sock, from, msg, args, quoted }) {
+  const q = args.join(' ').trim() || quotedText(quoted);
+  if (!q) {
+    await sock.sendMessage(from, {
+      text: '> 🌤️ *WETTER — VERWENDUNG*\n\n' +
+        '• `$wetter <stadt>`\n' +
+        '• oder eine Nachricht mit dem Ortsnamen zitieren\n\n' +
+        '_Beispiel:_ `$wetter Kerkrade`\n' +
+        '📡 _Echte Daten von Open-Meteo_'
+    }, { quoted: msg });
+    return true;
+  }
+
+  const geoUrl = 'https://geocoding-api.open-meteo.com/v1/search?count=1&language=de&format=json&name=' + encodeURIComponent(q);
+  const geo = await jget__mtoolcmds(geoUrl);
+  const place = geo?.results?.[0];
+  if (!place) {
+    await sock.sendMessage(from, {
+      text: `> ❌ *ORT NICHT GEFUNDEN*\n\n• Gesucht: _${q}_\n\n💡 _Versuche es mit dem Ortsnamen ohne Zusatz (z. B. „Kerkrade“)._`
+    }, { quoted: msg });
+    return true;
+  }
+
+  const wUrl = 'https://api.open-meteo.com/v1/forecast' +
+    `?latitude=${place.latitude}&longitude=${place.longitude}` +
+    '&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,cloud_cover,pressure_msl,wind_speed_10m,wind_gusts_10m' +
+    '&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max' +
+    '&timezone=auto&forecast_days=2';
+  const w = await jget__mtoolcmds(wUrl);
+  const cur = w?.current || {};
+  const day = w?.daily || {};
+  const [emoji, text] = wmo(cur.weather_code);
+
+  const placeName = [place.name, place.admin1, place.country].filter(Boolean).join(', ');
+  const lines = [
+    '╔══════════════════════════════╗',
+    '║   🌤️  W E T T E R            ║',
+    '╚══════════════════════════════╝',
+    '',
+    `📍 *${placeName}*`,
+    '',
+    `${emoji} *${text}*`,
+    `🌡️ *${cur.temperature_2m} °C* _(gefühlt ${cur.apparent_temperature} °C)_`,
+    `📅 Heute: ${day.temperature_2m_max?.[0]}° / ${day.temperature_2m_min?.[0]}° _(max/min)_`,
+    (day.precipitation_probability_max?.[0] != null ? `🌧️ Regen: ${day.precipitation_probability_max[0]} % _(Niederschlag ${day.precipitation_sum?.[0]} mm)_` : ''),
+    `💧 Luftfeuchte: ${cur.relative_humidity_2m} % · ☁️ Bewölkung: ${cur.cloud_cover} %`,
+    `💨 Wind: ${cur.wind_speed_10m} km/h _(Böen ${cur.wind_gusts_10m} km/h)_`,
+    `🔽 Luftdruck: ${cur.pressure_msl} hPa`,
+    '',
+    `🕐 Stand: ${String(cur.time || '').replace('T', ' ')} _(${w.timezone_abbreviation || w.timezone})_`,
+    `🧭 ${place.latitude.toFixed(2)}, ${place.longitude.toFixed(2)}`,
+    '',
+    '📡 _Echte Daten · Open-Meteo_'
+  ].filter(Boolean);
+
+  await sock.sendMessage(from, { text: lines.join('\n') }, { quoted: msg });
+  return true;
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   2) $währung
+   ───────────────────────────────────────────────────────────────────── */
+
+function parseCurrencyToken(raw = '') {
+  let t = String(raw).trim().toLowerCase();
+  if (!t) return null;
+  for (const [sym, code] of Object.entries(SYMBOL_TO_CODE)) {
+    if (t === sym) return code;
+  }
+  t = t.replace(/[^a-z]/g, '');
+  if (t.length === 3) return t.toUpperCase();
+  return null;
+}
+
+async function cmdWaehrung({ sock, from, msg, args, quoted }) {
+  const text = args.join(' ').trim() || quotedText(quoted);
+  const tokens = text.split(/\s+/).filter(Boolean);
+
+  /* $währung liste — verfügbare Währungen */
+  if (tokens.length && /^(liste|list|kurse|alle)$/i.test(tokens[0])) {
+    const data = await jget__mtoolcmds('https://api.frankfurter.dev/v1/currencies');
+    const codes = Object.keys(data || {});
+    await sock.sendMessage(from, {
+      text: '> 💱 *VERFÜGBARE WÄHRUNGEN*\n\n' +
+        codes.map((k) => `${k} _(${data[k]})_`).join(' · ') +
+        `\n\n📡 _${codes.length} Währungen · Frankfurter API (EZB)_`
+    }, { quoted: msg });
+    return true;
+  }
+
+  let amount = null, fromCur = null, toCur = null;
+  if (tokens.length >= 3) {
+    amount = Number(String(tokens[0]).replace(',', '.'));
+    fromCur = parseCurrencyToken(tokens[1]);
+    toCur = parseCurrencyToken(tokens[2]);
+  } else if (tokens.length === 2) {
+    /* „10 eur“ → Ziel Standard USD · „eur usd“ → 1 Einheit */
+    const a = Number(String(tokens[0]).replace(',', '.'));
+    if (isFinite(a)) { amount = a; fromCur = parseCurrencyToken(tokens[1]); toCur = 'USD'; }
+    else { amount = 1; fromCur = parseCurrencyToken(tokens[0]); toCur = parseCurrencyToken(tokens[1]); }
+  } else if (tokens.length === 1) {
+    const a = Number(String(tokens[0]).replace(',', '.'));
+    if (isFinite(a)) { amount = a; fromCur = 'EUR'; toCur = 'USD'; }
+  }
+
+  if (!isFinite(amount) || amount <= 0 || !fromCur || !toCur) {
+    await sock.sendMessage(from, {
+      text: '> 💱 *WÄHRUNG — VERWENDUNG*\n\n' +
+        '• `$währung <betrag> <von> <nach>`\n' +
+        '• `$währung 50 EUR TRY` · `$währung 10 €` _(→ USD)_ · `$währung eur usd`\n' +
+        '• `$währung liste` — alle Währungen\n\n' +
+        '📡 _Echte Kurse · Frankfurter API (EZB-Referenzkurse)_'
+    }, { quoted: msg });
+    return true;
+  }
+  if (fromCur === toCur) {
+    await sock.sendMessage(from, { text: `> 💱 ${amount} ${fromCur} = ${amount} ${toCur} _(gleiche Währung)_` }, { quoted: msg });
+    return true;
+  }
+
+  const data = await jget__mtoolcmds(`https://api.frankfurter.dev/v1/latest?base=${encodeURIComponent(fromCur)}&symbols=${encodeURIComponent(toCur)}`);
+  const rate = data?.rates?.[toCur];
+  if (typeof rate !== 'number') throw new Error('Kurs nicht verfügbar');
+  const result = Math.round(rate * amount * 100) / 100;
+
+  const fName = CURRENCY_NAMES[fromCur.toLowerCase()] || fromCur;
+  const tName = CURRENCY_NAMES[toCur.toLowerCase()] || toCur;
+
+  await sock.sendMessage(from, {
+    text: '╔══════════════════════════════╗\n' +
+      '║   💱  W Ä H R U N G          ║\n' +
+      '╚══════════════════════════════╝\n\n' +
+      `*${amount} ${fromCur}*  ›  *${result} ${toCur}*\n\n` +
+      `• Kurs: 1 ${fromCur} = ${rate} ${toCur}\n` +
+      `• ${fName} → ${tName}\n` +
+      `• Stand: ${data.date || '—'}\n\n` +
+      '📡 _Echte EZB-Referenzkurse · Frankfurter API_'
+  }, { quoted: msg });
+  return true;
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   3) $übersetze
+   ───────────────────────────────────────────────────────────────────── */
+
+async function cmdTranslate({ sock, from, msg, args, quoted }) {
+  const raw = args.join(' ').trim() || quotedText(quoted);
+  if (!raw) {
+    await sock.sendMessage(from, {
+      text: '> 🌍 *ÜBERSETZEN — VERWENDUNG*\n\n' +
+        '• `$übersetze <sprache> <text>`\n' +
+        '• `$übersetze en Guten Morgen`\n' +
+        '• `$übersetze tr|en …` _(von → nach)_\n' +
+        '• oder Text zitieren: `$übersetze en`\n\n' +
+        '🌐 _Sprachen: de, en, tr, es, fr, it, nl, pl, pt, ru, ar, ja, zh …_\n' +
+        '📡 _MyMemory Translation_'
+    }, { quoted: msg });
+    return true;
+  }
+
+  let pair = null, text = raw;
+  const first = raw.split(/\s+/)[0];
+  const pipeMatch = first.match(/^([a-zA-Z]{2})\|([a-zA-Z]{2})$/);
+  if (pipeMatch) {
+    pair = `${pipeMatch[1].toLowerCase()}|${pipeMatch[2].toLowerCase()}`;
+    text = raw.slice(first.length).trim();
+  } else {
+    const target = langName(first);
+    if (target) {
+      pair = `de|${target}`;
+      text = raw.slice(first.length).trim();
+    }
+  }
+  if (!pair || !text) {
+    await sock.sendMessage(from, {
+      text: '> ❌ *ZIELSPRACHE FEHLT*\n\nNutze z. B. `$übersetze en Hallo Welt` oder `$übersetze de|en Hallo Welt`.'
+    }, { quoted: msg });
+    return true;
+  }
+  if (text.length > 450) text = text.slice(0, 450);
+
+  const data = await jget__mtoolcmds(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${encodeURIComponent(pair)}`, 15000);
+  if (String(data?.responseStatus) !== '200') {
+    throw new Error(data?.responseDetails || 'Übersetzungsdienst antwortet nicht');
+  }
+
+  /* MyMemory liefert die Übersetzung mal in responseData, mal nur in den
+     Treffern — beides wird berücksichtigt (echter Wert, nie geraten). */
+  const matches = Array.isArray(data.matches) ? data.matches : [];
+  let translation = String(data?.responseData?.translatedText || '').trim();
+  let match = matches[0] || null;
+  if (!translation) {
+    const hit = matches.find((m) => m && String(m.translation || '').trim());
+    if (hit) { match = hit; translation = String(hit.translation).trim(); }
+  }
+  if (!translation) throw new Error('Keine Übersetzung für diese Sprache erhalten');
+
+  const [pairFrom, pairTo] = pair.split('|');
+  const shownFrom = (match?.source || pairFrom || '?').toUpperCase().replace(/-.*$/, '');
+  const shownTo = (match?.target || pairTo || '?').toUpperCase().replace(/-.*$/, '');
+  const quality = match?.quality != null ? `${match.quality} %` : null;
+
+  await sock.sendMessage(from, {
+    text: '╔══════════════════════════════╗\n' +
+      '║   🌍  Ü B E R S E T Z U N G  ║\n' +
+      '╚══════════════════════════════╝\n\n' +
+      `*${shownFrom} › ${shownTo}*\n\n` +
+      `${String(text).slice(0, 300)}\n` +
+      `↳ *${translation.slice(0, 600)}*\n\n` +
+      (quality ? `• Qualität: ${quality}\n` : '') +
+      (data.responseData.match != null ? `• Match: ${Math.round(Number(data.responseData.match) * 100)} %\n` : '') +
+      '\n📡 _MyMemory Translation (echt)_'
+  }, { quoted: msg });
+  return true;
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   4) $qr
+   ───────────────────────────────────────────────────────────────────── */
+
+async function cmdQr({ sock, from, msg, args, quoted }) {
+  const data = args.join(' ').trim() || quotedText(quoted);
+  if (!data) {
+    await sock.sendMessage(from, {
+      text: '> 🔳 *QR-CODE — VERWENDUNG*\n\n' +
+        '• `$qr <text oder link>`\n' +
+        '• oder eine Nachricht zitieren und `$qr` schreiben\n\n' +
+        '_Beispiel:_ `$qr https://github.com/maximilinschule09-rgb/LoveBot/HelloKitty Baby Maxi 💔`\n' +
+        '📡 _Erzeugt über goqr.me_'
+    }, { quoted: msg });
+    return true;
+  }
+  if (data.length > 900) {
+    await sock.sendMessage(from, {
+      text: `> ❌ *ZU LANG*\n\nDein Text hat ${data.length} Zeichen — maximal sind 900 möglich.`
+    }, { quoted: msg });
+    return true;
+  }
+
+  const url = 'https://api.qrserver.com/v1/create-qr-code/?size=512x512&margin=8&format=png&data=' + encodeURIComponent(data);
+  /* Erst prüfen, ob der Dienst antwortet — sonst keine kaputte Bildnachricht */
+  const head = await fetch(url, { method: 'GET', signal: AbortSignal.timeout(15000) });
+  if (!head.ok || !String(head.headers?.get('content-type') || '').includes('image')) {
+    throw new Error('QR-Dienst antwortet nicht (HTTP ' + head.status + ')');
+  }
+
+  const preview = data.length > 60 ? data.slice(0, 60) + '…' : data;
+  await sock.sendMessage(from, {
+    image: { url },
+    caption: '╔══════════════════════════════╗\n' +
+      '║   🔳  Q R  ·  C O D E        ║\n' +
+      '╚══════════════════════════════╝\n\n' +
+      `• Inhalt: ${preview}\n` +
+      `• Länge: ${data.length} Zeichen\n` +
+      '• Größe: 512 × 512 px\n\n' +
+      '📡 _Erzeugt über goqr.me_'
+  }, { quoted: msg });
+  return true;
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   5) $kurz
+   ───────────────────────────────────────────────────────────────────── */
+
+async function cmdKurz({ sock, from, msg, args, quoted }) {
+  const raw = args.join(' ').trim() || quotedText(quoted);
+  if (!raw) {
+    await sock.sendMessage(from, {
+      text: '> 🔗 *LINK-KÜRZER — VERWENDUNG*\n\n' +
+        '• `$kurz <url>`\n' +
+        '• oder einen Link zitieren und `$kurz` schreiben\n\n' +
+        '_Beispiel:_ `$kurz https://github.com/maximilinschule09-rgb/LoveBot/HelloKitty Baby Maxi 💔`\n' +
+        '📡 _TinyURL · Fallback is.gd_'
+    }, { quoted: msg });
+    return true;
+  }
+
+  let normalized = raw.trim();
+  if (!/^https?:\/\//i.test(normalized)) normalized = 'https://' + normalized.replace(/^\/+/, '');
+  let parsed;
+  try { parsed = new URL(normalized); } catch (e) {
+    await sock.sendMessage(from, { text: '> ❌ *UNGÜLTIGE URL*\n\nBitte gib eine vollständige Adresse an, z. B. https://example.com' }, { quoted: msg });
+    return true;
+  }
+  if (!/^https?:$/.test(parsed.protocol)) {
+    await sock.sendMessage(from, { text: '> ❌ *UNGÜLTIGES PROTOKOLL*\n\nNur http:// und https:// sind erlaubt.' }, { quoted: msg });
+    return true;
+  }
+
+  let short = null, service = '';
+  try {
+    short = await tget('https://tinyurl.com/api-create.php?url=' + encodeURIComponent(normalized), 12000);
+    service = 'TinyURL';
+  } catch (e) {
+    try {
+      short = await tget('https://is.gd/create.php?format=simple&url=' + encodeURIComponent(normalized), 12000);
+      service = 'is.gd';
+    } catch (e2) {
+      throw new Error('Shortener nicht erreichbar');
+    }
+  }
+  if (!short || !/^https?:\/\//i.test(short)) throw new Error('Shortener hat keine URL geliefert');
+
+  await sock.sendMessage(from, {
+    text: '╔══════════════════════════════╗\n' +
+      '║   🔗  K U R Z L I N K        ║\n' +
+      '╚══════════════════════════════╝\n\n' +
+      `• Original: ${normalized}\n` +
+      `• *Kurz:* ${short}\n\n` +
+      `• Länge: ${normalized.length} › ${short.length} Zeichen\n` +
+      `• Dienst: ${service}\n\n` +
+      '📡 _Echt gekürzt_'
+  }, { quoted: msg });
+  return true;
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   6) $passwort
+   ───────────────────────────────────────────────────────────────────── */
+
+const PWD_LOWER = 'abcdefghijkmnopqrstuvwxyz';
+const PWD_UPPER = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+const PWD_DIGIT = '23456789';
+const PWD_SYMBOL = '!@#$%&*+-_=?';
+
+function randomFrom(set) {
+  return set[crypto.randomInt(0, set.length)];
+}
+
+function makePassword(length) {
+  const pool = PWD_LOWER + PWD_UPPER + PWD_DIGIT + PWD_SYMBOL;
+  const chars = [
+    randomFrom(PWD_LOWER), randomFrom(PWD_UPPER),
+    randomFrom(PWD_DIGIT), randomFrom(PWD_SYMBOL)
+  ];
+  for (let i = chars.length; i < length; i++) chars.push(randomFrom(pool));
+  /* Kryptografisch mischen (Fisher-Yates mit crypto.randomInt) */
+  for (let i = chars.length - 1; i > 0; i--) {
+    const j = crypto.randomInt(0, i + 1);
+    [chars[i], chars[j]] = [chars[j], chars[i]];
+  }
+  const password = chars.join('');
+  const entropyBits = Math.round(length * Math.log2(pool.length));
+  return { password, entropyBits, poolSize: pool.length };
+}
+
+async function cmdPasswort({ sock, from, msg, args }) {
+  const requested = Number(String(args[0] || '').replace(/[^\d]/g, ''));
+  const length = Math.min(64, Math.max(8, isFinite(requested) && requested > 0 ? requested : 16));
+  const { password, entropyBits, poolSize } = makePassword(length);
+
+  let strength = '🔓 Schwach';
+  if (entropyBits >= 128) strength = '🛡️ Sehr stark';
+  else if (entropyBits >= 90) strength = '🔒 Stark';
+  else if (entropyBits >= 60) strength = '🔑 Okay';
+
+  await sock.sendMessage(from, {
+    text: '╔══════════════════════════════╗\n' +
+      '║   🔐  P A S S W O R T        ║\n' +
+      '╚══════════════════════════════╝\n\n' +
+      '```' + password + '```\n\n' +
+      `• Länge: ${length} Zeichen\n` +
+      `• Zeichenpool: ${poolSize} (a-z, A-Z, 0-9, Sonderzeichen)\n` +
+      `• Entropie: ≈ ${entropyBits} Bit · ${strength}\n` +
+      `• Erzeugt mit: crypto.randomBytes / randomInt\n\n` +
+      '⚠️ _Passwort nach dem Kopieren löschen — es wird nicht gespeichert._'
+  }, { quoted: msg });
+  return true;
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   DISPATCH
+   ───────────────────────────────────────────────────────────────────── */
+
+const HANDLERS__mtoolcmds = {
+  wetter: cmdWetter, weather: cmdWetter,
+  währung: cmdWaehrung, waehrung: cmdWaehrung, currency: cmdWaehrung, cur: cmdWaehrung, wechselkurs: cmdWaehrung,
+  übersetze: cmdTranslate, uebersetze: cmdTranslate, translate: cmdTranslate,
+  übersetzer: cmdTranslate, uebersetzer: cmdTranslate, tr: cmdTranslate,
+  qr: cmdQr, qrcode: cmdQr,
+  kurz: cmdKurz, kuerz: cmdKurz, short: cmdKurz, shorten: cmdKurz, tiny: cmdKurz,
+  passwort: cmdPasswort, password: cmdPasswort, pw: cmdPasswort, pwd: cmdPasswort
+};
+
+/**
+ * Führt einen Alltags-Tool-Befehl aus.
+ * @returns {Promise<boolean>} true, wenn der Befehl zu diesem Modul gehört
+ */
+async function handleToolCommand({ sock, msg, from, args = [], command = '', pref = '$', quoted = null }) {
+  const key = String(command || '').toLowerCase();
+  const handler = HANDLERS__mtoolcmds[key];
+  if (!handler) return false;
+
+  try {
+    await handler({ sock, msg, from, args, quoted, pref });
+    await sendReaction(sock, from, reactions.completion.reactions.withoutAnyProblems, msg.key);
+    console.log(c.bold + c.brightCyan + `[tools] $${key} ausgeführt.` + c.reset);
+    return true;
+  } catch (err) {
+    const reason = String(err?.message || err).slice(0, 160);
+    try {
+      await sock.sendMessage(from, {
+        text: '> ❌ *TOOL-FEHLER*\n\n' +
+          `• Befehl: *$${key}*\n` +
+          `• Grund: _${reason}_\n\n` +
+          '💡 _Der externe Dienst ist eventuell gerade nicht erreichbar — versuch es gleich nochmal._'
+      }, { quoted: msg });
+      await sendReaction(sock, from, '❌', msg.key);
+    } catch (sendErr) {}
+    console.log(c.bold + c.brightYellow + `[tools] $${key} fehlgeschlagen: ${reason}` + c.reset);
+    return true;
+  }
+}
+/* ── MERGE-END toolcmds ── */
+
+/* ── MERGE-START sessioncmds ── */
+/* ═══════════════════════════════════════════════════════════════════════
+   📡  L O V E B O T   S E S S I O N   C O M M A N D S   (Owner-only)
+   ───────────────────────────────────────────────────────────────────────
+   $sessions · $session · $sessionstats · $sessionhealth · $sessionlogs
+   $newsession · $startsession · $restartsession · $killsession
+   $delsession · $sessionname · $sessiondefault · $sessionqr · $pairing
+
+   Läuft im default-Case des Befehls-Switches (vor LovePlus).
+   Alle Aktionen werden im SessionManager (Database/sessions.json) protokolliert.
+   Kill ≠ Delete:  Kill stoppt nur die Verbindung, Delete entfernt die Registry
+   (Credentials werden NIE automatisch gelöscht).
+   ═══════════════════════════════════════════════════════════════════ */
+
+import * as SM from './sessionManager.js';
+
+
+const LINE = '━━━━━━━━━━━━━━━━━━━━';
+const ICONS = {
+  CONNECTED: '🟢', DISCONNECTED: '🔴', QR_REQUIRED: '🟡',
+  CONNECTING: '🕸️', WAITING_FOR_AUTH: '🟣', STOPPED: '⚫', ERROR: '💥'
+};
+
+const COMMANDS__msessioncmds = new Map();
+function cmd__msessioncmds(names, fn) { for (const n of names.split(' ')) COMMANDS__msessioncmds.set(n, fn); }
+
+function fmt__msessioncmds(n) { return Number(n || 0).toLocaleString('de-DE'); }
+
+/* ── Übersicht ────────────────────────────────────────────────────────── */
+cmd__msessioncmds('sessions', async (ctx) => {
+  const list = SM.listSessions();
+  if (!list.length) {
+    await ctx.send('> 📡 *Noch keine Sessions registriert.*\nDer Bot trägt sich beim nächsten Verbinden automatisch ein.');
+    return true;
+  }
+  const online = list.filter((s) => s.status === 'CONNECTED').length;
+  const fleet = SM.fleetStats();
+  const body = list.map((s, i) =>
+    (ICONS[s.status] || '⚪') + (s.maintenance ? '🛠️' : '') + ' *' + String(i + 1).padStart(2, '0') + ' ' + s.name + '*' + (s.isDefault ? ' ⭐' : '') +
+    (s.tags.length ? ' 🏷️' : '') +
+    '\n     _' + s.id + ' · ' + s.status + ' · ↑ ' + s.uptime + (s.uptimePct != null ? ' · ' + s.uptimePct + '%' : '') + ' · 👥 ' + fmt__msessioncmds(s.groups) + '_'
+  ).join('\n');
+  await ctx.send(
+    '> 📡 *HELLOKITTY BABY MAXI — SESSION CENTER*\n> _Managed: ' + fleet.managed + ' · Running: ' + fleet.running + ' · Paused: ' + fleet.paused + ' · Auth: ' + fleet.authRequired + ' · Error: ' + fleet.error + '_\n\n' + body + '\n\n' + LINE + '\n' +
+    '❥ *' + ctx.pref + 'session <id>* — Details\n❥ *' + ctx.pref + 'fleet* — Fleet-Übersicht\n❥ *' + ctx.pref + 'newsession <name>* — neue Session\n❥ *' + ctx.pref + 'pausesession/<id>/resumesession* — Pause & Resume'
+  );
+  return true;
+});
+
+/* ── Details ──────────────────────────────────────────────────────────── */
+cmd__msessioncmds('session sessioninfo sessionstatus', async (ctx) => {
+  const id = ctx.args[0]?.replace(/^@/, '') || 'main';
+  const s = SM.getSession(id);
+  if (!s) {
+    await ctx.send('> ❌ Session *' + id + '* nicht gefunden.\nAlle Sessions: *' + ctx.pref + 'sessions*');
+    return true;
+  }
+  await ctx.send(
+    '> 📡 *SESSION: ' + s.name.toUpperCase() + '* ' + (ICONS[s.status] || '') + '\n\n' +
+    '🆔 *ID:* ' + s.id + (s.isDefault ? ' _(Standard)_ ⭐' : '') + '\n' +
+    '📊 *Status:* ' + s.status + '\n' +
+    '📱 *Nummer:* ' + s.phone + '\n' +
+    '🔌 *Quelle:* ' + (s.source === 'live' ? 'dieser Bot-Prozess' : s.source === 'spawned' ? 'Kind-Prozess' : 'externe Instanz') + '\n\n' +
+    '⏱️ *Uptime:* ' + s.uptime + '\n' +
+    '👥 *Gruppen:* ' + fmt__msessioncmds(s.groups) + '\n' +
+    '💬 *Nachrichten:* ' + fmt__msessioncmds(s.messages) + '\n' +
+    '⚡ *Befehle:* ' + fmt__msessioncmds(s.commands) + '\n' +
+    '🧠 *RAM:* ' + s.memoryMb + ' MB\n' +
+    '🔄 *Reconnects:* ' + s.reconnects + ' · 🐞 *Fehler:* ' + s.errors + '\n' +
+    '👀 *Zuletzt gesehen:* ' + (s.lastSeen ? new Date(s.lastSeen).toLocaleString('de-DE') : '—') + '\n\n' + LINE + '\n' +
+    '❥ *' + ctx.pref + 'sessionstats* · *' + ctx.pref + 'sessionhealth* · *' + ctx.pref + 'sessionlogs*'
+  );
+  return true;
+});
+
+cmd__msessioncmds('sessionstats', async (ctx) => {
+  const id = ctx.args[0]?.replace(/^@/, '') || 'main';
+  const s = SM.getSession(id);
+  if (!s) { await ctx.send('> ❌ Session *' + id + '* nicht gefunden.'); return true; }
+  const perMinMsg = s.uptimeSec ? (s.messages / Math.max(1, s.uptimeSec / 60)).toFixed(1) : '0';
+  const perMinCmd = s.uptimeSec ? (s.commands / Math.max(1, s.uptimeSec / 60)).toFixed(1) : '0';
+  await ctx.send(
+    '> 📊 *SESSION-STATS: ' + s.name.toUpperCase() + '*\n\n' +
+    '💬 Nachrichten: *' + fmt__msessioncmds(s.messages) + '* _(' + perMinMsg + '/Min)_\n' +
+    '⚡ Befehle: *' + fmt__msessioncmds(s.commands) + '* _(' + perMinCmd + '/Min)_\n' +
+    '👥 Gruppen: *' + fmt__msessioncmds(s.groups) + '*\n' +
+    '🔄 Reconnects: *' + s.reconnects + '*\n' +
+    '🐞 Fehler: *' + s.errors + '*\n' +
+    '🧠 RAM: *' + s.memoryMb + ' MB*\n' +
+    '⏱️ Uptime: *' + s.uptime + '*'
+  );
+  return true;
+});
+
+cmd__msessioncmds('sessionhealth', async (ctx) => {
+  const list = SM.listSessions();
+  if (!list.length) { await ctx.send('> 📡 Keine Sessions registriert.'); return true; }
+  const body = list.map((s) =>
+    s.health.emoji + ' *' + s.name + '* — ' + s.health.label + '\n     _' + s.status + ' · ' + s.reconnects + ' Reconnects · ' + s.errors + ' Fehler_'
+  ).join('\n');
+  const bad = list.filter((s) => s.health.code !== 'HEALTHY').length;
+  await ctx.send(
+    '> 🩺 *SESSION HEALTH CHECK*\n\n' + body + '\n\n' + LINE + '\n' +
+    (bad === 0 ? '✅ _Alle Sessions gesund._' : '⚠️ _' + bad + ' Session(s) brauchen Aufmerksamkeit._')
+  );
+  return true;
+});
+
+cmd__msessioncmds('sessionlogs sessionactivity', async (ctx) => {
+  const acts = SM.recentActivity(15);
+  if (!acts.length) { await ctx.send('> 📜 Noch keine Aktivität protokolliert.'); return true; }
+  const body = acts.map((a) => {
+    const t = new Date(a.ts).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+    return t + ' ' + a.text;
+  }).join('\n');
+  await ctx.send('> 📜 *SESSION-AKTIVITÄT* _(letzte 15)_\n\n' + body);
+  return true;
+});
+
+/* ── Lifecycle ────────────────────────────────────────────────────────── */
+cmd__msessioncmds('newsession', async (ctx) => {
+  const name = ctx.args.join(' ').trim() || ('Session_' + (SM.listSessions().length + 1));
+  const { id, spawned } = SM.createSession(name, {
+    source: SM.spawnConfigured() ? 'spawned-candidate' : 'external',
+    announceChatId: ctx.from,
+    spawn: SM.spawnConfigured()
+  });
+  let text =
+    '> ✅ *NEUE SESSION ERSTELLT*\n\n' +
+    '🆔 *ID:* ' + id + '\n' +
+    '📛 *Name:* ' + name + '\n' +
+    '📶 *Status:* WAITING_FOR_AUTH\n\n';
+  if (spawned) {
+    text += '🚀 Ein zweiter Bot-Prozess wurde gestartet und verbindet sich gleich.\n' +
+      '📱 Auth: QR/Pairing über Terminal oder Dashboard der neuen Instanz.\n\n' +
+      '❥ *' + ctx.pref + 'sessions* — Status beobachten';
+  } else {
+    text +=
+      '📡 *So wird sie aktiv:*\n' +
+      '1⃣ Zweite HelloKitty Baby Maxi 💔-Instanz starten mit:\n     _LOVEBOT_SESSION_ID=' + id + ' LOVEBOT_SESSION_DIR=Sessions/' + id + ' node Love.js_\n' +
+      '2⃣ Dort QR scannen oder Pairing-Code eingeben\n' +
+      '3⃣ Verbindung erscheint automatisch hier & im Web-Session-Center\n\n' +
+      '💡 _Auto-Spawn lässt sich in Database/sessions.json aktivieren_ _(config.spawn.enabled)_.';
+  }
+  await ctx.send(text);
+  return true;
+});
+
+cmd__msessioncmds('startsession', async (ctx) => {
+  const id = ctx.args[0]?.replace(/^@/, '');
+  if (!id) { await ctx.send('> ❓ Verwendung: *' + ctx.pref + 'startsession <id>*'); return true; }
+  if (!SM.getSession(id)) { await ctx.send('> ❌ Session *' + id + '* nicht gefunden — erst *' + ctx.pref + 'newsession*.'); return true; }
+  if (!SM.spawnConfigured()) {
+    await ctx.send('> 🔒 *Auto-Spawn ist deaktiviert.*\n\nStarte die Instanz manuell:\n_LOVEBOT_SESSION_ID=' + id + ' LOVEBOT_SESSION_DIR=Sessions/' + id + ' node Love.js_\n\n💡 Aktivierbar in _Database/sessions.json_ → _config.spawn.enabled_.');
+    return true;
+  }
+  const ok = SM.spawnSession(id);
+  await ctx.send(ok ? '> 🚀 Session *' + id + '* wird gestartet …' : '> ❌ Start fehlgeschlagen — siehe *' + ctx.pref + 'sessionlogs*.');
+  return true;
+});
+
+cmd__msessioncmds('restartsession reloadsession reconnectsession', async (ctx) => {
+  const id = ctx.args[0]?.replace(/^@/, '') || 'main';
+  if (!SM.getSession(id)) { await ctx.send('> ❌ Session *' + id + '* nicht gefunden.'); return true; }
+  if (id === 'main') {
+    await ctx.send('> 🔄 *Main-Session:* Der Haupt-Bot reconnectet automatisch bei Verbindungsproblemen.\nEin richtiger Neustart läuft über den Server/Server-Manager (_pm2 restart_ o. ä.), nicht über den Chat — Sicherheit zuerst. 🛡️');
+    return true;
+  }
+  const ok = await withLock(ctx, id, 'RESTART', async () => {
+    SM.stopSpawned(id);
+    return SM.spawnConfigured() ? SM.spawnSession(id) : false;
+  });
+  if (ok === null) return true;
+  await ctx.send(ok
+    ? '> 🔄 Session *' + id + '* neu gestartet.'
+    : '> ℹ️ Session *' + id + '* ist keine gespawnte Instanz — Neustart erfolgt auf ihrem eigenen Host.');
+  return true;
+});
+
+cmd__msessioncmds('killsession stopsession', async (ctx) => {
+  const id = ctx.args[0]?.replace(/^@/, '');
+  if (!id) { await ctx.send('> ❓ Verwendung: *' + ctx.pref + 'killsession <id>*\n\n🛑 Stoppt die Verbindung — Credentials bleiben erhalten.'); return true; }
+  if (id === 'main') {
+    await ctx.send('> 🛑 *Main-Session geschützt.*\nDie Hauptverbindung kannst du nicht aus dem Chat heraus killen — sonst sperrt sich der Bot selbst aus. 😅\n\n💡 Für gespawnte Sessions: *' + ctx.pref + 'killsession <id>*');
+    return true;
+  }
+  const res = await withLock(ctx, id, 'STOP', async () => SM.stopSession(id, actorOf(ctx)));
+  if (!res) return true;
+  if (res.ok) {
+    await ctx.send('> 🛑 Session *' + id + '* gestoppt _(desiredState: stopped — kein Auto-Start)_.\n\n🔐 Credentials bleiben erhalten — Reaktivieren: *' + ctx.pref + 'resumesession ' + id + '*');
+  } else if (res.reason === 'not_spawned') {
+    await ctx.send('> ℹ️ *' + id + '* ist keine gespawnte Session — Registry auf stopped gesetzt; stoppe den Prozess auf ihrem Host.');
+  } else if (res.reason === 'not_running') {
+    await ctx.send('> ℹ️ Session *' + id + '* läuft gar nicht.');
+  } else {
+    await ctx.send('> ❌ Stoppen fehlgeschlagen — siehe *' + ctx.pref + 'sessionlogs*.');
+  }
+  return true;
+});
+
+cmd__msessioncmds('delsession', async (ctx) => {
+  const id = ctx.args[0]?.replace(/^@/, '');
+  if (!id) { await ctx.send('> ❓ Verwendung: *' + ctx.pref + 'delsession <id>*\n\n🗑️ Entfernt die Session aus der Registry. Credentials werden NICHT gelöscht.'); return true; }
+  const res = await withLock(ctx, id, 'DELETE', async () => SM.deleteSession(id, { actor: actorOf(ctx) }));
+  if (!res) return true;
+  if (res.ok) {
+    await ctx.send('> 🗑️ Session *' + id + '* aus der Registry entfernt.\n\n🔐 Der Session-Ordner _Sessions/' + id + '_ bleibt unberührt — bei Bedarf manuell löschen.');
+  } else if (res.reason === 'main_protected') {
+    await ctx.send('> 🛡️ Die *Main-Session* kann nicht gelöscht werden.');
+  } else {
+    await ctx.send('> ❌ Session *' + id + '* nicht gefunden.');
+  }
+  return true;
+});
+
+/* ── Verwaltung ───────────────────────────────────────────────────────── */
+cmd__msessioncmds('sessionname sessionrename', async (ctx) => {
+  const id = ctx.args[0]?.replace(/^@/, '');
+  const name = ctx.args.slice(1).join(' ').trim();
+  if (!id || !name) { await ctx.send('> ❓ Verwendung: *' + ctx.pref + 'sessionname <id> <neuer name>*'); return true; }
+  const s = SM.renameSession(id, name);
+  await ctx.send(s ? '> ✏️ Session *' + id + '* heißt jetzt *' + s.name + '*.' : '> ❌ Session *' + id + '* nicht gefunden.');
+  return true;
+});
+
+cmd__msessioncmds('sessiondefault', async (ctx) => {
+  const id = ctx.args[0]?.replace(/^@/, '');
+  if (!id) { await ctx.send('> ❓ Verwendung: *' + ctx.pref + 'sessiondefault <id>*'); return true; }
+  const ok = SM.setDefault(id);
+  await ctx.send(ok ? '> ⭐ *' + id + '* ist jetzt die Standard-Session.' : '> ❌ Session *' + id + '* nicht gefunden.');
+  return true;
+});
+
+cmd__msessioncmds('sessionqr sessioncode sessionpair', async (ctx) => {
+  await ctx.send(
+    '> 📱 *QR / PAIRING — WO?*\n\n' +
+    'QR-Code und Pairing-Code erscheinen aus Sicherheitsgründen _nicht im Gruppen-Chat_, sondern:\n\n' +
+    '❥ Im **Terminal** der jeweiligen Instanz\n' +
+    '❥ Im **Dashboard** unter Session → *Verbinden*\n\n' +
+    '📡 Status der Sessions: *' + ctx.pref + 'sessions*\n' +
+    '🆕 Neue Session: *' + ctx.pref + 'newsession <name>*'
+  );
+  return true;
+});
+
+cmd__msessioncmds('pairing', async (ctx) => {
+  await ctx.send('> 🔗 Pairing-Code wird im **Terminal** oder **Dashboard** erzeugt — nie im Chat. 🛡️\nSiehe *' + ctx.pref + 'sessionqr*');
+  return true;
+});
+
+/* ── Session 3.0: Profil · Clone · Wartung · Events · Einzelwerte ───── */
+
+cmd__msessioncmds('sessionprofile', async (ctx) => {
+  const id = ctx.args[0]?.replace(/^@/, '') || 'main';
+  const s = SM.getSession(id);
+  if (!s) { await ctx.send('> ❌ Session *' + id + '* nicht gefunden.'); return true; }
+  const prof = s.profile || { prefix: '$', language: 'de', theme: 'romantic', mode: 'public', features: {} };
+  const FEAT = { love: '❤️ Love', economy: '💎 Economy', pets: '🐶 Pets', games: '🎮 Games', ai: '🤖 AI', moderation: '🛡️ Moderation' };
+  const featLines = Object.entries(FEAT).map(([k, label]) => {
+    const v = prof.features?.[k] || 'inherit';
+    const badge = v === 'inherit' ? '🌐 geerbt' : v === 'on' ? '✅ AN' : '❌ AUS';
+    return badge + ' ' + label;
+  }).join('\n');
+  await ctx.send(
+    '> ⚙️ *SESSION-PROFIL: ' + s.name.toUpperCase() + '*\n\n' +
+    '❥ *Präfix:* ' + prof.prefix + '\n' +
+    '❥ *Sprache:* ' + prof.language + '\n' +
+    '❥ *Theme:* ' + prof.theme + '\n' +
+    '❥ *Modus:* ' + prof.mode + '\n\n' +
+    '*Features* _(Global → Session)_:\n' + featLines + '\n\n' + LINE + '\n' +
+    '❥ *' + ctx.pref + 'sessionset ' + id + ' prefix #*\n' +
+    '❥ *' + ctx.pref + 'sessionfeature ' + id + ' pets off*'
+  );
+  return true;
+});
+
+cmd__msessioncmds('sessionset', async (ctx) => {
+  const id = ctx.args[0]?.replace(/^@/, '');
+  const key = ctx.args[1]?.toLowerCase();
+  const value = ctx.args.slice(2).join(' ').trim();
+  if (!id || !key || !value) {
+    await ctx.send('> ❓ Verwendung: *' + ctx.pref + 'sessionset <id> <prefix|language|theme|mode> <wert>*');
+    return true;
+  }
+  const prof = SM.setSessionProfileField(id, key, value);
+  if (prof) {
+    await ctx.send('> ✅ Profil *' + id + '* aktualisiert: *' + key + ' = ' + value + '*\n\n💡 Präfix-Änderungen greifen beim nächsten Start der Session.');
+  } else {
+    await ctx.send('> ❌ Nicht gesetzt — Session oder Schlüssel unbekannt. Erlaubt: _prefix, language, theme, mode_.');
+  }
+  return true;
+});
+
+cmd__msessioncmds('sessionfeature', async (ctx) => {
+  const id = ctx.args[0]?.replace(/^@/, '');
+  const feature = ctx.args[1]?.toLowerCase();
+  const value = ctx.args[2]?.toLowerCase();
+  if (!id || !feature || !value) {
+    await ctx.send('> ❓ Verwendung: *' + ctx.pref + 'sessionfeature <id> <love|economy|pets|games|ai|moderation> <inherit|on|off>*');
+    return true;
+  }
+  const prof = SM.setSessionFeature(id, feature, value);
+  if (prof) {
+    await ctx.send('> 🧩 Feature *' + feature + '* für *' + id + '* → *' + value + '*');
+  } else {
+    await ctx.send('> ❌ Unbekannte Session, Feature oder Wert _(inherit|on|off)_.');
+  }
+  return true;
+});
+
+cmd__msessioncmds('sessionclone', async (ctx) => {
+  const srcId = ctx.args[0]?.replace(/^@/, '');
+  const newName = ctx.args.slice(1).join(' ').trim();
+  if (!srcId || !newName) {
+    await ctx.send('> ❓ Verwendung: *' + ctx.pref + 'sessionclone <quell-id> <neuer name>*\n\n🧬 Kopiert Profil & Einstellungen — *niemals* WhatsApp-Credentials. Die neue Session braucht ihre eigene Auth (QR/Pairing).');
+    return true;
+  }
+  const res = SM.cloneSession(srcId, newName);
+  if (res.ok) {
+    await ctx.send(
+      '> 🧬 *SESSION GEKLONT*\n\n' +
+      '📤 Quelle: *' + srcId + '*\n' +
+      '🆕 Neu: *' + res.id + '* („' + res.name + '“)\n\n' +
+      '✅ Profil, Features & Einstellungen kopiert\n' +
+      '🔐 Credentials **nicht** kopiert — eigene Auth nötig:\n     _LOVEBOT_SESSION_ID=' + res.id + ' LOVEBOT_SESSION_DIR=Sessions/' + res.id + ' node Love.js_'
+    );
+  } else {
+    await ctx.send('> ❌ Quell-Session *' + srcId + '* nicht gefunden.');
+  }
+  return true;
+});
+
+cmd__msessioncmds('sessionexport sessionbackup', async (ctx) => {
+  const id = ctx.args[0]?.replace(/^@/, '') || 'main';
+  const s = SM.getSession(id);
+  if (!s) { await ctx.send('> ❌ Session *' + id + '* nicht gefunden.'); return true; }
+  const safe = { ...s, health: undefined };
+  await ctx.send(
+    '> 📦 *SESSION-EXPORT: ' + id + '*\n\n```json\n' + JSON.stringify(safe, null, 2) + '\n```\n\n' +
+    '🔐 Enthält nur Registry-Daten (Nummer maskiert) — *keine* WhatsApp-Credentials.'
+  );
+  return true;
+});
+
+cmd__msessioncmds('sessionmaintenance', async (ctx) => {
+  const id = ctx.args[0]?.replace(/^@/, '');
+  const mode = ctx.args[1]?.toLowerCase();
+  if (!id || !['on', 'off'].includes(mode)) {
+    await ctx.send('> ❓ Verwendung: *' + ctx.pref + 'sessionmaintenance <id> <on|off>*');
+    return true;
+  }
+  const s = SM.setMaintenance(id, mode === 'on');
+  if (s) {
+    await ctx.send('> 🛠️ Wartungsmodus für *' + s.name + '*: *' + (mode === 'on' ? 'AN' : 'AUS') + '*');
+  } else {
+    await ctx.send('> ❌ Session *' + id + '* nicht gefunden.');
+  }
+  return true;
+});
+
+cmd__msessioncmds('sessionevents', async (ctx) => {
+  const id = ctx.args[0]?.replace(/^@/, '') || 'main';
+  const acts = SM.sessionActivity(id, 12);
+  if (!SM.getSession(id)) { await ctx.send('> ❌ Session *' + id + '* nicht gefunden.'); return true; }
+  if (!acts.length) { await ctx.send('> 📜 Keine Events für *' + id + '* protokolliert.'); return true; }
+  const body = acts.map((a) => new Date(a.ts).toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' }) + ' ' + a.text).join('\n');
+  await ctx.send('> 📜 *EVENTS: ' + id + '* _(letzte 12)_\n\n' + body);
+  return true;
+});
+
+cmd__msessioncmds('sessionerrors', async (ctx) => {
+  const id = ctx.args[0]?.replace(/^@/, '') || 'main';
+  if (!SM.getSession(id)) { await ctx.send('> ❌ Session *' + id + '* nicht gefunden.'); return true; }
+  const errs = SM.sessionActivity(id, 10, 'error');
+  const s = SM.getSession(id);
+  if (!errs.length && !s.errors) { await ctx.send('> ✅ Keine Fehler für *' + id + '* — alles sauber!'); return true; }
+  const body = errs.length ? errs.map((a) => new Date(a.ts).toLocaleTimeString('de-DE') + ' ' + a.text).join('\n') : '_(nur Zähler, keine Details)_';
+  await ctx.send('> 🐞 *FEHLER: ' + id + '* _(gesamt: ' + s.errors + ')_\n\n' + body);
+  return true;
+});
+
+cmd__msessioncmds('sessiongroups', async (ctx) => {
+  const s = SM.getSession(ctx.args[0]?.replace(/^@/, '') || 'main');
+  if (!s) { await ctx.send('> ❌ Session nicht gefunden.'); return true; }
+  await ctx.send('> 👥 *' + s.name + '* betreut *' + fmt__msessioncmds(s.groups) + '* Gruppen.');
+  return true;
+});
+
+cmd__msessioncmds('sessionmessages', async (ctx) => {
+  const s = SM.getSession(ctx.args[0]?.replace(/^@/, '') || 'main');
+  if (!s) { await ctx.send('> ❌ Session nicht gefunden.'); return true; }
+  await ctx.send('> 💬 *' + s.name + '* hat *' + fmt__msessioncmds(s.messages) + '* Nachrichten verarbeitet.');
+  return true;
+});
+
+cmd__msessioncmds('sessioncommands', async (ctx) => {
+  const s = SM.getSession(ctx.args[0]?.replace(/^@/, '') || 'main');
+  if (!s) { await ctx.send('> ❌ Session nicht gefunden.'); return true; }
+  await ctx.send('> ⚡ *' + s.name + '* hat *' + fmt__msessioncmds(s.commands) + '* Befehle ausgeführt.');
+  return true;
+});
+
+cmd__msessioncmds('sessionusers', async (ctx) => {
+  await ctx.send('> 👤 Nutzer-Statistiken sind bot-weit (nicht pro Session) — siehe *' + ctx.pref + 'system* / *$top*.');
+  return true;
+});
+
+/* ── Session 4.0: Lock-Schutz für Lifecycle-Aktionen ────────────────── */
+function actorOf(ctx) {
+  return ctx.userProfile?.registration?.name || ctx.msg?.pushName || 'owner';
+}
+
+async function withLock(ctx, id, op, fn) {
+  const lock = SM.acquireLock(id, op, actorOf(ctx));
+  if (!lock.ok) {
+    const held = lock.held || {};
+    await ctx.send(
+      '> ⏳ *Session „' + id + '“ ist gerade beschäftigt.*\n\n' +
+      '🔄 Laufende Operation: *' + (held.op || '?') + '*\n' +
+      '👤 Angefordert von: *' + (held.by || 'system') + '*\n\n' +
+      '_Bitte warten, bis sie abgeschlossen ist._ 🛡️'
+    );
+    return null;
+  }
+  try {
+    return await fn();
+  } finally {
+    SM.releaseLock(id);
+  }
+}
+
+/* ── Session 4.0: Pause · Resume · AutoStart · Tags · Env · Fleet ────── */
+
+cmd__msessioncmds('pausesession', async (ctx) => {
+  const id = ctx.args[0]?.replace(/^@/, '');
+  if (!id) { await ctx.send('> ❓ Verwendung: *' + ctx.pref + 'pausesession <id>*\n\n⏸️ Pausiert eine Session vorübergehend — Credentials & desiredState bleiben, Resume jederzeit.'); return true; }
+  if (id === 'main') { await ctx.send('> 🛡️ *Main-Session geschützt* — pausieren wäre ein Selbst-Aussperren. 😅'); return true; }
+  const res = await withLock(ctx, id, 'PAUSE', async () => SM.pauseSession(id, actorOf(ctx)));
+  if (!res) return true;
+  if (res.ok) await ctx.send('> ⏸️ Session *' + id + '* pausiert.\n\n🔓 Resume: *' + ctx.pref + 'resumesession ' + id + '*\n🔐 Credentials bleiben erhalten.');
+  else if (res.reason === 'already_paused') await ctx.send('> ℹ️ Session *' + id + '* ist bereits pausiert.');
+  else await ctx.send('> ❌ Session *' + id + '* nicht gefunden.');
+  return true;
+});
+
+cmd__msessioncmds('resumesession', async (ctx) => {
+  const id = ctx.args[0]?.replace(/^@/, '');
+  if (!id) { await ctx.send('> ❓ Verwendung: *' + ctx.pref + 'resumesession <id>*'); return true; }
+  const res = await withLock(ctx, id, 'RESUME', async () => SM.resumeSession(id, actorOf(ctx)));
+  if (!res) return true;
+  if (res.ok) await ctx.send('> ▶️ Session *' + id + '* reaktiviert — *desiredState: running*.\n\n' + (SM.getSession(id)?.source === 'spawned' ? '🚀 Gespawnte Instanz wird gestartet …' : '📡 Externe Instanz verbindet sich beim nächsten Start selbst.'));
+  else await ctx.send('> ❌ Session *' + id + '* nicht gefunden.');
+  return true;
+});
+
+cmd__msessioncmds('sessionautostart', async (ctx) => {
+  const id = ctx.args[0]?.replace(/^@/, '');
+  const mode = ctx.args[1]?.toLowerCase();
+  if (!id || !['on', 'off'].includes(mode)) { await ctx.send('> ❓ Verwendung: *' + ctx.pref + 'sessionautostart <id> <on|off>*\n\n⚡ Auto-Start: nach Neustart automatisch wieder hochkommen (Warm Restart).'); return true; }
+  const s = SM.setAutoStart(id, mode === 'on');
+  await ctx.send(s ? '> ⚡ Auto-Start für *' + id + '*: *' + mode.toUpperCase() + '*' : '> ❌ Session nicht gefunden.');
+  return true;
+});
+
+cmd__msessioncmds('sessiontags', async (ctx) => {
+  const id = ctx.args[0]?.replace(/^@/, '');
+  const tags = ctx.args.slice(1).join(' ');
+  if (!id || !tags) { await ctx.send('> ❓ Verwendung: *' + ctx.pref + 'sessiontags <id> <tag1 tag2 …>*\n\nBeispiel: *$sessiontags soul_02 production primary*'); return true; }
+  const s = SM.setTags(id, tags);
+  await ctx.send(s ? '> 🏷️ Tags für *' + id + '*: ' + (s.tags.length ? s.tags.map((t) => '`' + t + '`').join(' · ') : '_keine_') : '> ❌ Session nicht gefunden.');
+  return true;
+});
+
+cmd__msessioncmds('sessionenv', async (ctx) => {
+  const id = ctx.args[0]?.replace(/^@/, '');
+  const env = ctx.args[1]?.toLowerCase();
+  if (!id || !env) { await ctx.send('> ❓ Verwendung: *' + ctx.pref + 'sessionenv <id> <production|testing|development>*'); return true; }
+  const s = SM.setEnv(id, env);
+  await ctx.send(s ? '> 🧪 Environment für *' + id + '*: *' + s.env + '*' : '> ❌ Session nicht gefunden oder ungültiges Environment.');
+  return true;
+});
+
+cmd__msessioncmds('fleet', async (ctx) => {
+  const f = SM.fleetStats();
+  await ctx.send(
+    '> 📡 *HELLOKITTY BABY MAXI — SESSION FLEET*\n\n' +
+    '🗄️ *Managed:* ' + f.managed + '   🟢 *Running:* ' + f.running + '\n' +
+    '⏸️ *Paused:* ' + f.paused + '   🟣 *Auth nötig:* ' + f.authRequired + '\n' +
+    '⚫ *Stopped:* ' + f.stopped + '   🔴 *Error/Offline:* ' + f.error + '\n\n' +
+    '📈 *Ø Verfügbarkeit:* ' + (f.avgUptimePct == null ? '—' : f.avgUptimePct + '%') + '\n\n' + LINE + '\n' +
+    '❥ *' + ctx.pref + 'sessions* — Einzelansicht\n' +
+    '❥ *' + ctx.pref + 'restartfailed* — fehlgeschlagene neu starten\n' +
+    '❥ *' + ctx.pref + 'sessionhealth* — Health-Check'
+  );
+  return true;
+});
+
+cmd__msessioncmds('restartfailed', async (ctx) => {
+  const results = SM.restartFailed(actorOf(ctx));
+  if (!results.length) { await ctx.send('> ✅ *Keine fehlgeschlagenen Sessions* mit desiredState „running“. Alles gut!'); return true; }
+  const body = results.map((r) => '❥ *' + r.id + '* — ' + (r.restarted ? '🚀 neu gestartet' : 'ℹ️ ' + (r.note || 'übersprungen'))).join('\n');
+  await ctx.send('> 🔄 *RESTART FAILED SESSIONS*\n\n' + body);
+  return true;
+});
+
+cmd__msessioncmds('orphansessions sessionorphans', async (ctx) => {
+  const orphans = SM.detectOrphanSessionDirs();
+  if (!orphans.length) {
+    await ctx.send('> ✅ *Keine Phantom-Sessions* — jeder Session-Ordner hat einen Registry-Eintrag.');
+  } else {
+    await ctx.send(
+      '> 👻 *PHANTOM-SESSIONS ERKANNT*\n\n' +
+      'Diese Ordner liegen unter _Sessions/_, haben aber **keinen** Registry-Eintrag:\n\n' +
+      orphans.map((o) => '❥ `' + o + '`').join('\n') + '\n\n' +
+      '💡 Registrieren: *' + ctx.pref + 'newsession <name>* mit passender ID starten — oder Ordner aufräumen. _Es wird nichts automatisch gelöscht._ 🛡️'
+    );
+  }
+  return true;
+});
+
+/* ═══════════════════════════════════════════════════════════════════ */
+/*  Einsprung aus Love.js (default-Case, VOR LovePlus)                  */
+/* ═══════════════════════════════════════════════════════════════════ */
+const SESSION_HELP_CMDS = [
+  ['$sessions', 'Alle Sessions mit Status & Uptime 📡 (Owner)'],
+  ['$session <id>', 'Details einer Session (Owner)'],
+  ['$sessionstats <id>', 'Nachrichten, Befehle/Min, RAM, Reconnects (Owner)'],
+  ['$sessionhealth', 'Health-Check aller Sessions 🩺 (Owner)'],
+  ['$sessionlogs', 'Letzte Session-Aktivität 📜 (Owner)'],
+  ['$newsession <name>', 'Neue Session anlegen 🆕 (Owner)'],
+  ['$startsession <id>', 'Gespawnte Session starten 🚀 (Owner)'],
+  ['$restartsession <id>', 'Session neu starten 🔄 (Owner)'],
+  ['$killsession <id>', 'Verbindung stoppen — Credentials bleiben 🛑 (Owner)'],
+  ['$delsession <id>', 'Aus Registry entfernen 🗑️ (Owner)'],
+  ['$sessionname <id> <name>', 'Session umbenennen ✏️ (Owner)'],
+  ['$sessiondefault <id>', 'Standard-Session setzen ⭐ (Owner)'],
+  ['$sessionqr', 'Wo QR/Pairing-Code erscheinen 📱 (Owner)'],
+  ['$sessionprofile <id>', 'Profil der Session: Präfix, Theme, Features ⚙️ (Owner)'],
+  ['$sessionset <id> <key> <wert>', 'Profil ändern: prefix/language/theme/mode (Owner)'],
+  ['$sessionfeature <id> <f> <inherit|on|off>', 'Feature-Override pro Session 🧩 (Owner)'],
+  ['$sessionclone <id> <name>', 'Session klonen (nur Profil, nie Credentials) 🧬 (Owner)'],
+  ['$sessionexport <id>', 'Registry-Export als JSON 📦 (Owner)'],
+  ['$sessionmaintenance <id> <on|off>', 'Wartungsmodus 🛠️ (Owner)'],
+  ['$sessionevents <id>', 'Events einer Session 📜 (Owner)'],
+  ['$sessionerrors <id>', 'Fehler einer Session 🐞 (Owner)'],
+  ['$sessiongroups <id>', 'Anzahl Gruppen einer Session 👥 (Owner)'],
+  ['$sessionmessages <id>', 'Nachrichten-Zähler 💬 (Owner)'],
+  ['$sessioncommands <id>', 'Befehls-Zähler ⚡ (Owner)'],
+  ['$pausesession <id>', 'Vorübergehend pausieren ⏸️ — Credentials bleiben (Owner)'],
+  ['$resumesession <id>', 'Pausierte/gestoppte Session reaktivieren ▶️ (Owner)'],
+  ['$sessionautostart <id> <on|off>', 'Auto-Start nach Neustart (Warm Restart) ⚡ (Owner)'],
+  ['$sessiontags <id> <tags…>', 'Tags setzen 🏷️ z. B. production primary (Owner)'],
+  ['$sessionenv <id> <production|testing|development>', 'Environment setzen 🧪 (Owner)'],
+  ['$fleet', 'Fleet-Übersicht: Managed vs Running vs Paused 📡 (Owner)'],
+  ['$restartfailed', 'Fehlgeschlagene Sessions neu starten 🔄 (Owner)'],
+  ['$orphansessions', 'Phantom-Ordner in Sessions/ finden 👻 (Owner)']
+];
+
+
+/* ── 📚 Registry-Abfragen (Owner) — Befehle einmal definieren, überall ── */
+cmd__msessioncmds('cmdinfo', async (ctx) => {
+  const name = (ctx.args || []).join(' ').replace(/^\$/, '').trim() || String(ctx.text || '').replace(/^\$/, '').trim();
+  if (!name) {
+    await ctx.send('> 📚 *CMDINFO*\n\nNutze: *$cmdinfo <befehl>*\nBeispiel: *$cmdinfo marry*');
+    return true;
+  }
+  const c = regResolve(name);
+  if (!c) {
+    await ctx.send('> ❌ *„' + name + '“ nicht in der Registry.*\n\n💡 Versuche *$cmdsuche ' + name + '*');
+    return true;
+  }
+  await ctx.send(
+    '> 📚 *REGISTRY: ' + c.name.toUpperCase() + '*\n\n' +
+    'Kategorie: ' + c.emoji + ' ' + c.categoryTitle + '\n' +
+    'Usage: *' + c.usage + '*\n' +
+    'Beschreibung: ' + c.desc + '\n' +
+    'Aliase: ' + (c.aliases.length ? c.aliases.map((a) => '$' + a).join(', ') : '—') + '\n' +
+    'Rechte: ' + (c.perms === 'owner' ? '👑 Owner' : c.perms === 'admin' ? '🛡️ Admin' : '🌐 Alle') + '\n' +
+    'Cooldown: ' + c.cooldown + 's\n' +
+    'Quelle: registry/commands.json'
+  );
+  return true;
+});
+
+cmd__msessioncmds('cmdsuche cmdsearch', async (ctx) => {
+  const q = (ctx.args || []).join(' ').trim() || String(ctx.text || '').trim();
+  if (!q) {
+    await ctx.send('> 🔎 *CMDSUCHE*\n\nNutze: *$cmdsuche <begriff>*\nBeispiel: *$cmdsuche session*');
+    return true;
+  }
+  const hits = regSearch(q, 15);
+  if (!hits.length) { await ctx.send('> 🔎 Keine Treffer für *“' + q + '”*.'); return true; }
+  const st = regStats();
+  await ctx.send(
+    '> 🔎 *SUCHE: „' + q + '“* — ' + hits.length + ' Treffer\n\n' +
+    hits.map((c) => c.emoji + ' *$' + c.name + '* — ' + c.desc.slice(0, 60)).join('\n') +
+    '\n\n━━━━━━━━━━━━━━━━━━━━\n📚 Registry: ' + st.commands + ' Befehle · ' + st.aliases + ' Aliase · ' + st.categories + ' Kategorien'
+  );
+  return true;
+});
+
+async function handleSessionCommand(ctx) {
+  const fn = COMMANDS__msessioncmds.get(String(ctx.command || '').toLowerCase());
+  if (!fn) return false;
+
+  /* 👑 Owner-Gate: nur Host-Gerät (Bot-/Owner-Nummer) */
+  if (!ctx.isHost) {
+    await ctx.sock.sendMessage(ctx.from, {
+      text: '> 👑 *OWNER-ONLY*\n\nDie Session-Verwaltung ist ausschließlich dem Owner vorbehalten. 🛡️'
+    }, { quoted: ctx.msg });
+    return true;
+  }
+
+  const enriched = {
+    ...ctx,
+    send: (text) => ctx.sock.sendMessage(ctx.from, { text }, { quoted: ctx.msg })
+  };
+
+  try {
+    return (await fn(enriched)) === true;
+  } catch (err) {
+    console.error('[sessions] Fehler bei "' + ctx.command + '":', err?.message || err);
+    try {
+      await ctx.sock.sendMessage(ctx.from, { text: '> ⚠️ Session-Befehl fehlgeschlagen — siehe Logs.' }, { quoted: ctx.msg });
+    } catch (e) {}
+    return true;
+  }
+}
+/* ── MERGE-END sessioncmds ── */
+
+/* ── MERGE-START progressstats ── */
+/* ═══════════════════════════════════════════════════════════════════════
+   💜  L O V E B O T   P R O G R E S S   S T A T S   v5.0  (progressstats.js)
+   ─────────────────────────────────────────────────────────────────────
+   Statistik- & Profilschicht der Progression (liest nur, schreibt nie):
+   Aktivität, Trends, Ziele, Rekorde, nächste Ziele, Profil-Center-Text.
+   Import-Richtung: progressstats → levelsystem + loveplus (kein Zyklus).
+   Alles aus echten gespeicherten Daten — Fehlendes wird als „–“ gezeigt,
+   niemals erfunden.
+   ══════════════════════════════════════════════════════════════════════ */
+
+
+
+
+
+/* ── Kleindruck-Helfer ─────────────────────────────────────────────── */
+const de = (n) => Number(n || 0).toLocaleString('de-DE');
+const bar__mprogressstats = (pct, len = 10) => {
+  const p = Math.max(0, Math.min(100, Number(pct) || 0));
+  const f = Math.round((p / 100) * len);
+  return '█'.repeat(f) + '░'.repeat(Math.max(0, len - f));
+};
+const missing = (v, fmt) => {
+  if (v === null || v === undefined || v === '' || (typeof v === 'number' && !Number.isFinite(v))) return '–';
+  return fmt ? fmt(v) : String(v);
+};
+function relTime(ts, now = Date.now()) {
+  const t = Number(ts) || 0;
+  if (!t) return '–';
+  const diff = now - t;
+  if (diff < 0) return '–';
+  const min = Math.floor(diff / 60000);
+  if (min < 1) return 'gerade eben';
+  if (min < 60) return `vor ${min} Min`;
+  const h = Math.floor(min / 60);
+  if (h < 24) return `vor ${h} Std`;
+  const d = Math.floor(h / 24);
+  if (d < 7) return `vor ${d} Tag${d === 1 ? '' : 'en'}`;
+  return new Date(t).toLocaleDateString('de-DE');
+}
+const fmtDate = (iso) => {
+  if (!iso) return '–';
+  const t = new Date(iso).getTime();
+  return Number.isFinite(t) ? new Date(t).toLocaleDateString('de-DE') : '–';
+};
+
+/* ── Aktivität ─────────────────────────────────────────────────────── */
+/** Aktive Tage/Wochen/Monate + letzte Aktivität (aus xpDaily/lastXpAt). */
+function activityStats(profile, now = Date.now()) {
+  const p = ensureProgression(profile) || {};
+  const days = (p.xpDaily || []).map((e) => e.d).filter(Boolean);
+  const weeks = new Set(days.map((d) => isoWeekKey(new Date(d + 'T00:00:00Z').getTime())));
+  const months = new Set(days.map((d) => String(d).slice(0, 7)));
+  return {
+    activeDays: days.length,
+    activeWeeks: weeks.size,
+    activeMonths: months.size,
+    lastActive: Number(p.lastXpAt) || 0,
+    lastActiveRel: relTime(p.lastXpAt, now)
+  };
+}
+
+/** Summen aus statsDaily für einen Zeitraum (Tage zurück, 0 = nur heute). */
+function statsDailySum(profile, daysBack, now = Date.now()) {
+  const p = profile?.progression || {};
+  const start = new Date(new Date(now).toISOString().slice(0, 10) + 'T00:00:00Z').getTime();
+  const out = { m: 0, c: 0, g: 0, w: 0 };
+  for (const e of (p.statsDaily || [])) {
+    if (!e || !e.d) continue;
+    const age = Math.round((start - new Date(e.d + 'T00:00:00Z').getTime()) / 86400000);
+    if (!Number.isFinite(age) || age < 0 || age > daysBack) continue;
+    out.m += Number(e.m) || 0; out.c += Number(e.c) || 0;
+    out.g += Number(e.g) || 0; out.w += Number(e.w) || 0;
+  }
+  return out;
+}
+
+/* ── Trends ────────────────────────────────────────────────────────── */
+/** Vergleiche heute↔gestern, Kalenderwoche↔Vorwoche, Monat↔Vormonat (echte xpDaily). */
+function xpTrends(profile, now = Date.now()) {
+  const p = profile?.progression || {};
+  const byDay = {};
+  for (const e of (p.xpDaily || [])) if (e && e.d) byDay[e.d] = (byDay[e.d] || 0) + (Number(e.a) || 0);
+  const dk = (ts) => new Date(ts).toISOString().slice(0, 10);
+  const today = dk(now), yest = dk(now - 86400000);
+  const wk = isoWeekKey(now), prevWk = isoWeekKey(now - 7 * 86400000);
+  const mo = today.slice(0, 7);
+  const prevMoD = new Date(new Date(today + 'T00:00:00Z').getTime());
+  prevMoD.setUTCMonth(prevMoD.getUTCMonth() - 1);
+  const prevMo = prevMoD.toISOString().slice(0, 7);
+  let curW = 0, prvW = 0, curM = 0, prvM = 0;
+  for (const [d, a] of Object.entries(byDay)) {
+    const t = new Date(d + 'T00:00:00Z').getTime();
+    if (!Number.isFinite(t)) continue;
+    if (isoWeekKey(t) === wk) curW += a;
+    if (isoWeekKey(t) === prevWk) prvW += a;
+    if (d.slice(0, 7) === mo) curM += a;
+    if (d.slice(0, 7) === prevMo) prvM += a;
+  }
+  const cmp = (cur, prev, prevExists) => {
+    if (!prevExists) return { cur, prev: 0, pct: null };
+    if (prev <= 0) return { cur, prev, pct: cur > 0 ? 100 : 0 };
+    return { cur, prev, pct: Math.round(((cur - prev) / prev) * 100) };
+  };
+  return {
+    day: cmp(byDay[today] || 0, byDay[yest] || 0, yest in byDay),
+    week: cmp(curW, prvW, Object.keys(byDay).some((d) => isoWeekKey(new Date(d + 'T00:00:00Z').getTime()) === prevWk)),
+    month: cmp(curM, prvM, Object.keys(byDay).some((d) => d.slice(0, 7) === prevMo))
+  };
+}
+function trendArrow(pct) {
+  if (pct === null || pct === undefined) return '➖';
+  if (pct > 0) return '📈';
+  if (pct < 0) return '📉';
+  return '➖';
+}
+function trendText(t) {
+  if (!t || t.pct === null) return '➖ _Noch keine Vergleichsdaten_';
+  const sign = t.pct > 0 ? '+' : '';
+  return `${trendArrow(t.pct)} ${sign}${t.pct}% _(${de(t.prev)} → ${de(t.cur)})_`;
+}
+
+/* ── Ziele ─────────────────────────────────────────────────────────── */
+function goalProgress(profile, now = Date.now()) {
+  const p = ensureProgression(profile) || {};
+  const g = xpRules().goals || {};
+  const per = xpPeriods(profile, now);
+  const dayKey = new Date(now).toISOString().slice(0, 10);
+  const wk = isoWeekKey(now);
+  let weekSum = 0;
+  for (const e of (p.xpDaily || [])) {
+    if (e && e.d && isoWeekKey(new Date(e.d + 'T00:00:00Z').getTime()) === wk) weekSum += Number(e.a) || 0;
+  }
+  const todayStats = (p.statsDaily || []).find((e) => e && e.d === dayKey) || {};
+  let weekM = 0, weekG = 0;
+  for (const e of (p.statsDaily || [])) {
+    if (!e || !e.d) continue;
+    if (isoWeekKey(new Date(e.d + 'T00:00:00Z').getTime()) === wk) { weekM += Number(e.m) || 0; weekG += Number(e.g) || 0; }
+  }
+  const mk = (have, target, key, reward) => ({
+    have, target, reward: Number(reward) || 0,
+    done: target > 0 && !!(p.unlocks || {})[key],
+    pct: target > 0 ? Math.min(100, Math.round((have / target) * 100)) : 0
+  });
+  const minor = Number(xpRules().rewards?.goalMinorCopper ?? 25) || 0;
+  const gs = p.goalStreak || {};
+  return {
+    enabled: g.enabled !== false,
+    streak: { current: Number(gs.c) || 0, best: Number(gs.best) || 0 },
+    daily: mk(per.today, Number(g.dailyXp) || 0, 'goal-d' + dayKey, g.dailyCopper),
+    weekly: mk(weekSum, Number(g.weeklyXp) || 0, 'goal-w' + wk, g.weeklyCopper),
+    dailyMessages: mk(Number(todayStats.m) || 0, Number(g.dailyMessages) || 0, 'goal-dm' + dayKey, minor),
+    dailyCommands: mk(Number(todayStats.c) || 0, Number(g.dailyCommands) || 0, 'goal-dc' + dayKey, minor),
+    weeklyMessages: mk(weekM, Number(g.weeklyMessages) || 0, 'goal-wm' + wk, minor),
+    weeklyGames: mk(weekG, Number(g.weeklyGames) || 0, 'goal-wg' + wk, minor)
+  };
+}
+
+/* ── Nächste Ziele ─────────────────────────────────────────────────── */
+/** Kandidaten + sinnvollstes (= knappstes) Ziel. (5.0: +Meilenstein/Prestige/Truhe) */
+function nextTargets(profile, now = Date.now(), { achCount = 0 } = {}) {
+  const p = ensureProgression(profile) || {};
+  const bid = profile?.identity?.bid || '';
+  const lvl = Number(p.level) || 0;
+  const need = neededXp(lvl, Number(p.prestige) || 0);
+  const xp = Number(p.xp) || 0;
+  const cands = [];
+  cands.push({
+    id: 'level', emoji: '⭐', label: `Level ${de(lvl + 1)}`,
+    detail: `Noch ${de(Math.max(0, need - xp))} XP`,
+    pct: need > 0 ? Math.min(99, Math.round((xp / need) * 100)) : 0
+  });
+  const nt = nextTitleFor(lvl);
+  if (nt) cands.push({
+    id: 'title', emoji: '📛', label: `Titel ${nt.emoji} ${nt.name}`,
+    detail: `Noch ${de(nt.min - lvl)} Level (ab Level ${nt.min})`,
+    pct: Math.min(99, Math.round((lvl / nt.min) * 100))
+  });
+  const streak = Math.max(Number(p.streak) || 0, Number(p.streaks?.daily?.c) || 0);
+  const nextMark = [7, 30, 100, 365].find((m) => m > streak);
+  if (nextMark) cands.push({
+    id: 'streak', emoji: '🔥', label: `${nextMark}-Tage-Streak`,
+    detail: `Noch ${de(nextMark - streak)} Tag${nextMark - streak === 1 ? '' : 'e'}`,
+    pct: Math.min(99, Math.round((streak / nextMark) * 100))
+  });
+  try {
+    const ap = achievementProgress(bid, profile);
+    const nx = (ap.next || [])[0];
+    if (nx) cands.push({
+      id: 'achievement', emoji: '🏆', label: nx.name,
+      detail: `${de(nx.have)}/${de(nx.need)} — noch ${de(nx.need - nx.have)}`,
+      pct: Math.min(99, Math.round((nx.have / nx.need) * 100))
+    });
+  } catch (e) {}
+  const msNext = MILESTONES.find((m) => m.level > lvl && (Number(p.prestige) || 0) === 0);
+  if (msNext) cands.push({
+    id: 'milestone', emoji: '🎁', label: `Meilenstein Lv ${msNext.level} — ${msNext.label}`,
+    detail: `Noch ${de(msNext.level - lvl)} Level (+${de(msNext.coins)} Kupfer)`,
+    pct: Math.min(99, Math.round((lvl / msNext.level) * 100))
+  });
+  if (!msNext && (Number(p.prestige) || 0) === 0) {
+    try {
+      const pp = prestigeProgress(profile);
+      if (pp && !pp.maxed) cands.push({
+        id: 'prestige', emoji: '👑', label: `Prestige ${pp.nextPrestige} — ${pp.nextPrestigeTitle}`,
+        detail: `Noch ${de(pp.levelsToPrestige)} Level · ${de(pp.xpRemaining)} XP`,
+        pct: 99
+      });
+    } catch (e) {}
+  }
+  const pend = (p.pendingRewards || [])[0];
+  if (pend) cands.push({
+    id: 'chest', emoji: '🎁', label: `${pend.label} abholen`,
+    detail: `+${de(pend.copper)} Kupfer warten — $reward claim`,
+    pct: 100
+  });
+  try {
+    const bp = badgeProgress(profile, achCount).filter((b) => !b.unlocked && b.need > 0)
+      .sort((a, b) => (b.have / b.need) - (a.have / a.need))[0];
+    if (bp) cands.push({
+      id: 'badge', emoji: '🏅', label: `Badge ${bp.emoji} ${bp.name}`,
+      detail: `${de(bp.have)}/${de(bp.need)} — ${bp.desc}`,
+      pct: Math.min(99, Math.round((bp.have / bp.need) * 100))
+    });
+  } catch (e) {}
+  const goals = goalProgress(profile, now);
+  if (goals.enabled && goals.daily.target > 0 && !goals.daily.done) cands.push({
+    id: 'dailygoal', emoji: '🎯', label: 'Tagesziel',
+    detail: `${de(goals.daily.have)}/${de(goals.daily.target)} XP (+${de(goals.daily.reward)} Kupfer)`,
+    pct: goals.daily.pct
+  });
+  if (goals.enabled && goals.weekly.target > 0 && !goals.weekly.done) cands.push({
+    id: 'weeklygoal', emoji: '🏆', label: 'Wochenziel',
+    detail: `${de(goals.weekly.have)}/${de(goals.weekly.target)} XP (+${de(goals.weekly.reward)} Kupfer)`,
+    pct: goals.weekly.pct
+  });
+  cands.sort((a, b) => b.pct - a.pct);
+  return { top: cands[0] || null, all: cands.slice(0, 5) };
+}
+
+/* ── Insights (5.0): persönliche Hinweise aus echten Daten ────────── */
+function buildInsights(profile, { rankDelta = null, now = Date.now() } = {}) {
+  const p = ensureProgression(profile) || {};
+  const st = ensureStats(profile) || {};
+  const lines = [];
+  const lvl = Number(p.level) || 0;
+  const need = neededXp(lvl, Number(p.prestige) || 0);
+  const xp = Number(p.xp) || 0;
+  const per = xpPeriods(profile, now);
+  const soc = socialCounters(profile);
+  /* 💡 Nächstes Level greifbar? */
+  if (need > 0 && (need - xp) > 0 && (need - xp) <= Math.max(50, per.today)) {
+    lines.push(`💡 Nur noch *${de(need - xp)} XP* bis Level ${de(lvl + 1)} — heute schon ${de(per.today)} gesammelt!`);
+  }
+  /* 🎁 Ungeöffnete Truhe? */
+  if ((p.pendingRewards || []).length) {
+    lines.push(`🎁 *${(p.pendingRewards || []).length} Truhe(n)* warten auf dich — $reward claim`);
+  }
+  /* 🔥 Streak in Gefahr / Rekord nah? */
+  const streak = Math.max(Number(p.streak) || 0, Number(p.streaks?.daily?.c) || 0);
+  const lastXp = Number(p.lastXpAt) || 0;
+  const todayK = new Date(now).toISOString().slice(0, 10);
+  const lastK = lastXp ? new Date(lastXp).toISOString().slice(0, 10) : '';
+  if (streak >= 3 && lastK !== todayK) {
+    lines.push(`🔥 Dein *${de(streak)}-Tage-Streak* braucht heute noch XP — sonst reißt er!`);
+  }
+  /* 🏆 Fast geschafft? */
+  try {
+    const ap = achievementProgress(profile?.identity?.bid || '', profile);
+    const nx = (ap.next || [])[0];
+    if (nx && nx.need > 0 && nx.have / nx.need >= 0.8) {
+      lines.push(`🏆 Fast da: *${nx.name}* (${de(nx.have)}/${de(nx.need)})`);
+    }
+  } catch (e) {}
+  /* 🎯 Tagesziel fast voll? */
+  const goals = goalProgress(profile, now);
+  if (goals.enabled && goals.daily.target > 0 && !goals.daily.done && goals.daily.pct >= 70) {
+    lines.push(`🎯 Tagesziel zu *${goals.daily.pct}%* voll — noch ${de(goals.daily.target - goals.daily.have)} XP!`);
+  }
+  /* 📈 Rang verbessert? */
+  if (rankDelta !== null && rankDelta !== undefined && Number.isFinite(Number(rankDelta)) && Number(rankDelta) !== 0) {
+    lines.push(Number(rankDelta) > 0
+      ? `📈 Du bist *${de(rankDelta)} Plätze* aufgestiegen — stark!`
+      : `📉 Du bist *${de(-rankDelta)} Plätze* gefallen — hol sie dir zurück!`);
+  }
+  /* 💬 Lange nichts geschrieben? */
+  if ((Number(st.messages) || 0) === 0 && (Number(p.totalXp) || 0) > 0) {
+    lines.push('💬 Tipp: Jede nette Nachricht gibt XP — chatte los!');
+  }
+  void soc;
+  return lines.slice(0, 3);
+}
+
+/* ── Social-Zähler aus dem loveplus-Store ──────────────────────────── */
+function socialCounters(profile) {
+  try {
+    const bid = profile?.identity?.bid || '';
+    const store = loadStore();
+    const mx = achievementMetrics(profile, store, bid);
+    const u = store.users?.[bid] || {};
+    return {
+      giftsSent: mx.giftsSent, giftsReceived: mx.giftsReceived,
+      lettersSent: mx.lettersSent, loginStreak: mx.loginStreak,
+      hasPet: !!u.pet, achievements: Object.keys(u.achievements || {}).length
+    };
+  } catch (e) {
+    return { giftsSent: 0, giftsReceived: 0, lettersSent: 0, loginStreak: 0, hasPet: false, achievements: 0 };
+  }
+}
+
+/* ═══ PROFIL-CENTER ($me) ═══ */
+function buildProfileCenter(profile, { name = 'Du', rankPos = null, rankTotal = 0, rankPrev = null, roleText = '', pref = '$', now = Date.now(), skipUser = false } = {}) {
+  const p = ensureProgression(profile) || {};
+  const st = ensureStats(profile) || {};
+  const reg = profile?.registration || {};
+  const rk = rankFor(Number(p.prestige) || 0, Number(p.level) || 0);
+  const tt = activeTitleFor(profile);
+  const per = xpPeriods(profile, now);
+  const act = activityStats(profile, now);
+  const lvl = Number(p.level) || 0;
+  const need = neededXp(lvl, Number(p.prestige) || 0);
+  const pct = need > 0 ? Math.min(100, Math.round(((Number(p.xp) || 0) / need) * 100)) : 100;
+  const nt = nextTitleFor(lvl);
+  const soc = socialCounters(profile);
+  const goals = goalProgress(profile, now);
+  const trends = xpTrends(profile, now);
+  const targets = nextTargets(profile, now);
+  const badgeCount = Object.keys(p.badges || {}).length;
+  const titleCount = TITLES.filter((t) => t.min <= lvl).length;
+  const hist = recentXp(profile, 5);
+  const memberDays = reg.registeredAt ? Math.max(0, Math.floor((now - new Date(reg.registeredAt).getTime()) / 86400000)) : null;
+  const wins = Number(st.gameWins) || 0, games = Number(st.games) || 0;
+  const winrate = games > 0 ? Math.round((wins / games) * 100) : null;
+  const L = [];
+  /* Gleiche Glass-Rail-Linien wie die Profilkarten. */
+  const RAIL = '▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰';
+  L.push(RAIL);
+  L.push(skipUser ? '📊 *PROGRESSION CENTER*' : '💜 *LOVE PROFILE*');
+  L.push(RAIL, '');
+  if (!skipUser) {
+  L.push('👤 *USER*');
+  L.push(`Name: *${name}*`);
+  L.push(`Account: ${reg.registered === true ? 'Registriert ✅' : 'Gast — noch nicht registriert'}`);
+  if (reg.registeredAt) L.push(`Mitglied seit: ${fmtDate(reg.registeredAt)}${memberDays !== null ? ` (${de(memberDays)} Tage)` : ''}`);
+  if (roleText) L.push(`Rolle: ${String(roleText).replace(/\n• \*Gruppe:\* /, '')}`);
+  L.push(`Letzte Aktivität: ${act.lastActiveRel}`, '');
+  }
+  L.push('🏆 *PROGRESSION*');
+  L.push(`${rk.full}`);
+  if (Number(p.prestige) > 0) L.push(`Prestige: *${de(p.prestige)}*`);
+  try {
+    const pp = prestigeProgress(profile);
+    if (pp && !pp.maxed) L.push(`Nächstes Prestige: *${pp.levelsToPrestige}* Level · *${de(pp.xpRemaining)}* XP fehlen`);
+    else if (pp && pp.maxed) L.push('👑 *Maximales Prestige erreicht!*');
+  } catch (e) {}
+  if ((p.pendingRewards || []).length) L.push(`🎁 Truhen bereit: *${(p.pendingRewards || []).length}* — $reward claim`);
+  L.push(`Level: *${de(lvl)}* · Titel: ${tt.emoji} *${tt.name}*`);
+  L.push(`XP: *${de(p.xp)}* / ${de(need)} · Lifetime: *${de(per.lifetime)}*`);
+  L.push(`\`${bar__mprogressstats(pct, 14)}\` ${pct}%`);
+  L.push(`Noch ${de(Math.max(0, need - (Number(p.xp) || 0)))} XP bis Level ${de(lvl + 1)}`);
+  if (nt) L.push(`Nächster Titel: ${nt.emoji} *${nt.name}* (ab Level ${nt.min})`);
+  L.push('');
+  L.push('🌍 *GLOBAL RANK*');
+  if (rankPos) {
+    let trend = '';
+    if (rankPrev && rankPrev !== rankPos) {
+      const d = rankPrev - rankPos;
+      trend = d > 0 ? ` 📈 (+${de(d)})` : ` 📉 (${de(d)})`;
+    }
+    L.push(`*#${de(rankPos)}* von ${de(rankTotal)}${trend}`);
+  } else L.push('Noch unplatziert — chatte los! 💜');
+  L.push('');
+  L.push('🔥 *STREAK*');
+  L.push(`Aktuell: *${de(Math.max(Number(p.streak) || 0, Number(p.streaks?.daily?.c) || 0))}* Tage · Rekord: *${de(p.bestStreak)}* Tage`, '');
+  L.push('💬 *ACTIVITY*');
+  L.push(`Nachrichten: *${de(st.messages)}* · Befehle: *${de(st.commands)}*`);
+  L.push(`Aktive Tage: *${de(act.activeDays)}* · Wochen: *${de(act.activeWeeks)}* · Monate: *${de(act.activeMonths)}*`, '');
+  L.push('🎮 *GAMES*');
+  L.push(`Spiele: *${de(games)}* · Siege: *${de(wins)}* · Niederlagen: *${de(st.gameLosses)}*`);
+  L.push(`Winrate: ${winrate === null ? '–' : `*${winrate}%*`} · Best Score: –`, '');
+  L.push('💜 *SOCIAL*');
+  L.push(`Komplimente: *${de(st.complimentsGiven)}* · Love-Aktionen: *${de(st.loveActions)}*`);
+  L.push(`Geschenke: *${de(soc.giftsSent)}* gesendet · *${de(soc.giftsReceived)}* erhalten · Briefe: *${de(soc.lettersSent)}*`, '');
+  L.push('🏅 *SAMMLUNG*');
+  try {
+    const ap = achievementProgress(profile?.identity?.bid || '', profile);
+    L.push(`Achievements: *${de(ap.count)} / ${de(ap.total)}*`);
+    const tOrd = ['bronze', 'silver', 'gold', 'diamond', 'mythic'];
+    const tEmo = { bronze: '🥉', silver: '🥈', gold: '🥇', diamond: '💎', mythic: '👑' };
+    L.push(tOrd.map((t) => `${tEmo[t]}${ap.byTier?.[t]?.got || 0}`).join(' '));
+  } catch (e) { L.push('Achievements: –'); }
+  let titleTotal = titleCount;
+  try { titleTotal = availableTitles(profile, socialCounters(profile).achievements).length; } catch (e) {}
+  L.push(`Badges: *${de(badgeCount)}* · Titel: *${de(titleTotal)}* freigeschaltet`, '');
+  L.push('📈 *XP PERIOD*');
+  L.push(`Heute: *+${de(per.today)}* · Woche: *+${de(per.week)}* · Monat: *+${de(per.month)}*`);
+  L.push(`Trend Tag: ${trendText(trends.day)}`);
+  L.push(`Trend Woche: ${trendText(trends.week)}`, '');
+  if (goals.enabled && (goals.daily.target > 0 || goals.weekly.target > 0)) {
+    L.push('🎯 *GOALS*');
+    if (goals.daily.target > 0) L.push(`Täglich: \`${bar__mprogressstats(goals.daily.pct)}\` ${de(goals.daily.have)}/${de(goals.daily.target)}${goals.daily.done ? ' ✅' : ''}`);
+    if (goals.weekly.target > 0) L.push(`Wöchentlich: \`${bar__mprogressstats(goals.weekly.pct)}\` ${de(goals.weekly.have)}/${de(goals.weekly.target)}${goals.weekly.done ? ' ✅' : ''}`);
+    if (goals.dailyMessages.target > 0) L.push(`💬 Nachrichten/Tag: ${de(goals.dailyMessages.have)}/${de(goals.dailyMessages.target)}${goals.dailyMessages.done ? ' ✅' : ''}`);
+    if (goals.dailyCommands.target > 0) L.push(`⌨️ Befehle/Tag: ${de(goals.dailyCommands.have)}/${de(goals.dailyCommands.target)}${goals.dailyCommands.done ? ' ✅' : ''}`);
+    if (goals.weeklyMessages.target > 0) L.push(`💬 Nachrichten/Woche: ${de(goals.weeklyMessages.have)}/${de(goals.weeklyMessages.target)}${goals.weeklyMessages.done ? ' ✅' : ''}`);
+    if (goals.weeklyGames.target > 0) L.push(`🎮 Spiele/Woche: ${de(goals.weeklyGames.have)}/${de(goals.weeklyGames.target)}${goals.weeklyGames.done ? ' ✅' : ''}`);
+    if ((goals.streak.current || 0) > 0 || (goals.streak.best || 0) > 0) L.push(`🔥 Ziel-Streak: *${de(goals.streak.current)}* Tage (Best *${de(goals.streak.best)}*)`);
+    L.push('');
+  }
+  L.push('📊 *RECORDS*');
+  const rc = p.records || {};
+  L.push(`Höchstes Level: *${de(rc.highestLevel || lvl)}* · Längste Streak: *${de(p.bestStreak)}* Tage`);
+  L.push(`Bester Tag: *+${de(rc.highestDailyXp)}* XP · Meiste XP auf einmal: *+${de(rc.mostXpOneAction)}*`);
+  let mostMsg = 0;
+  for (const e of (p.statsDaily || [])) mostMsg = Math.max(mostMsg, Number(e.m) || 0);
+  L.push(`Meiste Nachrichten/Tag: *${de(mostMsg)}*`, '');
+  if (targets.top) {
+    L.push('🎯 *NEXT MILESTONE*');
+    L.push(`${targets.top.emoji} *${targets.top.label}* — ${targets.top.detail}`);
+    L.push('');
+  }
+  if (hist.length) {
+    L.push('📜 *LETZTE XP*');
+    for (const h of hist) L.push(`+${de(h.amount)}  ${h.label}`);
+    L.push('');
+  }
+  const insights = buildInsights(profile, { rankDelta: (rankPos && rankPrev) ? rankPrev - rankPos : null, now });
+  if (insights.length) {
+    L.push('💡 *INSIGHTS*');
+    for (const line of insights) L.push(line);
+    L.push('');
+  }
+  L.push(`💡 _${pref}progress · ${pref}stats me · ${pref}records · ${pref}activity_`);
+  L.push('╰────────────────────────────╯');
+  return L.join('\n');
+}
+
+/* ═══ Einzel-Bereiche für Commands ═══ */
+function buildPersonalStats(profile, now = Date.now()) {
+  const st = ensureStats(profile) || {};
+  const p = ensureProgression(profile) || {};
+  const soc = socialCounters(profile);
+  const games = Number(st.games) || 0, wins = Number(st.gameWins) || 0;
+  const L = ['> 📊 *HELLOKITTY BABY MAXI STATS*', '',
+    `💬 Nachrichten: *${de(st.messages)}*`,
+    `⚙️ Befehle: *${de(st.commands)}*`,
+    `🎮 Spiele: *${de(games)}* · 🏆 Siege: *${de(wins)}* · 💔 Niederlagen: *${de(st.gameLosses)}*`,
+    `🌹 Komplimente verteilt: *${de(st.complimentsGiven)}*`,
+    `💜 Love-Aktionen: *${de(st.loveActions)}*`,
+    `🎁 Geschenke: *${de(soc.giftsSent)}* gesendet · *${de(soc.giftsReceived)}* erhalten`,
+    `💌 Liebesbriefe: *${de(soc.lettersSent)}*`,
+    `📅 Daily-Claims: *${de(st.dailiesClaimed)}* · 💼 Work-Claims: *${de(st.workClaimed)}* · 🌹 Dailylove: *${de(st.dailyloveClaimed)}*`,
+    `🏆 Achievements: *${de(soc.achievements)}* · 🏅 Badges: *${de(Object.keys(p.badges || {}).length)}*`,
+    `🔥 Streak: *${de(p.streak)}* Tage (Best *${de(p.bestStreak)}*)`,
+    `Σ Lifetime XP: *${de(p.totalXp)}*`];
+  return L.join('\n');
+}
+
+function buildActivity(profile, now = Date.now()) {
+  const p = ensureProgression(profile) || {};
+  const per = xpPeriods(profile, now);
+  const act = activityStats(profile, now);
+  const t = statsDailySum(profile, 0, now);
+  const w = statsDailySum(profile, 6, now);
+  const m = statsDailySum(profile, 29, now);
+  const trends = xpTrends(profile, now);
+  const L = ['> 📅 *ACTIVITY*', '',
+    `*Heute:* +${de(per.today)} XP · ${de(t.m)}💬 ${de(t.c)}⚙️ ${de(t.g)}🎮`,
+    `*7 Tage:* +${de(per.week)} XP · ${de(w.m)}💬 ${de(w.c)}⚙️ ${de(w.g)}🎮 (${de(w.w)}🏆)`,
+    `*30 Tage:* +${de(per.month)} XP · ${de(m.m)}💬 ${de(m.c)}⚙️ ${de(m.g)}🎮 (${de(m.w)}🏆)`,
+    `*All Time:* Σ ${de(per.lifetime)} XP`, '',
+    `Aktive Tage: *${de(act.activeDays)}* · Wochen: *${de(act.activeWeeks)}* · Monate: *${de(act.activeMonths)}*`,
+    `Letzte Aktivität: ${act.lastActiveRel}`, '',
+    `Trend Tag: ${trendText(trends.day)}`,
+    `Trend Woche: ${trendText(trends.week)}`,
+    `Trend Monat: ${trendText(trends.month)}`, ''];
+  /* 🗓️ Heatmap: XP pro Wochentag (letzte 28 Tage, echte xpDaily) */
+  const wdNames = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
+  const wdXp = [0, 0, 0, 0, 0, 0, 0];
+  const start = new Date(new Date(now).toISOString().slice(0, 10) + 'T00:00:00Z').getTime();
+  for (const e of (p.xpDaily || [])) {
+    if (!e || !e.d) continue;
+    const tE = new Date(e.d + 'T00:00:00Z').getTime();
+    if (!Number.isFinite(tE)) continue;
+    const age = Math.round((start - tE) / 86400000);
+    if (age < 0 || age > 27) continue;
+    wdXp[(new Date(tE).getUTCDay() + 6) % 7] += Number(e.a) || 0;
+  }
+  const wdMax = Math.max(...wdXp, 1);
+  L.push('🗓️ *HEATMAP (28 Tage)*');
+  if (wdXp.every((v) => v === 0)) L.push('_Noch keine Daten — sammle XP! 💜_');
+  else for (let i = 0; i < 7; i++) L.push(`${wdNames[i]} \`${bar__mprogressstats(Math.round((wdXp[i] / wdMax) * 100), 8)}\` +${de(wdXp[i])} XP`);
+  L.push('');
+  /* 🕒 Echte Zeit-Stats (ab 5.0 gezählt — vorher „–“) */
+  const hours = Array.isArray(p.hourActivity) ? p.hourActivity : [];
+  const hourTotal = hours.reduce((a, h) => a + (Number(h) || 0), 0);
+  if (!hourTotal) {
+    L.push('🕒 *AKTIVSTE ZEIT:* – _(wird ab jetzt gezählt)_');
+  } else {
+    let bestH = 0;
+    for (let i = 1; i < 24; i++) if ((Number(hours[i]) || 0) > (Number(hours[bestH]) || 0)) bestH = i;
+    const fmtH = (h) => String(h).padStart(2, '0') + ':00';
+    L.push(`🕒 *AKTIVSTE ZEIT:* ${fmtH(bestH)}–${fmtH((bestH + 1) % 24)} Uhr (${de(hours[bestH])} Aktionen)`);
+    const wdAct = Array.isArray(p.weekdayActivity) ? p.weekdayActivity : [0, 0, 0, 0, 0, 0, 0];
+    let bestD = 0;
+    for (let i = 1; i < 7; i++) if ((Number(wdAct[i]) || 0) > (Number(wdAct[bestD]) || 0)) bestD = i;
+    const wdLong = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag'];
+    L.push(`📆 *AKTIVSTER TAG:* ${wdLong[bestD]} (${de(wdAct[bestD])} Aktionen)`);
+  }
+  return L.join('\n');
+}
+
+function buildRecords(profile) {
+  const p = ensureProgression(profile) || {};
+  const rc = p.records || {};
+  let mostMsg = 0, mostGames = 0;
+  for (const e of (p.statsDaily || [])) {
+    mostMsg = Math.max(mostMsg, Number(e.m) || 0);
+    mostGames = Math.max(mostGames, Number(e.g) || 0);
+  }
+  const L = ['> 🏆 *PERSONAL RECORDS*', '',
+    `⭐ Höchstes Level: *${de(rc.highestLevel || p.level)}*`,
+    `✨ Meiste Lifetime XP: *${de(p.totalXp)}*`,
+    `📅 Höchste Tages-XP: *+${de(rc.highestDailyXp)}*`,
+    `🔥 Längste Streak: *${de(p.bestStreak)}* Tage`,
+    `💬 Meiste Nachrichten/Tag: *${de(mostMsg)}*`,
+    `🎮 Meiste Spiele/Tag: *${de(mostGames)}* · 🏆 Siege gesamt: *${de(profile?.stats?.gameWins)}*`,
+    `💥 Meiste XP auf einmal: *+${de(rc.mostXpOneAction)}*`,
+    '🎯 Bester Game-Score: – _(Spiele sind Sieg/Niederlage)_'];
+  return L.join('\n');
+}
+
+function buildMilestones(profile) {
+  const p = ensureProgression(profile) || {};
+  const lvl = Number(p.level) || 0;
+  const un = p.unlocks || {};
+  const L = ['> 🎯 *MILESTONES*', '', '*Level*'];
+  for (const mst of MILESTONES) {
+    const got = !!un['lv' + mst.level] || lvl >= mst.level || Number(p.prestige) > 0;
+    L.push(`${got ? '✅' : '🔒'} Level ${mst.level} — ${mst.label}${got && Number(mst.coins) > 0 ? ` (+${de(mst.coins)} Kupfer)` : ''}`);
+  }
+  L.push('', '*Lifetime-XP*');
+  for (const [mark, label] of [[1000, '1.000'], [10000, '10.000'], [100000, '100.000'], [1000000, '1.000.000']]) {
+    L.push(`${(Number(p.totalXp) || 0) >= mark ? '✅' : '🔒'} ${label} XP _(jetzt ${de(p.totalXp)})_`);
+  }
+  L.push('', '*Streak (Rekord)*');
+  for (const mark of [7, 30, 100, 365]) {
+    L.push(`${(Number(p.bestStreak) || 0) >= mark ? '✅' : '🔒'} ${mark} Tage _(Best ${de(p.bestStreak)})_`);
+  }
+  L.push('', '*Prestige*');
+  for (const mark of [1, 2, 3, 5]) {
+    L.push(`${(Number(p.prestige) || 0) >= mark ? '✅' : '🔒'} Prestige ${mark} _(jetzt ${de(p.prestige)})_`);
+  }
+  L.push('', '*Ziel-Streak (Best)*');
+  const gsBest = Number(p.goalStreak?.best) || 0;
+  for (const mark of [3, 7, 30]) {
+    L.push(`${gsBest >= mark ? '✅' : '🔒'} ${mark} Tage _(Best ${de(gsBest)})_`);
+  }
+  return L.join('\n');
+}
+
+function buildRewards(profile) {
+  const p = ensureProgression(profile) || {};
+  const rt = rewardsTable(Number(p.prestige) || 0, Number(p.level) || 0);
+  const un = p.unlocks || {};
+  const goalD = Object.keys(un).filter((k) => k.startsWith('goal-d')).length;
+  const goalW = Object.keys(un).filter((k) => k.startsWith('goal-w')).length;
+  const L = ['> 🎁 *REWARDS*', '', '*Erhalten*'];
+  const earned = rt.filter((m) => m.unlocked);
+  if (!earned.length && !goalD && !goalW) L.push('_Noch keine — Level ups bringen Kupfer! 💜_');
+  for (const m of earned) L.push(`✅ Level ${m.level} — ${m.label} (+${de(m.coins)} Kupfer)`);
+  if (goalD) L.push(`✅ Tagesziele: *${de(goalD)}×* geschafft`);
+  if (goalW) L.push(`✅ Wochenziele: *${de(goalW)}×* geschafft`);
+  L.push(`💰 Reward-Kupfer gesamt: *${de(p.rewardsClaimed?.copper)}*`);
+  const pend = p.pendingRewards || [];
+  if (pend.length) {
+    L.push('', '*Abholbereit* 🎁');
+    for (const r of pend) L.push(`🎁 ${r.label} — +${de(r.copper)} Kupfer`);
+    L.push('_Abholen: $reward claim_');
+  }
+  const locked = rt.filter((m) => !m.unlocked);
+  if (locked.length) {
+    L.push('', '*Kommend*');
+    for (const m of locked.slice(0, 3)) L.push(`🔒 Level ${m.level} — ${m.label} (+${de(m.coins)} Kupfer)`);
+  }
+  const log = (p.rewardsLog || []).slice(-5).reverse();
+  if (log.length) {
+    L.push('', '*Letzte Rewards*');
+    for (const r of log) L.push(`${r.copper === null || r.copper === undefined ? '–' : '+' + de(r.copper)} Kupfer — ${r.label || r.kind || '?'} _(${relTime(r.t)})_`);
+  }
+  return L.join('\n');
+}
+
+function buildProgress(profile, { rankPos = null, rankTotal = 0, now = Date.now() } = {}) {
+  const p = ensureProgression(profile) || {};
+  const lvl = Number(p.level) || 0;
+  const need = neededXp(lvl, Number(p.prestige) || 0);
+  const xp = Number(p.xp) || 0;
+  const pct = need > 0 ? Math.min(100, Math.round((xp / need) * 100)) : 100;
+  const nt = nextTitleFor(lvl);
+  const targets = nextTargets(profile, now);
+  const goals = goalProgress(profile, now);
+  const L = ['> 📈 *FORTSCHRITT*', '',
+    `⭐ Level *${de(lvl)}* · \`${bar__mprogressstats(pct)}\` ${pct}%`,
+    `Noch ${de(Math.max(0, need - xp))} XP bis Level ${de(lvl + 1)}`,
+    `🔥 Streak: *${de(p.streak)}* Tage (Best *${de(p.bestStreak)}*)`];
+  if (rankPos) L.push(`📍 Global: *#${de(rankPos)}* von ${de(rankTotal)}`);
+  if (nt) L.push(`📛 Nächster Titel: ${nt.emoji} *${nt.name}* (ab Level ${nt.min})`);
+  const msNext = MILESTONES.find((m) => m.level > lvl && (Number(p.prestige) || 0) === 0);
+  if (msNext) L.push(`🎁 Nächster Meilenstein: *Lv ${msNext.level}* — ${msNext.label} (+${de(msNext.coins)} Kupfer)`);
+  try {
+    const pp = prestigeProgress(profile);
+    if (pp && !pp.maxed && lvl >= 100) L.push(`👑 Prestige ${pp.nextPrestige}: noch *${de(pp.levelsToPrestige)}* Level · *${de(pp.xpRemaining)}* XP`);
+  } catch (e) {}
+  L.push('', '🎯 *Nächste Ziele*');
+  for (const t of targets.all) L.push(`${t.emoji} *${t.label}* — ${t.detail} \`(${t.pct}%)\``);
+  if (goals.enabled && goals.daily.target > 0) {
+    L.push('', `🎯 Tagesziel: \`${bar__mprogressstats(goals.daily.pct)}\` ${de(goals.daily.have)}/${de(goals.daily.target)}${goals.daily.done ? ' ✅' : ''}`);
+  }
+  if (goals.enabled && goals.weekly.target > 0) {
+    L.push(`🏆 Wochenziel: \`${bar__mprogressstats(goals.weekly.pct)}\` ${de(goals.weekly.have)}/${de(goals.weekly.target)}${goals.weekly.done ? ' ✅' : ''}`);
+  }
+  if ((p.pendingRewards || []).length) L.push(`🎁 *${(p.pendingRewards || []).length} Truhe(n)* abholbereit — $reward claim`);
+  return L.join('\n');
+}
+
+/* ═══ NEU 5.0: Quellen, Reports, Prestige, Vergleich ═══ */
+
+/** XP-Quellen-Anteile (Lifetime, echte xpSources). */
+function buildXpSources(profile) {
+  const p = ensureProgression(profile) || {};
+  const srcs = p.xpSources || {};
+  const total = Object.values(srcs).reduce((a, v) => a + (Number(v) || 0), 0);
+  const L = ['> 📊 *XP-QUELLEN*', ''];
+  if (!total) {
+    L.push('_Noch keine XP — jede Aktion zählt ab jetzt! 💜_');
+    return L.join('\n');
+  }
+  const LABEL = { messages: '💬 Nachrichten', love: '💜 Liebesnachrichten', commands: '⚙️ Befehle', games: '🎮 Spiele', dailies: '📅 Dailies', work: '💼 Arbeit', compliments: '🌹 Komplimente', media: '🎬 Media', general: '✨ Sonstiges', admin: '🛠️ Admin' };
+  const rows = Object.entries(srcs).map(([k, v]) => ({ k, v: Number(v) || 0 })).filter((r) => r.v > 0)
+    .sort((a, b) => b.v - a.v);
+  for (const r of rows) {
+    const pct = Math.round((r.v / total) * 100);
+    L.push(`${LABEL[r.k] || '✨ ' + r.k}: \`${bar__mprogressstats(pct, 8)}\` ${pct}% _(${de(r.v)} XP)_`);
+  }
+  L.push('', `Σ Lifetime: *${de(p.totalXp)}* XP`);
+  return L.join('\n');
+}
+
+/** Tages-Historie (letzte N Tage aus echter xpDaily). */
+function dailyHistory(profile, n = 7, now = Date.now()) {
+  const p = profile?.progression || {};
+  const byDay = {};
+  for (const e of (p.xpDaily || [])) if (e && e.d) byDay[e.d] = (byDay[e.d] || 0) + (Number(e.a) || 0);
+  const out = [];
+  for (let i = n - 1; i >= 0; i--) {
+    const d = new Date(new Date(now).toISOString().slice(0, 10) + 'T00:00:00Z').getTime() - i * 86400000;
+    const key = new Date(d).toISOString().slice(0, 10);
+    out.push({ d: key, a: byDay[key] || 0 });
+  }
+  return out;
+}
+
+function reportBody(profile, days, title, emoji, now, { rankPos = null, rankTotal = 0 } = {}) {
+  const hist = dailyHistory(profile, days, now);
+  const total = hist.reduce((a, h) => a + h.a, 0);
+  const active = hist.filter((h) => h.a > 0).length;
+  const best = hist.reduce((a, h) => (h.a > a.a ? h : a), { d: '', a: 0 });
+  const avg = active ? Math.round(total / active) : 0;
+  const L = [`> ${emoji} *${title}*`, '',
+    `+${de(total)} XP in ${days} Tagen · ${de(active)} aktive Tage · Ø ${de(avg)} XP/Tag`];
+  if (rankPos) L.push(`🏅 Rang *#${de(rankPos)}* _(von ${de(rankTotal)})_`);
+  /* 💰🪙 Kupfer + Aktivität im Zeitraum (6.0, echte Zähler) */
+  try {
+    const e = ensureEconomy(profile) || {};
+    const per = days <= 7 ? (e.periods?.week || {}) : null;
+    if (per && per.k) L.push(`🪙 Diese Woche: *+${de(per.e)}* verdient · *−${de(per.s)}* ausgegeben`);
+    else if (days > 7) {
+      const mk = monthKey(now);
+      const mm = e.monthly?.[mk] || {};
+      L.push(`🪙 Dieser Monat: *+${de(mm.e)}* verdient · *−${de(mm.s)}* ausgegeben`);
+    }
+    let m = 0, c = 0, g = 0, w = 0;
+    if (days <= 7) {
+      const since = new Date(new Date(now).toISOString().slice(0, 10) + 'T00:00:00Z').getTime() - (days - 1) * 86400000;
+      for (const x of (profile?.progression?.statsDaily || [])) {
+        if (!x || !x.d) continue;
+        if (new Date(x.d + 'T00:00:00Z').getTime() < since) continue;
+        m += Number(x.m) || 0; c += Number(x.c) || 0; g += Number(x.g) || 0; w += Number(x.w) || 0;
+      }
+    } else {
+      const ms = monthStatsSum(profile, now);
+      m = ms.m; c = ms.c; g = ms.g; w = ms.w;
+    }
+    L.push(`💬 ${de(m)} Nachrichten · ⌨️ ${de(c)} Befehle · 🎮 ${de(g)} Spiele (${de(w)} Siege)`);
+  } catch (err) {}
+  if (best.a > 0) L.push(`Bester Tag: *${fmtDate(best.d)}* (+${de(best.a)} XP)`);
+  const max = Math.max(...hist.map((h) => h.a), 1);
+  L.push('');
+  const show = days <= 7 ? hist : hist.filter((h) => h.a > 0).slice(-10);
+  if (!show.length) L.push('_Keine Aktivität in diesem Zeitraum._');
+  for (const h of show) {
+    const wd = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'][new Date(h.d + 'T00:00:00Z').getUTCDay()];
+    L.push(`${wd} ${h.d.slice(5)} \`${bar__mprogressstats(Math.round((h.a / max) * 100), 8)}\` +${de(h.a)}`);
+  }
+  if (days > 7 && hist.filter((h) => h.a > 0).length > 10) L.push(`_… +${hist.filter((h) => h.a > 0).length - 10} weitere aktive Tage_`);
+  /* 🏆 Neue Achievements im Zeitraum (echte Store-Zeitstempel) */
+  try {
+    const bid = profile?.identity?.bid || '';
+    const store = loadStore();
+    const got = store.users?.[bid]?.achievements || {};
+    const since = now - days * 86400000;
+    const fresh = Object.entries(got).filter(([, ts]) => (Number(ts) || 0) >= since).length;
+    L.push('', `🏆 Neue Achievements: *${de(fresh)}*`);
+  } catch (e) {}
+  const peW = buildPeriodEconomy(profile, days <= 7 ? 'week' : 'month', now);
+  if (peW) L.push('', peW);
+  return L.join('\n');
+}
+
+/** Wochen-Report (7 Tage, echte Daten). */
+function buildWeeklyReport(profile, now = Date.now(), opts = {}) {
+  return reportBody(profile, 7, 'WOCHEN-REPORT', '🗓️', now, opts);
+}
+
+/** Monats-Report (30 Tage, echte Daten). */
+function buildMonthlyReport(profile, now = Date.now(), opts = {}) {
+  return reportBody(profile, 30, 'MONATS-REPORT', '📆', now, opts);
+}
+
+/** Prestige-Karte (Zyklus, Rest-XP echt aus der Kurve, Belohnungen). */
+function buildPrestige(profile) {
+  const p = ensureProgression(profile) || {};
+  const pp = prestigeProgress(profile);
+  const L = ['> 👑 *PRESTIGE*', ''];
+  if (!pp) { L.push('_Profil nicht verfügbar._'); return L.join('\n'); }
+  L.push(`Aktuell: *Prestige ${de(pp.prestige)}* · Level *${de(pp.level)}*`);
+  if (pp.maxed) {
+    L.push('👑 *MAXIMAL — du hast alles erreicht. Legende!*');
+    return L.join('\n');
+  }
+  L.push(`Nächstes: *${pp.nextPrestigeTitle}* (Prestige ${pp.nextPrestige})`);
+  L.push(`Noch *${de(pp.levelsToPrestige)}* Level · *${de(pp.xpRemaining)}* XP`);
+  L.push(`\`${bar__mprogressstats(Math.round(((743 - pp.levelsToPrestige) / 743) * 100), 12)}\``);
+  L.push('', '*Belohnungen beim Prestige-Up*');
+  L.push(`💰 +${de(pp.prestigeCopper)} Kupfer (sofort)`);
+  L.push(`🎁 Prestige-Truhe: +${de(pp.chestCopper)} Kupfer (claimbar)`);
+  L.push('🏅 Alle Badges, Titel & Achievements bleiben erhalten');
+  return L.join('\n');
+}
+
+/** Fairer Profil-Vergleich (nur öffentliche Progressions-Daten). */
+function buildCompare(a, nameA, b, nameB, { rankA = null, rankB = null, total = 0, showEconomy = false } = {}) {
+  const pa = ensureProgression(a) || {}, pb = ensureProgression(b) || {};
+  const row = (label, va, vb, fmt) => {
+    const f = fmt || ((v) => de(v));
+    const mark = va === vb ? '🟰' : (va > vb ? '🟢' : '🔴');
+    const markB = va === vb ? '🟰' : (vb > va ? '🟢' : '🔴');
+    return `${label}: ${mark} ${f(va)} vs ${markB} ${f(vb)}`;
+  };
+  const stA = ensureStats(a) || {}, stB = ensureStats(b) || {};
+  const L = ['> ⚔️ *VERGLEICH*', '', `*${nameA}* vs *${nameB}*`, ''];
+  L.push(row('Prestige', Number(pa.prestige) || 0, Number(pb.prestige) || 0));
+  L.push(row('Level', Number(pa.level) || 0, Number(pb.level) || 0));
+  L.push(row('Lifetime-XP', Number(pa.totalXp) || 0, Number(pb.totalXp) || 0, (v) => de(v)));
+  L.push(row('Streak-Rekord', Number(pa.bestStreak) || 0, Number(pb.bestStreak) || 0, (v) => de(v) + ' T'));
+  L.push(row('Badges', Object.keys(pa.badges || {}).length, Object.keys(pb.badges || {}).length));
+  L.push(row('Nachrichten', Number(stA.messages) || 0, Number(stB.messages) || 0));
+  L.push(row('Spiele', Number(stA.games) || 0, Number(stB.games) || 0));
+  L.push(row('Siege', Number(stA.gameWins) || 0, Number(stB.gameWins) || 0));
+  /* 💰 Economy nur bei beidseitiger Sichtbarkeit (6.0 Privacy) */
+  if (showEconomy) {
+    const ecoA = getBalance(a) || {}, ecoB = getBalance(b) || {};
+    L.push(row('Kupfer gesamt', Number(ecoA.total) || 0, Number(ecoB.total) || 0));
+    L.push(row('Bank', Number(ecoA.bank) || 0, Number(ecoB.bank) || 0));
+  }
+  if (rankA || rankB) L.push('', `Rang: *${rankA ? '#' + de(rankA) : '–'}* vs *${rankB ? '#' + de(rankB) : '–'}* _(von ${de(total)})_`);
+  return L.join('\n');
+}
+
+function buildStreakCard(profile) {
+  const p = ensureProgression(profile) || {};
+  const streak = Math.max(Number(p.streak) || 0, Number(p.streaks?.daily?.c) || 0);
+  const marks = [7, 30, 100, 365];
+  const next = marks.find((m) => m > streak);
+  const prev = [...marks].reverse().find((m) => m <= streak) || 0;
+  const pct = next ? Math.min(99, Math.round(((streak - prev) / (next - prev)) * 100)) : 100;
+  const L = ['> 🔥 *STREAK*', '',
+    `Aktuell: *${de(streak)}* Tage · Best: *${de(p.bestStreak)}* Tage`,
+    `\`${bar__mprogressstats(pct, 12)}\` ${pct}%`];
+  if (next) {
+    L.push(`Nächstes Ziel: *${next} Tage* (noch ${de(next - streak)})`);
+    const rewards = { 7: '🏅 7-Tage-Badge + 50 XP + 🏆 Achievement', 30: '🏅 30-Tage-Badge + 200 XP + 🏆 Achievement', 100: '🏅 100-Tage-Badge + 1000 XP + 🏆 Achievement', 365: '🏆 Jahres-Badge + 🏆 Achievement' };
+    L.push(`Belohnung: ${rewards[next] || '–'}`);
+  } else {
+    L.push('👑 *Maximale Streak-Marke erreicht!*');
+  }
+  const sts = p.streaks || {};
+  L.push('', `Chat: ${de(sts.chat?.c)} Tage · XP (≥50/Tag): ${de(sts.xp?.c)} Tage`);
+  return L.join('\n');
+}
+
+function buildBadgeShowcase(profile, achCount = 0) {
+  const prog = badgeProgress(profile, achCount);
+  const got = prog.filter((b) => b.unlocked);
+  const L = ['> 🏅 *DEINE BADGES* _(' + got.length + '/' + prog.length + ')_', ''];
+  for (const area of BADGE_AREAS) {
+    const inArea = prog.filter((b) => b.area === area.id);
+    if (!inArea.length) continue;
+    const gotA = inArea.filter((b) => b.unlocked).length;
+    L.push(`${area.emoji} *${area.name.toUpperCase()}* (${gotA}/${inArea.length})`);
+    for (const b of inArea) {
+      const tier = (b.tier && b.tiers && b.tiers > 1) ? ` _[Stufe ${b.tier}/${b.tiers}]_` : '';
+      if (b.unlocked) L.push(`${b.emoji} *${b.name}* — _${b.desc}_${tier}`);
+      else L.push(`🔒 ${b.name} \`(${de(b.have)}/${de(b.need)})\` — _${b.desc}_${tier}`);
+    }
+    L.push('');
+  }
+  return L.join('\n').trimEnd();
+}
+
+function buildTitleOverview(profile, achCount = 0) {
+  const p = ensureProgression(profile) || {};
+  const lvl = Number(p.level) || 0;
+  const active = activeTitleFor(profile);
+  const L = ['> 📛 *TITEL*', '', `Aktiv: ${active.emoji} *${active.name}*`, '', '*Level-Titel*'];
+  const earned = TITLES.filter((t) => t.min <= lvl);
+  for (const t of earned) L.push(`${t.emoji} *${t.name}* (ab Level ${t.min})`);
+  const locked = TITLES.filter((t) => t.min > lvl);
+  for (const t of locked) L.push(`🔒 ${t.name} (ab Level ${t.min} — noch ${de(t.min - lvl)})`);
+  /* 🌟 Spezial-Titel: verdient vs. offen (mit echtem Fortschritt) */
+  let avail = [];
+  try { avail = availableTitles(profile, achCount); } catch (e) { avail = []; }
+  const availNames = new Set(avail.map((t) => t.name));
+  const streak = Math.max(Number(p.streak) || 0, Number(p.streaks?.daily?.c) || 0);
+  const progOf = (s) => {
+    if (s.source === 'prestige') return `${de(p.prestige)}/${s.need.replace(/[^0-9]/g, '')}`;
+    if (s.source === 'collection') return `${de(achCount)}/${s.need.replace(/[^0-9]/g, '')}`;
+    if (s.source === 'streak') return `${de(streak)}/${s.need.replace(/[^0-9]/g, '')}`;
+    return '–';
+  };
+  L.push('', '*Spezial-Titel*');
+  for (const s of SPECIAL_TITLES) {
+    if (availNames.has(s.name)) L.push(`${s.emoji} *${s.name}* _(${s.need})_`);
+    else L.push(`🔒 ${s.name} _(${s.need} — jetzt ${progOf(s)})_`);
+  }
+  L.push('', '_Wählen: $title use <name> · Zurück zum Höchsten: $title clear_');
+  return L.join('\n');
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   💰 6.0 ACCOUNT / ECONOMY — Builder (lesen nur, schreiben nie)
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/** True, wenn das Profil seine Economy vor anderen verbirgt. */
+function economyHidden(profile) {
+  return profile?.registration?.privacy?.hideEconomy === true;
+}
+
+/** Kompakte Geldbörse (eine Zeile, für $me-kompakt). */
+function buildCoins(profile) {
+  const b = getBalance(profile) || {};
+  return `🪙 *${de(b.wallet)}* Kupfer · 🏦 *${de(b.bank)}* Bank · Σ *${de(b.total)}*`;
+}
+
+/** Wallet-Karte mit Tages-/Wochen-/Lifetime-Summen. */
+function buildBalance(profile, now = Date.now()) {
+  const b = getBalance(profile) || {};
+  const e = ensureEconomy(profile) || {};
+  const L = ['> 💰 *KONTO*', '',
+    `🤎 Wallet: *${de(b.wallet)}* Kupfer`,
+    `🏦 Bank: *${de(b.bank)}* Kupfer`,
+    `💎 Gesamt: *${de(b.total)}* Kupfer`];
+  const day = e.periods?.day || {}, week = e.periods?.week || {};
+  L.push('', `Heute: *+${de(day.e)}* / *−${de(day.s)}*`);
+  L.push(`Woche: *+${de(week.e)}* / *−${de(week.s)}*`);
+  L.push(`Lifetime: *+${de(e.stats?.earned)}* / *−${de(e.stats?.spent)}*`);
+  if (e.stats?.highBal) L.push(`🏆 Rekord-Vermögen: *${de(e.stats.highBal)}*`);
+  return L.join('\n');
+}
+
+/** Bank-Karte (Vaults, Kapazität, Zinsen). */
+function buildBank(profile, { achCount = 0, now = Date.now() } = {}) {
+  const b = getBalance(profile) || {};
+  const cap = capacityFor(profile, achCount);
+  const free = Math.max(0, cap - (Number(b.bank) || 0));
+  const pct = cap > 0 ? Math.round((Number(b.bank) || 0) / cap * 100) : 0;
+  const e = ensureEconomy(profile) || {};
+  const r = xpRules().economy || {};
+  const L = ['> 🏦 *BANK*', '',
+    `Guthaben: *${de(b.bank)}* Kupfer`,
+    `\`${bar__mprogressstats(Math.min(100, pct), 12)}\` ${pct} %`,
+    `Kapazität: *${de(b.bank)}* / *${de(cap)}* (frei: *${de(free)}*)`];
+  L.push('', `📈 Zins: *${Number(r.interestPct ?? 1)} %* pro Tag (max. *${de(r.interestCap ?? 5000)}*, ins Wallet)`);
+  const last = Number(e.interest?.lastAt) || 0;
+  const cdMs = Math.max(1, Number(r.interestCooldownH) || 24) * 3600000;
+  if (last > 0 && now - last < cdMs) {
+    const waitH = Math.floor((cdMs - (now - last)) / 3600000);
+    const waitM = Math.round(((cdMs - (now - last)) % 3600000) / 60000);
+    L.push(`⏳ Nächste Zinsen in *${waitH} Std. ${waitM} Min.*`);
+  } else if ((Number(b.bank) || 0) > 0) {
+    L.push('✅ *Zinsen bereit* — abholen mit *$bank claim*!');
+  } else {
+    L.push('_Leeres Konto bringt keine Zinsen — erst einzahlen._');
+  }
+  return L.join('\n');
+}
+
+/** Voller Economy-Überblick. */
+function buildEconomy(profile, { achCount = 0, now = Date.now(), name = '' } = {}) {
+  const b = getBalance(profile) || {};
+  const e = ensureEconomy(profile) || {};
+  const cap = capacityFor(profile, achCount);
+  const L = ['> 🪙 *ECONOMY*' + (name ? ' — ' + name : ''), '',
+    `🤎 Wallet: *${de(b.wallet)}*`,
+    `🏦 Bank: *${de(b.bank)}* / *${de(cap)}*`,
+    `💎 Gesamt: *${de(b.total)}* Kupfer`];
+  const mk = monthKey(now);
+  const mm = e.monthly?.[mk] || {};
+  L.push('', `📅 Monat: *+${de(mm.e)}* / *−${de(mm.s)}*`);
+  L.push(`♾️ Lifetime: *+${de(e.stats?.earned)}* / *−${de(e.stats?.spent)}*`);
+  const d = e.daily || {};
+  if (d.best) L.push(`🔥 Daily-Serie: *${de(d.streak)}* (Rekord *${de(d.best)}*)`);
+  const tx = (e.tx || [])[0];
+  if (tx) L.push('', `Letzte Buchung: *${tx.d > 0 ? '+' : ''}${de(tx.d)}* (${sourceLabel(tx.s)})`);
+  return L.join('\n');
+}
+
+/** Transaktions-Verlauf (neueste zuerst). */
+function buildTransactions(profile, { limit = 10 } = {}) {
+  const e = ensureEconomy(profile) || {};
+  const tx = (e.tx || []).slice(0, Math.max(1, Math.min(20, Number(limit) || 10)));
+  const L = ['> 🧾 *TRANSAKTIONEN*', ''];
+  if (!tx.length) { L.push('_Noch keine Buchungen._'); return L.join('\n'); }
+  for (const t of tx) {
+    const sign = Number(t.d) >= 0 ? '+' : '';
+    const vault = t.v === 'bank' ? '🏦' : '🤎';
+    L.push(`${vault} *${sign}${de(t.d)}* · ${sourceLabel(t.s)}${t.r ? ` _(${String(t.r).slice(0, 40)})_` : ''}`);
+  }
+  return L.join('\n');
+}
+
+/** Einheitliche Daily-Karte (Claim-Ergebnis + XP). */
+function buildDailySummary(profile, { claim = null, xpGranted = 0, pref = '$' } = {}) {
+  const e = ensureEconomy(profile) || {};
+  const d = e.daily || {};
+  const L = ['> 📅 *DAILY*', ''];
+  if (!claim || !claim.ok) {
+    if (claim && claim.reason === 'claimed') {
+      L.push('⏳ *Heute schon abgeholt.*');
+      L.push(`🔥 Serie: *${de(d.streak)}* Tage (Rekord *${de(d.best)}*)`);
+      L.push('', '♡ _come back tomorrow. I\'ll be here._');
+    } else {
+      L.push('_Heute noch nicht abgeholt._');
+      if (d.streak) L.push(`🔥 Serie: *${de(d.streak)}* Tage`);
+    }
+    return L.join('\n');
+  }
+  L.push(`🪙 *+${de(claim.amount)} Kupfer*${xpGranted ? ` · 💜 *+${de(xpGranted)} XP*` : ''}`);
+  L.push(`🔥 Serie: *${de(claim.streak)}* Tag${claim.streak === 1 ? '' : 'e'}${claim.continued ? '' : ' (neu gestartet)'}`);
+  if (claim.effPct) L.push(`📈 Streak-Bonus: *+${claim.effPct} %*`);
+  for (const bo of (claim.bonuses || [])) {
+    if (bo.kind === 'milestone') L.push(`🏆 Meilenstein ${bo.streak} Tage: *+${de(bo.amount)}*`);
+    else if (bo.kind === 'weekly') L.push(`🗓️ Wochen-Bonus: *+${de(bo.amount)}*`);
+    else if (bo.kind === 'monthly') L.push(`🗓️ Monats-Bonus: *+${de(bo.amount)}*`);
+    else if (bo.kind === 'yearly') L.push(`🎆 Jahres-Bonus: *+${de(bo.amount)}*`);
+    else if (bo.kind === 'best') L.push(`🏆 Neuer Serien-Rekord: *+${de(bo.amount)}*`);
+  }
+  L.push('', `💰 Kontostand: *${de(claim.balance)}* Kupfer`);
+  L.push('', `_Morgen wieder: ${pref}daily_`);
+  return L.join('\n');
+}
+
+/** Monatsvergleich: dieser vs. letzter Monat (XP + Kupfer). Null statt Fake. */
+function monthlyTrend(profile, now = Date.now()) {
+  const mk = monthKey(now);
+  const d = new Date(mk + '-01T00:00:00Z');
+  d.setUTCMonth(d.getUTCMonth() - 1);
+  const prev = d.toISOString().slice(0, 7);
+  const p = profile?.progression || {};
+  const cur = Number(p.xpMonthly?.[mk]);
+  const prv = Number(p.xpMonthly?.[prev]);
+  const e = profile?.economy || {};
+  const cCur = e.monthly?.[mk] || null;
+  const cPrv = e.monthly?.[prev] || null;
+  return {
+    month: mk, prev,
+    xp: Number.isFinite(cur) ? cur : 0,
+    xpPrev: Number.isFinite(prv) ? prv : null,
+    coins: cCur ? { e: Number(cCur.e) || 0, s: Number(cCur.s) || 0 } : { e: 0, s: 0 },
+    coinsPrev: cPrv ? { e: Number(cPrv.e) || 0, s: Number(cPrv.s) || 0 } : null
+  };
+}
+
+/** Jahres-Report (12 Monate, echte Aggregate + Store-Zeitstempel). */
+function buildYearlyReport(profile, now = Date.now(), { rankPos = null, rankTotal = 0 } = {}) {
+  const yxp = yearXpSum(profile, now);
+  const ys = yearStatsSum(profile, now);
+  const e = ensureEconomy(profile) || {};
+  const yp = e.periods?.year || {};
+  const p = profile?.progression || {};
+  const months = Object.keys(p.xpMonthly || {}).sort();
+  const bestMk = months.reduce((a, k) => ((Number(p.xpMonthly[k]) || 0) > (Number(p.xpMonthly[a]) || 0) ? k : a), months[0] || '');
+  const L = ['> 🎆 *JAHRES-REPORT*', ''];
+  L.push(`+${de(yxp)} XP · ${de(months.length)} aktive Monate`);
+  if (rankPos) L.push(`🏅 Rang *#${de(rankPos)}* _(von ${de(rankTotal)})_`);
+  L.push('', `💬 ${de(ys.m)} Nachrichten · ⌨️ ${de(ys.c)} Befehle`);
+  L.push(`🎮 ${de(ys.g)} Spiele (${de(ys.w)} Siege)`);
+  L.push(`🪙 Jahr: *+${de(yp.e)}* verdient · *−${de(yp.s)}* ausgegeben`);
+  if (bestMk && Number(p.xpMonthly[bestMk]) > 0) {
+    L.push(`🌟 Stärkster Monat: *${bestMk}* (+${de(p.xpMonthly[bestMk])} XP)`);
+  }
+  const d = e.daily || {};
+  if (d.best) L.push(`🔥 Beste Daily-Serie: *${de(d.best)}* Tage`);
+  try {
+    const bid = profile?.identity?.bid || '';
+    const store = loadStore();
+    const got = store.users?.[bid]?.achievements || {};
+    const since = now - 365 * 86400000;
+    const fresh = Object.entries(got).filter(([, ts]) => (Number(ts) || 0) >= since).length;
+    L.push('', `🏆 Neue Achievements: *${de(fresh)}*`);
+  } catch (err) {}
+  if (!yxp && !months.length) L.push('', '_Noch keine Jahresdaten — sie entstehen ab jetzt automatisch._');
+  const peY = buildPeriodEconomy(profile, 'year', now);
+  if (peY) L.push('', peY);
+  return L.join('\n');
+}
+
+
+/* ── 💜 7.0: Perioden-Economy (verdient/ausgegeben/netto + Top-Quelle/-Ausgabe) ── */
+function buildPeriodEconomy(profile, kind = 'week', now = Date.now()) {
+  try {
+    const e = ensureEconomy(profile) || {};
+    const k = String(kind || 'week').toLowerCase();
+    const days = k === 'day' ? 1 : k === 'month' ? 30 : k === 'year' ? 365 : k === 'life' ? 0 : 7;
+    const per = days === 0 ? null : (e.periods?.[k === 'life' ? 'year' : k] || {});
+    const earned = days === 0 ? (e.stats?.earned || 0) : (per.e || 0);
+    const spent = days === 0 ? (e.stats?.spent || 0) : (per.s || 0);
+    const since = days === 0 ? 0 : now - days * 86400000;
+    const src = {}, sink = {};
+    for (const t of (e.tx || [])) {
+      if ((Number(t.t) || 0) < since) continue;
+      const d = Number(t.d) || 0;
+      if (d >= 0) src[t.s] = (src[t.s] || 0) + d;
+      else sink[t.s] = (sink[t.s] || 0) - d;
+    }
+    const top = (o) => { const e2 = Object.entries(o).sort((a, b) => b[1] - a[1])[0]; return e2 ? `${sourceLabel(e2[0])} (+${de(e2[1])})` : '–'; };
+    const topS = (o) => { const e2 = Object.entries(o).sort((a, b) => b[1] - a[1])[0]; return e2 ? `${sourceLabel(e2[0])} (−${de(e2[1])})` : '–'; };
+    const label = { day: 'Heute', week: 'Woche', month: 'Monat', year: 'Jahr', life: 'Lifetime' }[k] || 'Woche';
+    return `🪙 ${label}: *+${de(earned)}* / *−${de(spent)}* (netto *${de(earned - spent)}*) · Top: ${top(src)} · Top-Ausgabe: ${topS(sink)}`;
+  } catch (err) { return ''; }
+}
+
+/** Tages-Report (heute, echte Zähler). */
+function buildDayReport(profile, now = Date.now(), { rankPos = null, rankTotal = 0 } = {}) {
+  const p = profile?.progression || {};
+  const dk = new Date(now).toISOString().slice(0, 10);
+  const entry = (p.xpDaily || []).find((x) => x && x.d === dk) || {};
+  const st = (p.statsDaily || []).find((x) => x && x.d === dk) || {};
+  const e = ensureEconomy(profile) || {};
+  const day = e.periods?.day || {};
+  const L = ['> 📅 *TAGES-REPORT*', ''];
+  L.push(`+${de(entry.a)} XP heute`);
+  if (rankPos) L.push(`🏅 Rang *#${de(rankPos)}* _(von ${de(rankTotal)})_`);
+  L.push('', `💬 ${de(st.m)} Nachrichten · ⌨️ ${de(st.c)} Befehle · 🎮 ${de(st.g)} Spiele`);
+  L.push(`🪙 Heute: *+${de(day.e)}* / *−${de(day.s)}*`);
+  const peD = buildPeriodEconomy(profile, 'day', now);
+  if (peD) L.push(peD);
+  L.push(`_Mehr: ${'$'}report week · ${'$'}report month · ${'$'}report year_`);
+  return L.join('\n');
+}
+
+/**
+ * Zentraler Report-Dispatcher (6.0): day|week|month|year|all.
+ * $report + $daily/$weekly/$monthly/$yearly nutzen alle diesen Weg.
+ */
+function buildReport(profile, period = 'week', { now = Date.now(), rankPos = null, rankTotal = 0 } = {}) {
+  const per = String(period || 'week').toLowerCase();
+  if (per === 'day' || per === 'today' || per === 'tagesreport') return buildDayReport(profile, now, { rankPos, rankTotal });
+  if (per === 'month' || per === 'monat' || per === 'monatsreport') return buildMonthlyReport(profile, now, { rankPos, rankTotal });
+  if (per === 'year' || per === 'jahr' || per === 'jahresreport') return buildYearlyReport(profile, now, { rankPos, rankTotal });
+  if (per === 'all' || per === 'lifetime' || per === 'alles') return buildLifetimeReport(profile, { rankPos, rankTotal });
+  return buildWeeklyReport(profile, now, { rankPos, rankTotal });
+}
+
+/** Lifetime-Übersicht (alle echten Summen). */
+function buildLifetimeReport(profile, { rankPos = null, rankTotal = 0 } = {}) {
+  const p = ensureProgression(profile) || {};
+  const st = profile?.stats || {};
+  const e = ensureEconomy(profile) || {};
+  const L = ['> ♾️ *LIFETIME*', ''];
+  L.push(`⭐ *${de(p.totalXp)}* XP · Prestige *${de(p.prestige)}* · Level *${de(p.level)}*`);
+  if (rankPos) L.push(`🏅 Rang *#${de(rankPos)}* _(von ${de(rankTotal)})_`);
+  L.push('', `💬 ${de(st.messages)} Nachrichten · ⌨️ ${de(st.commands)} Befehle`);
+  L.push(`🎮 ${de(st.games)} Spiele (${de(st.gameWins)} Siege) · 🎁 ${de(st.dailiesClaimed)} Dailies`);
+  L.push(`🪙 *+${de(e.stats?.earned)}* verdient · *−${de(e.stats?.spent)}* ausgegeben`);
+  L.push(`🏆 Rekord-Vermögen: *${de(e.stats?.highBal)}*`);
+  return L.join('\n');
+}
+
+/** XP-Multiplikator-Karte (Aufschlüsselung + Event-Countdown). */
+function buildXpMultiplier(profile, { isOwner = false, now = Date.now() } = {}) {
+  const bd = xpMultiplierBreakdown(profile, now, { isOwner });
+  const L = ['> ✖️ *XP-MULTIPLIKATOR*', ''];
+  for (const pt of (bd.parts || [])) {
+    L.push(`${pt.active ? '✅' : '⚪'} ${pt.label}: *×${Number(pt.mult).toFixed(2)}*`);
+  }
+  L.push('', `Gesamt: *×${Number(bd.total).toFixed(2)}*${bd.capped ? ` _(gedeckelt bei ×${bd.cap})_` : ''}`);
+  try {
+    const r = xpRules().multipliers || {};
+    if (r.eventActive && r.eventEndsAt) {
+      const left = Number(r.eventEndsAt) - now;
+      if (left > 0) {
+        const h = Math.floor(left / 3600000), m = Math.round((left % 3600000) / 60000);
+        L.push(`🎪 Event endet in *${h} Std. ${m} Min.*`);
+      }
+    }
+  } catch (err) {}
+  const peL = buildPeriodEconomy(profile, 'life', Date.now());
+  if (peL) L.push('', peL);
+  return L.join('\n');
+}
+
+/** Economy-Zeile für $me-kompakt (Wochen-/Monats-Summen). */
+function buildPeriodsLine(profile) {
+  const e = ensureEconomy(profile) || {};
+  const w = e.periods?.week || {}, m = e.periods?.month || {};
+  return `🪙 Woche *+${de(w.e)}* · Monat *+${de(m.e)}*`;
+}
+
+/** Economy-Block für $me-vollständig. */
+function buildEconomySection(profile, { achCount = 0 } = {}) {
+  const b = getBalance(profile) || {};
+  const cap = capacityFor(profile, achCount);
+  const e = ensureEconomy(profile) || {};
+  const d = e.daily || {};
+  const L = ['*💰 ECONOMY*',
+    `🤎 ${de(b.wallet)} · 🏦 ${de(b.bank)} / ${de(cap)} · Σ ${de(b.total)}`];
+  if (d.best) L.push(`🔥 Daily-Serie ${de(d.streak)} (Rekord ${de(d.best)})`);
+  return L.join('\n');
+}
+
+/**
+ * 👤 Vollständige Account-Übersicht ($account / $info me).
+ * plusUser (loveplus-Store) liefert der Aufrufer für Inventar/Achievements.
+ */
+function buildAccount(profile, { plusUser = null, rankPos = null, rankTotal = 0, achCount = null, now = Date.now(), pref = '$', extras = null } = {}) {
+  const p = ensureProgression(profile) || {};
+  const b = getBalance(profile) || {};
+  const e = ensureEconomy(profile) || {};
+  const reg = profile?.registration || {};
+  const L = ['> 👤 *ACCOUNT*', ''];
+  L.push(`*${reg.name || 'Unregistriert'}*${reg.registeredAt ? ` · dabei seit ${fmtDate(reg.registeredAt)}` : ''}`);
+  const rk = rankPos ? ` · 🏅 *#${de(rankPos)}*` : '';
+  L.push(`⭐ P${de(p.prestige)} · Lv *${de(p.level)}* · *${de(p.totalXp)}* XP${rk}`);
+  L.push(`🪙 *${de(b.total)}* Kupfer (🤎 ${de(b.wallet)} · 🏦 ${de(b.bank)})`);
+  try {
+    const bid = profile?.identity?.bid || '';
+    const count = achCount !== null ? achCount : achievementProgress(bid, profile).count;
+    const total = achievementProgress(bid, profile).total;
+    L.push(`🏆 ${de(count)} / ${de(total)} Achievements · 🏅 ${de(Object.keys(p.badges || {}).length)} Badges`);
+  } catch (err) {}
+  const inv = Object.entries(plusUser?.inventory || {}).filter(([, n]) => Number(n) > 0);
+  const invCount = inv.reduce((a, [, n]) => a + (Number(n) || 0), 0);
+  L.push(`📦 Inventar: *${de(invCount)}* Items (${de(inv.length)} Sorten)`);
+  const d = e.daily || {};
+  if (d.best) L.push(`🔥 Daily-Serie: *${de(d.streak)}* (Rekord *${de(d.best)}*)`);
+  const pend = (p.pendingRewards || []).length;
+  if (pend) L.push(`🎁 *${de(pend)}* Truhe${pend === 1 ? '' : 'n'} wartet (${pref}reward)`);
+  if (extras && typeof extras === 'object') {
+    if (extras.ageDays !== null && extras.ageDays !== undefined) L.push(`📅 Alter: *${de(extras.ageDays)}* Tage`);
+    if (extras.lastActive) L.push(`🕐 Zuletzt aktiv: ${extras.lastActive}`);
+    const sec = [];
+    if (extras.dsgvo) sec.push('DSGVO ✅');
+    if (extras.verified) sec.push('Verifiziert ✅');
+    if (sec.length) L.push(`🔐 ${sec.join(' · ')}`);
+    if (extras.notif) L.push(`🔔 Mitteilungen: ${extras.notif}`);
+    if (extras.privacy) L.push(`👁️ Privatsphäre: ${extras.privacy}`);
+    if (extras.ai) L.push(`🤖 AI: ${extras.ai}`);
+  }
+  L.push('', `_Details: ${pref}me · ${pref}economy · ${pref}report_`);
+  return L.join('\n');
+}
+
+/** Top-Vermögen (bot-weit, echte Salden). */
+function topCoins(users = {}, n = 10) {
+  return Object.entries(users || {})
+    .filter(([, u]) => u && typeof u === 'object')
+    .map(([bid, u]) => ({
+      bid,
+      name: u.registration?.name || u.identity?.username || '–',
+      wallet: Math.max(0, Math.floor(Number(u.wallet?.copper) || 0)),
+      bank: Math.max(0, Math.floor(Number(u.bank?.copper) || 0))
+    }))
+    .map((r) => ({ ...r, total: r.wallet + r.bank }))
+    .sort((a, b) => b.total - a.total)
+    .slice(0, Math.max(1, Math.min(25, Number(n) || 10)));
+}
+
+/** Reichsten-Liste ($rich / $top coins). */
+function buildTopCoins(users = {}, { n = 10, myBid = '', pref = '$' } = {}) {
+  const rows = topCoins(users, n);
+  const L = ['> 💰 *REICHSTE*', ''];
+  if (!rows.length) { L.push('_Noch keine Vermögen._'); return L.join('\n'); }
+  const medals = ['🥇', '🥈', '🥉'];
+  rows.forEach((r, i) => {
+    const mark = r.bid === myBid ? ' ◀️' : '';
+    L.push(`${medals[i] || `${de(i + 1)}.`} *${String(r.name).slice(0, 20)}* — ${de(r.total)} 🪙${mark}`);
+  });
+  L.push('', `_Mehr verdienen: ${pref}daily · ${pref}work_`);
+  return L.join('\n');
+}
+
+/* ── 💜 7.0: Aktivitäts-Sektion für $me (Perioden · Trends · Rekorde · Gruppen · AI) ── */
+function buildMeActivity(profile, { groupActivity = null, aiUsage = null, now = Date.now() } = {}) {
+  const p = profile || {};
+  const prog = p.progression || {};
+  const eco = p.economy || {};
+  let w = 0, m = 0;
+  try { w = weekXpSum(p, now); } catch (e) {}
+  try { m = monthXpSum(p, now); } catch (e) {}
+  const months = Object.keys(prog.xpMonthly || {}).sort().slice(-3);
+  const trend = months.length
+    ? months.map((k) => `${k.slice(5)}: ${de(prog.xpMonthly[k])}`).join(' · ')
+    : '–';
+  const ga = groupActivity || { msgs: 0, xp: 0, groups: 0 };
+  const aiLine = aiUsage && (aiUsage.total > 0 || aiUsage.today > 0)
+    ? `${de(aiUsage.today || 0)} heute · ${de(aiUsage.total || 0)} gesamt`
+    : 'noch keine — sag `$ai hallo`!';
+  return '📊 *ACTIVITY*\n' +
+    `• Woche: *${de(w)} XP* · Monat: *${de(m)} XP*\n` +
+    `• Trend: ${trend}\n` +
+    `• Rekorde: 🔥 ${de(prog.bestStreak)} Streak · 📅 ${de(eco.daily?.best)} Daily · ✨ ${de(prog.totalXp)} XP\n` +
+    `• Gruppen: ${de(ga.msgs)} Nachrichten · ${de(ga.xp)} GXP in ${de(ga.groups)} Gruppen\n` +
+    `• 🤖 AI: ${aiLine}`;
+}
+/* ── MERGE-END progressstats ── */
+
+/* ── MERGE-START systemReport ── */
+const UNKNOWN = 'UNKNOWN';
+
+function formatBytes(bytes) {
+  const value = Number(bytes);
+  if (!Number.isFinite(value) || value < 0) return UNKNOWN;
+  if (value < 1024) return `${Math.round(value)} B`;
+  const units = ['KB', 'MB', 'GB', 'TB'];
+  let amount = value;
+  let index = -1;
+  do {
+    amount /= 1024;
+    index++;
+  } while (amount >= 1024 && index < units.length - 1);
+  return `${amount.toFixed(amount >= 100 ? 0 : amount >= 10 ? 1 : 2)} ${units[index]}`;
+}
+
+function formatDurationCompact(ms) {
+  const totalSeconds = Math.max(0, Math.floor(Number(ms) / 1000));
+  const days = Math.floor(totalSeconds / 86400);
+  const hours = Math.floor((totalSeconds % 86400) / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  if (days) return `${days}d ${hours}h`;
+  if (hours) return `${hours}h ${minutes}m`;
+  if (minutes) return `${minutes}m ${seconds}s`;
+  return `${seconds}s`;
+}
+
+function wsStatus(sock) {
+  const state = sock?.ws?.readyState;
+  if (state === 1) return ['🟢', 'CONNECTED'];
+  if (state === 0) return ['🟡', 'CONNECTING'];
+  if (state === 2 || state === 3) return ['🔴', state === 2 ? 'CLOSING' : 'CLOSED'];
+  return ['⚪', UNKNOWN];
+}
+
+function safeNumber(value, digits = 1) {
+  return Number.isFinite(Number(value)) ? Number(value).toFixed(digits) : UNKNOWN;
+}
+
+async function buildSystemReport({ db, sock, sessionName = 'hellokitty baby maxi' } = {}) {
+  const [system, memory] = await Promise.all([
+    collectSystem().catch(() => null),
+    Promise.resolve(process.memoryUsage())
+  ]);
+  const stats = systemStats(db || {}, system?.uptimeSec ? system.uptimeSec * 1000 : process.uptime() * 1000);
+  const [wsEmoji, wsLabel] = wsStatus(sock);
+  const dbLoaded = !!db && typeof db === 'object';
+  const systemOk = !!system;
+  const status = systemOk && dbLoaded ? '🥀 ALLES LÄUFT. NIEMAND FREUT SICH.' : '🌧️ DEGRADIERT — TEILDATEN. WIE IMMER.';
+
+  return {
+    status,
+    sessionName,
+    wsEmoji,
+    wsLabel,
+    system,
+    memory,
+    stats,
+    dbLoaded,
+    process: {
+      pid: process.pid,
+      hostname: os.hostname(),
+      execPath: process.execPath,
+      node: process.version,
+      platform: process.platform,
+      arch: process.arch
+    }
+  };
+}
+
+function renderSystemReport(report) {
+  const s = report?.system;
+  const m = report?.memory || {};
+  const stats = report?.stats || {};
+  const p = report?.process || {};
+  const heap = s ? formatBytes(s.heapMb * 1024 * 1024) : formatBytes(m.heapUsed);
+  const rss = s ? formatBytes(s.ramMb * 1024 * 1024) : formatBytes(m.rss);
+  const cpu = s?.cpu != null ? `${safeNumber(s.cpu)} %` : UNKNOWN;
+  const uptime = s?.uptimeSec != null ? formatDurationCompact(s.uptimeSec * 1000) : UNKNOWN;
+  const line = (label, value) => `   ${label.padEnd(15)} ${value}`;
+  const lines = [
+    '╭────────────────────────────────╮',
+    '│ ✦ LOVE•BOT · SYSTEM STATUS     │',
+    '╰────────────────────────────────╯',
+    '',
+    `${report?.status || '⚪ UNKNOWN'}`,
+    '',
+    'SYSTEM',
+    line('OS', s?.platform || UNKNOWN),
+    line('NODE.JS', s?.node || p.node || UNKNOWN),
+    line('ARCH', s?.arch || p.arch || UNKNOWN),
+    line('PID', p.pid ?? UNKNOWN),
+    line('HOSTNAME', p.hostname || UNKNOWN),
+    '',
+    'RESOURCES',
+    line('CPU', cpu),
+    line('RSS', rss),
+    line('HEAP USED', heap),
+    line('EXTERNAL', formatBytes(m.external)),
+    line('UPTIME', uptime),
+    '',
+    'HELLOKITTY BABY MAXI',
+    line('USERS', stats.totalUsers ?? UNKNOWN),
+    line('REGISTERED', stats.registeredUsers ?? UNKNOWN),
+    line('GROUPS', stats.totalGroups ?? UNKNOWN),
+    line('ACTIVE GROUPS', stats.activeGroups ?? UNKNOWN),
+    line('BANS', stats.totalBans ?? UNKNOWN),
+    '',
+    'CONNECTIONS',
+    line('WHATSAPP', `${report?.wsEmoji || '⚪'} ${report?.wsLabel || UNKNOWN}`),
+    line('DATABASE', report?.dbLoaded ? '🟢 LOADED' : '🔴 UNAVAILABLE'),
+    '',
+    `Session ${report?.sessionName || UNKNOWN} · ${new Date().toLocaleTimeString('de-DE')}`
+  ];
+  return lines.join('\n');
+}
+/* ── MERGE-END systemReport ── */
+
+/* ── MERGE-START account ── */
+/* ═══════════════════════════════════════════════════════════════════════
+   💜  L O V E B O T   A C C O U N T   L I F E C Y C L E   v4.0  (account.js)
+   ─────────────────────────────────────────────────────────────────────
+   Self-Service-Account-Löschung ($unregister) mit Zwei-Phasen-Ablauf:
+   Warnung → Code → explizites Bestätigen → atomare Löschung + Backup.
+   • Nur der eigene Account, nur nach explizitem Confirm, mit Ablaufzeit.
+   • Owner blockiert (Notfall nur per ACCOUNT_RULES.allowOwnerUnregister),
+     Admins brauchen zusätzlich das Bestätigungswort.
+   • Alles oder nichts pro Speicher; Backup VOR dem Löschen; Audit danach.
+   • Re-Register danach ist automatisch sauber (frisches registered:false).
+   Import-Richtung: account → waApi + loveplus + lovecore (kein Zyklus).
+   ══════════════════════════════════════════════════════════════════════ */
+
+
+
+
+
+
+
+
+
+/* ── Zentrale Konfiguration ────────────────────────────────────────── */
+const ACCOUNT_RULES = {
+  codeTtlMs: 5 * 60 * 1000,  /* ⏳ Code-Gültigkeit: 5 Minuten */
+  codeDigits: 6,             /* 🔢 Stellen des Bestätigungscodes */
+  adminPhrase: 'LÖSCHEN',    /* ✍️ Doppelbestätigung für Admins/Owner */
+  allowOwnerUnregister: false /* 👑 Owner-Notfalllöschung (nur bewusst aktivieren) */
+};
+
+const HERE = path.dirname(fileURLToPath(import.meta.url));
+const DB_ROOT = path.join(HERE, 'Database');
+const SESSION_ID__maccount = process.env.LOVEBOT_SESSION_ID || 'main';
+const webmailPath = () => path.join(DB_ROOT, SESSION_ID__maccount === 'main' ? 'webmail.json' : `webmail-${SESSION_ID__maccount}.json`);
+const sessionsPath = () => path.join(DB_ROOT, 'websessions.json');
+const auditPath = () => path.join(DB_ROOT, 'admin-actions.jsonl');
+const backupDir = () => path.join(DB_ROOT, 'backups', 'unregister');
+const userDir = (bid) => path.join(DB_ROOT, 'LoveUser', String(bid));
+
+/* ── Pending-State (nur RAM: Bot-Neustart = automatischer Abbruch) ─── */
+const pending = new Map(); /* bid -> { code, expiresAt, createdAt, requiresPhrase, role } */
+
+function sweepPending(now = Date.now()) {
+  for (const [bid, p] of pending) {
+    if (!p || p.expiresAt <= now) pending.delete(bid);
+  }
+}
+
+function userNumbers(profile) {
+  const id = profile?.identity || {};
+  const out = new Set();
+  for (const v of [id.cleanJid, id.cleanLid]) {
+    const s = String(v || '').split('@')[0].split(':')[0].trim();
+    if (s && s !== 'unknown') out.add(s);
+  }
+  return [...out];
+}
+
+const userPart = (v) => String(v || '').split('@')[0].split(':')[0].trim();
+
+function timingEqual(a, b) {
+  const x = String(a || ''), y = String(b || '');
+  if (x.length !== y.length) return false;
+  try {
+    return crypto.timingSafeEqual(Buffer.from(x), Buffer.from(y));
+  } catch (e) { return x === y; }
+}
+
+/* ── Vorschau: was würde gelöscht? (ändert NICHTS) ─────────────────── */
+function deletionPreview(profile) {
+  const bid = profile?.identity?.bid || '';
+  const nums = userNumbers(profile);
+  const has = (v) => nums.includes(userPart(v));
+  const prev = {
+    bid, numbers: nums,
+    profile: false, afk: 0, warns: 0, proposals: 0,
+    plusUser: false, plusCouples: 0, coreUser: false, coreCouples: 0,
+    sessions: 0, pendingMails: 0, married: profile?.love?.married === true,
+    spouseKey: profile?.love?.spouseKey || '',
+    /* 💰 Economy-Bilanz (6.0): alles im Profil, wird mit gelöscht */
+    wallet: Math.max(0, Math.floor(Number(profile?.wallet?.copper) || 0)),
+    bank: Math.max(0, Math.floor(Number(profile?.bank?.copper) || 0)),
+    tx: Array.isArray(profile?.economy?.tx) ? profile.economy.tx.length : 0,
+    dailyBest: Number(profile?.economy?.daily?.best) || 0,
+    inventory: 0,
+    /* 💜 7.0: AI-Memory + Gruppen-Referenzen */
+    aiConvs: 0, aiFacts: 0, groupMembers: 0
+  };
+  if (!bid) return prev;
+  try {
+    const db = readDatabaseStore();
+    prev.profile = !!db.users?.[bid];
+    for (const [k, e] of Object.entries(db.afk || {})) {
+      if (k === bid || has(k) || has(e?.jid) || has(e?.lid)) prev.afk++;
+    }
+    for (const g of Object.values(db.groups || {})) {
+      for (const k of Object.keys(g?.warns || {})) if (has(k)) prev.warns++;
+      for (const k of Object.keys(g?.xp?.members || {})) if (k === bid || has(k)) prev.groupMembers++;
+    }
+    try {
+      const aiSt = JSON.parse(fs.readFileSync('Database/ai.json', 'utf8'));
+      for (const scope of Object.keys(aiSt.conversations || {})) {
+        if (scope === 'dm:' + bid || scope.endsWith(':' + bid)) prev.aiConvs++;
+      }
+      prev.aiFacts = Array.isArray(aiSt.facts?.[bid]) ? aiSt.facts[bid].length : 0;
+    } catch (e) {}
+    for (const [k, p] of Object.entries(db.meta?.marryProposals || {})) {
+      if (!p || typeof p !== 'object') continue;
+      if (has(k) || has(p.toKey) || has(p.toJid) || has(p.toLid) || has(p.fromKey) || has(p.fromJid) || has(p.fromLid)) prev.proposals++;
+    }
+  } catch (e) {}
+  try {
+    const plus = loadPlus();
+    const pu = plus.users?.[bid] || plus.users?.[nums.find((n) => plus.users?.[n]) || ''];
+    prev.plusUser = !!pu;
+    if (pu && pu.inventory && typeof pu.inventory === 'object') {
+      for (const n of Object.values(pu.inventory)) prev.inventory += Math.max(0, Number(n) || 0);
+    }
+    for (const k of Object.keys(plus.couples || {})) {
+      const sides = String(k).split('|');
+      if (sides.some((s) => has(s))) prev.plusCouples++;
+    }
+  } catch (e) {}
+  try {
+    const core = loadCore();
+    prev.coreUser = !!(core.users?.[bid] || nums.some((n) => core.users?.[n]));
+    for (const k of Object.keys(core.couples || {})) {
+      const sides = String(k).split('|');
+      if (sides.some((s) => has(s))) prev.coreCouples++;
+    }
+  } catch (e) {}
+  try {
+    const sess = JSON.parse(fs.readFileSync(sessionsPath(), 'utf8'));
+    for (const s of Object.values(sess || {})) if (has(s?.number)) prev.sessions++;
+  } catch (e) {}
+  try {
+    const mail = JSON.parse(fs.readFileSync(webmailPath(), 'utf8'));
+    for (const m of (mail?.queue || [])) {
+      if (m && m.status !== 'sent' && (has(m.to) || has(m.jid))) prev.pendingMails++;
+    }
+  } catch (e) {}
+  return prev;
+}
+
+/* ── Phase 1: Warnung + Code anfordern ─────────────────────────────── */
+function startUnregister(profile, { isOwner = false, isAdmin = false, now = Date.now() } = {}) {
+  sweepPending(now);
+  const bid = profile?.identity?.bid || '';
+  if (!bid) return { ok: false, reason: 'no-profile' };
+  if (profile?.registration?.registered !== true) return { ok: false, reason: 'not-registered' };
+  if (isOwner && !ACCOUNT_RULES.allowOwnerUnregister) return { ok: false, reason: 'owner-blocked' };
+  const digits = Math.max(4, Math.min(10, ACCOUNT_RULES.codeDigits || 6));
+  const code = String(crypto.randomInt(0, 10 ** digits)).padStart(digits, '0');
+  const requiresPhrase = isOwner || isAdmin;
+  pending.set(bid, {
+    code, createdAt: now, expiresAt: now + ACCOUNT_RULES.codeTtlMs,
+    requiresPhrase, role: isOwner ? 'owner' : (isAdmin ? 'admin' : 'user')
+  });
+  return {
+    ok: true, code, requiresPhrase,
+    expiresAt: now + ACCOUNT_RULES.codeTtlMs,
+    preview: deletionPreview(profile)
+  };
+}
+
+/** Pending-Info für Statusanzeige (NIEMALS den Code herausgeben). */
+function getPendingInfo(bid, now = Date.now()) {
+  sweepPending(now);
+  const p = pending.get(String(bid || ''));
+  if (!p) return null;
+  return { expiresAt: p.expiresAt, requiresPhrase: p.requiresPhrase, role: p.role };
+}
+
+function cancelUnregister(bid, now = Date.now()) {
+  sweepPending(now);
+  return pending.delete(String(bid || ''))
+    ? { ok: true }
+    : { ok: false, reason: 'none' };
+}
+
+/* ── Audit ─────────────────────────────────────────────────────────── */
+function auditAdmin(entry) {
+  const { time, ...rest } = entry || {};
+  void time;
+  return audit(rest);
+}
+function audit(entry) {
+  try {
+    fs.appendFileSync(auditPath(), JSON.stringify({ time: new Date().toISOString(), ...entry }) + '\n', 'utf8');
+    return true;
+  } catch (e) { return false; }
+}
+
+/* ── Phase 2: Bestätigen → Backup → Löschen ────────────────────────── */
+function confirmUnregister(profile, { code = '', phrase = '', actor = '', now = Date.now() } = {}) {
+  const bid = profile?.identity?.bid || '';
+  const p = bid ? pending.get(bid) : null;
+  if (!p) { sweepPending(now); return { ok: false, reason: 'none' }; }
+  if (p.expiresAt <= now) {
+    pending.delete(bid);
+    sweepPending(now);
+    return { ok: false, reason: 'expired' };
+  }
+  sweepPending(now);
+  if (!timingEqual(code, p.code)) return { ok: false, reason: 'bad-code' };
+  if (p.requiresPhrase && String(phrase || '').trim().toUpperCase() !== ACCOUNT_RULES.adminPhrase) {
+    return { ok: false, reason: 'bad-phrase' };
+  }
+  const res = executeUnregister(profile, { actor: actor || ('self:' + bid), now });
+  if (res.ok) pending.delete(bid);
+  return res;
+}
+
+function executeUnregister(profile, { actor = '', now = Date.now() } = {}) {
+  const bid = profile?.identity?.bid || '';
+  if (!bid) return { ok: false, reason: 'no-profile' };
+  const nums = userNumbers(profile);
+  const has = (v) => nums.includes(userPart(v));
+  const stamp = new Date(now).toISOString().replace(/[:.]/g, '-');
+  const backupId = `${bid}--${stamp}.json`;
+  const backup = {
+    meta: { bid, numbers: nums, at: new Date(now).toISOString(), actor, version: 1 },
+    dbUser: null, afk: {}, proposals: {}, warns: {}, plusUser: null, plusCouples: {},
+    coreUser: null, coreCouples: {}, sessions: {}, mails: [], partner: null
+  };
+  const deleted = {
+    profile: 0, afk: 0, warns: 0, proposals: 0, plusUser: 0, plusCouples: 0,
+    coreUser: 0, coreCouples: 0, sessions: 0, mails: 0, partnerFreed: false
+  };
+
+  /* 1) Database.json: User, AFK, Heiratsanträge, Warns */
+  const db = readDatabaseStore();
+  if (db.users?.[bid]) {
+    backup.dbUser = db.users[bid];
+    delete db.users[bid];
+    deleted.profile = 1;
+  }
+  for (const [k, e] of Object.entries(db.afk || {})) {
+    if (k === bid || has(k) || has(e?.jid) || has(e?.lid)) {
+      backup.afk[k] = e; delete db.afk[k]; deleted.afk++;
+    }
+  }
+  const props = db.meta?.marryProposals || {};
+  for (const [k, pr] of Object.entries(props)) {
+    if (!pr || typeof pr !== 'object') continue;
+    if (has(k) || has(pr.toKey) || has(pr.toJid) || has(pr.toLid) || has(pr.fromKey) || has(pr.fromJid) || has(pr.fromLid)) {
+      backup.proposals[k] = pr; delete props[k]; deleted.proposals++;
+    }
+  }
+  const touchedGroups = [];
+  const touchedSet = new Set();
+  for (const [gid, g] of Object.entries(db.groups || {})) {
+    if (g && typeof g.warns === 'object') {
+      for (const k of Object.keys(g.warns)) {
+        if (has(k)) {
+          backup.warns[gid] = backup.warns[gid] || {};
+          backup.warns[gid][k] = g.warns[k];
+          delete g.warns[k];
+          deleted.warns++;
+        }
+      }
+      if (backup.warns[gid] && !touchedSet.has(gid)) { touchedGroups.push(g); touchedSet.add(gid); }
+    }
+    /* 💜 7.0: Gruppen-Member-Referenzen (xp.members) + Treasury-Spuren des Users
+       entfernen (Aggregate bleiben, gbanned-Bans bleiben aus Sicherheit bestehen). */
+    if (g && g.xp && typeof g.xp.members === 'object') {
+      for (const k of Object.keys(g.xp.members)) {
+        if (k === bid || has(k)) {
+          backup.groupMembers = backup.groupMembers || {};
+          backup.groupMembers[gid] = backup.groupMembers[gid] || {};
+          backup.groupMembers[gid][k] = g.xp.members[k];
+          delete g.xp.members[k];
+          deleted.groupMembers = (deleted.groupMembers || 0) + 1;
+        }
+      }
+      if (backup.groupMembers && backup.groupMembers[gid] && !touchedSet.has(gid)) { touchedGroups.push(g); touchedSet.add(gid); }
+    }
+  }
+  /* 💜 7.0: AI-Memory des Users (Conversations, Fakten, Prefs, Stats) — synchron via fs */
+  try {
+    const aiFile = 'Database/ai.json';
+    const aiSt = JSON.parse(fs.readFileSync(aiFile, 'utf8'));
+    backup.aiMemory = { conversations: {}, facts: aiSt.facts?.[bid] || null, prefs: aiSt.prefs?.[bid] || null };
+    for (const scope of Object.keys(aiSt.conversations || {})) {
+      if (scope === 'dm:' + bid || scope.endsWith(':' + bid)) {
+        backup.aiMemory.conversations[scope] = aiSt.conversations[scope];
+        delete aiSt.conversations[scope];
+      }
+    }
+    let aiRemoved = Object.keys(backup.aiMemory.conversations).length;
+    if (aiSt.facts && aiSt.facts[bid] !== undefined) { delete aiSt.facts[bid]; aiRemoved++; }
+    if (aiSt.prefs && aiSt.prefs[bid] !== undefined) { delete aiSt.prefs[bid]; aiRemoved++; }
+    if (aiSt.stats?.byUser && aiSt.stats.byUser[bid] !== undefined) { delete aiSt.stats.byUser[bid]; aiRemoved++; }
+    if (aiRemoved > 0) {
+      fs.writeFileSync(aiFile, JSON.stringify(aiSt), 'utf8');
+      deleted.aiMemory = aiRemoved;
+    }
+  } catch (e) { /* kein AI-Store → nichts zu tun */ }
+  writeDatabaseStore(db);
+  for (const g of touchedGroups) {
+    try { saveGroupProfile(g); } catch (e) {}
+  }
+
+  /* 2) loveplus.json: User + Couples mit exakter Nummern-Beteiligung */
+  try {
+    const plus = loadPlus();
+    plus.users = plus.users || {};
+    for (const k of [bid, ...nums]) {
+      if (plus.users[k]) {
+        backup.plusUser = backup.plusUser || {};
+        backup.plusUser[k] = plus.users[k];
+        delete plus.users[k];
+        deleted.plusUser++;
+      }
+    }
+    for (const k of Object.keys(plus.couples || {})) {
+      if (String(k).split('|').some((s) => has(s))) {
+        backup.plusCouples[k] = plus.couples[k];
+        delete plus.couples[k];
+        deleted.plusCouples++;
+      }
+    }
+    savePlus(plus);
+  } catch (e) {}
+
+  /* 3) lovecore.json: dito */
+  try {
+    const core = loadCore();
+    core.users = core.users || {};
+    for (const k of [bid, ...nums]) {
+      if (core.users[k]) {
+        backup.coreUser = backup.coreUser || {};
+        backup.coreUser[k] = core.users[k];
+        delete core.users[k];
+        deleted.coreUser++;
+      }
+    }
+    for (const k of Object.keys(core.couples || {})) {
+      if (String(k).split('|').some((s) => has(s))) {
+        backup.coreCouples[k] = core.couples[k];
+        delete core.couples[k];
+        deleted.coreCouples++;
+      }
+    }
+    saveCore(core);
+  } catch (e) {}
+
+  /* 4) Partner freigeben (ohne Ghost-Profil zu erzeugen: Bid per Nummer suchen) */
+  const spouseKey = userPart(profile?.love?.spouseKey || '');
+  if (profile?.love?.married === true && spouseKey) {
+    try {
+      const db2 = readDatabaseStore();
+      const hit = Object.entries(db2.users || {}).find(([, u]) =>
+        u?.love?.married === true &&
+        (userPart(u?.identity?.cleanJid) === spouseKey || userPart(u?.identity?.cleanLid) === spouseKey));
+      if (hit) {
+        const [, spouse] = hit;
+        backup.partner = { bid: spouse?.identity?.bid || '', love: spouse?.love ? { ...spouse.love } : null };
+        spouse.love = {
+          ...(spouse.love || {}),
+          married: false, spouseName: null, spouseKey: null, spouseBid: null,
+          marriedAt: null, divorcedAt: new Date(now).toISOString()
+        };
+        db2.users[hit[0]] = spouse;
+        writeDatabaseStore(db2);
+        try {
+          const sp = path.join(userDir(hit[0]), hit[0] + '.json');
+          if (fs.existsSync(sp)) fs.writeFileSync(sp, JSON.stringify(spouse, null, 2), 'utf8');
+        } catch (e) {}
+        deleted.partnerFreed = true;
+      }
+    } catch (e) {}
+  }
+
+  /* 5) LoveUser-Verzeichnis komplett entfernen */
+  try {
+    if (fs.existsSync(userDir(bid))) {
+      fs.rmSync(userDir(bid), { recursive: true, force: true });
+    }
+  } catch (e) {}
+
+  /* 6) Web-Sessions des Users beenden */
+  try {
+    const raw = fs.readFileSync(sessionsPath(), 'utf8');
+    const sess = JSON.parse(raw) || {};
+    let changed = false;
+    for (const [tok, s] of Object.entries(sess)) {
+      if (s && has(s.number)) {
+        backup.sessions[tok] = s; delete sess[tok];
+        deleted.sessions++; changed = true;
+      }
+    }
+    if (changed) fs.writeFileSync(sessionsPath(), JSON.stringify(sess, null, 2), 'utf8');
+  } catch (e) {}
+
+  /* 7) Offene (ungesendete) Webmails an den User verwerfen */
+  try {
+    const raw = fs.readFileSync(webmailPath(), 'utf8');
+    const mail = JSON.parse(raw) || {};
+    const queue = Array.isArray(mail.queue) ? mail.queue : [];
+    const keep = [];
+    for (const m of queue) {
+      if (m && m.status !== 'sent' && (has(m.to) || has(m.jid))) {
+        backup.mails.push(m); deleted.mails++;
+      } else keep.push(m);
+    }
+    if (backup.mails.length) {
+      mail.queue = keep;
+      fs.writeFileSync(webmailPath(), JSON.stringify(mail, null, 2), 'utf8');
+    }
+  } catch (e) {}
+
+  /* 7b) Progression-Events anonymisieren (5.0: bid+name → neutral, Log bleibt für Statistik) */
+  let eventsAnon = 0;
+  try {
+    const evPath = path.join(DB_ROOT, 'events.jsonl');
+    const rawEv = fs.readFileSync(evPath, 'utf8');
+    const lines = rawEv.split('\n');
+    let changed = false;
+    const next = lines.map((ln) => {
+      if (!ln.trim()) return ln;
+      let e = null;
+      try { e = JSON.parse(ln); } catch (err) { return ln; }
+      const eb = String(e?.data?.bid || '');
+      if (eb && (eb === bid || nums.some((n) => n && eb.includes(n)))) {
+        e.data.bid = 'deleted';
+        if (e.data.name) e.data.name = '–';
+        eventsAnon++; changed = true;
+        return JSON.stringify(e);
+      }
+      return ln;
+    });
+    if (changed) fs.writeFileSync(evPath, next.join('\n'), 'utf8');
+  } catch (e) {}
+  deleted.eventsAnon = eventsAnon;
+
+  /* 8) Backup schreiben (enthält alles Entfernte) */
+  let backupOk = false;
+  try {
+    fs.mkdirSync(backupDir(), { recursive: true });
+    fs.writeFileSync(path.join(backupDir(), backupId), JSON.stringify(backup, null, 2), 'utf8');
+    backupOk = true;
+  } catch (e) {}
+
+  /* 9) Audit (mit User-ID, Zeit, Event) */
+  audit({
+    actor: actor || ('self:' + bid), action: 'account.unregister',
+    target: bid, backup: backupOk ? backupId : null,
+    deleted, reason: 'self-service confirmed'
+  });
+
+  return { ok: true, backupId: backupOk ? backupId : null, deleted };
+}
+
+/* ── Notfall-Wiederherstellung (nur Owner, nur via Chat-Confirm) ───── */
+function restoreUnregister(backupId, { actor = '' } = {}) {
+  const raw = String(backupId || '');
+  if (!raw || raw.includes('/') || raw.includes('\\') || raw.includes('..') || !raw.endsWith('.json')) return { ok: false, reason: 'bad-id' };
+  const safe = raw;
+  const file = path.join(backupDir(), safe);
+  if (!file.startsWith(backupDir())) return { ok: false, reason: 'bad-id' };
+  let backup;
+  try {
+    backup = JSON.parse(fs.readFileSync(file, 'utf8'));
+  } catch (e) { return { ok: false, reason: 'not-found' }; }
+  const bid = backup?.meta?.bid || '';
+  if (!bid) return { ok: false, reason: 'bad-backup' };
+  const restored = {};
+  const skipped = [];
+
+  const db = readDatabaseStore();
+  if (backup.dbUser && !db.users[bid]) {
+    db.users[bid] = backup.dbUser; restored.profile = 1;
+  } else if (backup.dbUser) skipped.push('profile(exists)');
+  for (const [k, v] of Object.entries(backup.afk || {})) {
+    if (!db.afk[k]) { db.afk[k] = v; restored.afk = (restored.afk || 0) + 1; }
+    else skipped.push('afk:' + k);
+  }
+  db.meta = db.meta || {};
+  db.meta.marryProposals = db.meta.marryProposals || {};
+  for (const [k, v] of Object.entries(backup.proposals || {})) {
+    if (!db.meta.marryProposals[k]) { db.meta.marryProposals[k] = v; restored.proposals = (restored.proposals || 0) + 1; }
+    else skipped.push('proposal:' + k);
+  }
+  const touched = [];
+  for (const [gid, warns] of Object.entries(backup.warns || {})) {
+    const g = db.groups?.[gid];
+    if (!g) { skipped.push('warns:' + gid + '(no-group)'); continue; }
+    g.warns = (g.warns && typeof g.warns === 'object') ? g.warns : {};
+    for (const [k, v] of Object.entries(warns)) {
+      if (!g.warns[k]) { g.warns[k] = v; restored.warns = (restored.warns || 0) + 1; }
+      else skipped.push(`warns:${gid}:${k}`);
+    }
+    touched.push(g);
+  }
+  if (backup.partner?.bid && db.users[backup.partner.bid] && backup.partner.love) {
+    db.users[backup.partner.bid].love = backup.partner.love;
+    restored.partner = 1;
+  }
+  writeDatabaseStore(db);
+  for (const g of touched) {
+    try { saveGroupProfile(g); } catch (e) {}
+  }
+  try {
+    const sp = path.join(userDir(bid), bid + '.json');
+    if (backup.dbUser && !fs.existsSync(sp)) {
+      fs.mkdirSync(userDir(bid), { recursive: true });
+      fs.writeFileSync(sp, JSON.stringify(backup.dbUser, null, 2), 'utf8');
+      restored.profileFile = 1;
+    } else if (backup.dbUser) skipped.push('profileFile(exists)');
+  } catch (e) { skipped.push('profileFile(err)'); }
+
+  try {
+    const plus = loadPlus();
+    plus.users = plus.users || {};
+    plus.couples = plus.couples || {};
+    for (const [k, v] of Object.entries(backup.plusUser || {})) {
+      if (!plus.users[k]) { plus.users[k] = v; restored.plusUser = (restored.plusUser || 0) + 1; }
+      else skipped.push('plusUser:' + k);
+    }
+    for (const [k, v] of Object.entries(backup.plusCouples || {})) {
+      if (!plus.couples[k]) { plus.couples[k] = v; restored.plusCouples = (restored.plusCouples || 0) + 1; }
+      else skipped.push('plusCouple:' + k);
+    }
+    savePlus(plus);
+  } catch (e) { skipped.push('plus(err)'); }
+  try {
+    const core = loadCore();
+    core.users = core.users || {};
+    core.couples = core.couples || {};
+    for (const [k, v] of Object.entries(backup.coreUser || {})) {
+      if (!core.users[k]) { core.users[k] = v; restored.coreUser = (restored.coreUser || 0) + 1; }
+      else skipped.push('coreUser:' + k);
+    }
+    for (const [k, v] of Object.entries(backup.coreCouples || {})) {
+      if (!core.couples[k]) { core.couples[k] = v; restored.coreCouples = (restored.coreCouples || 0) + 1; }
+      else skipped.push('coreCouple:' + k);
+    }
+    saveCore(core);
+  } catch (e) { skipped.push('core(err)'); }
+
+  audit({
+    actor: actor || 'owner', action: 'account.restore',
+    target: bid, backup: safe, restored, skipped, reason: 'owner emergency restore'
+  });
+  return { ok: true, restored, skipped };
+}
+
+/** Verfügbare Backups (neueste zuerst, für Owner-Übersicht). */
+function listUnregisterBackups(limit = 10) {
+  try {
+    if (!fs.existsSync(backupDir())) return [];
+    return fs.readdirSync(backupDir())
+      .filter((f) => f.endsWith('.json'))
+      .map((f) => {
+        let at = 0, bid = '';
+        try {
+          const st = fs.statSync(path.join(backupDir(), f));
+          at = st.mtimeMs;
+          bid = f.split('--')[0] || '';
+        } catch (e) {}
+        return { id: f, bid, at };
+      })
+      .sort((a, b) => b.at - a.at)
+      .slice(0, Math.max(1, limit));
+  } catch (e) { return []; }
+}
+/* ── MERGE-END account ── */
+
+/* ── MERGE-START lovecore ── */
+/* ═══════════════════════════════════════════════════════════════════════
+   ❤️ L O V E B O T   L O V E   C O R E   2 . 0   (lovecore.js)
+   ─────────────────────────────────────────────────────────────────────
+   Das Herzstück: EIN Panel, das alle bestehenden Systeme zusammenführt
+   (Ehe aus Love.js · Love-XP/Streak/Erinnerungen aus loveplus.js · neu:
+   Nachrichtenzähler, Aktionen, Meilensteine, Daily Love).
+
+   Eigener Speicher: Database/lovecore.json — es wird NICHTS an
+   loveplus.json oder Database.json überschrieben, nur gelesen.
+
+   Prinzip (wie beim Ping): nur echte Zähler. Nichts wird erfunden —
+   was es noch nicht gibt, steht auf 0 und wächst mit jeder Aktion.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+
+
+
+const STORE_PATH__mlovecore = path.join('Database', 'lovecore.json');
+
+/* ─────────────────────────────────────────────────────────────────────
+   Speicher
+   ───────────────────────────────────────────────────────────────────── */
+
+function emptyStore() {
+  return { users: {}, couples: {}, meta: { created: new Date().toISOString(), updated: new Date().toISOString() } };
+}
+
+function loadStore__mlovecore() {
+  try {
+    const raw = JSON.parse(fs.readFileSync(STORE_PATH__mlovecore, 'utf8'));
+    return { ...emptyStore(), ...raw, users: raw.users || {}, couples: raw.couples || {} };
+  } catch (e) {
+    return emptyStore();
+  }
+}
+
+function saveStore__mlovecore(store) {
+  try {
+    fs.mkdirSync(path.dirname(STORE_PATH__mlovecore), { recursive: true });
+    store.meta = { ...(store.meta || {}), updated: new Date().toISOString() };
+    fs.writeFileSync(STORE_PATH__mlovecore, JSON.stringify(store, null, 2), 'utf8');
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   Keys & Zähler
+   ───────────────────────────────────────────────────────────────────── */
+
+/** Gleicher Aufbau wie in loveplus.js, damit beide Module denselben Couple treffen. */
+function coupleKey(a, b) {
+  return [String(a || ''), String(b || '')].filter(Boolean).sort().join('|');
+}
+
+/** Couple-Key aus einem Profil (eigene bid + spouseBid aus Love.js). */
+function coupleKeyForProfile(profile) {
+  const bid = profile?.identity?.bid || '';
+  const spouseBid = profile?.love?.spouseBid || profile?.love?.spouseKey || '';
+  if (!bid || !spouseBid || profile?.love?.married !== true) return null;
+  const clean = (x) => String(x || '').split('jid')[0] || String(x || '');
+  return coupleKey(clean(bid), clean(spouseBid));
+}
+
+/** Alle Befehle, die als „Liebesnachricht“ zählen. */
+const LOVE_ACTIONS = {
+  kiss: { emoji: '💋', label: 'Küsse' },
+  hug: { emoji: '🤗', label: 'Umarmungen' },
+  slap: { emoji: '🖐️', label: 'Ohrfeigen' },
+  compliment: { emoji: '🌹', label: 'Komplimente' },
+  flirt: { emoji: '😘', label: 'Geflirtet' },
+  anmachen: { emoji: '😏', label: 'Anmachen' },
+  confess: { emoji: '💌', label: 'Geständnisse' },
+  confesslove: { emoji: '💖', label: 'Liebesgeständnisse' },
+  romantic: { emoji: '🌹', label: 'Romantik' },
+  goodmorning: { emoji: '🌅', label: 'Guten Morgen' },
+  goodnight: { emoji: '🌙', label: 'Gute Nacht' },
+  gift: { emoji: '🎁', label: 'Geschenke' },
+  letter: { emoji: '💌', label: 'Liebesbriefe' },
+  dateidee: { emoji: '🍽️', label: 'Date-Ideen' }
+};
+
+function isLoveAction(command) {
+  return Object.prototype.hasOwnProperty.call(LOVE_ACTIONS, String(command || '').toLowerCase());
+}
+
+/**
+ * Zählt eine Liebes-Aktion (Nutzer + Paar).
+ * @returns {{user:object, couple:object|null}}
+ */
+function bumpLoveAction({ bid = '', coupleKey: ck = null, kind = '', amount = 1 }) {
+  if (!bid) return { user: null, couple: null };
+  const k = String(kind || '').toLowerCase();
+  const store = loadStore__mlovecore();
+
+  const u = (store.users[bid] ||= { actions: {}, loveMessages: 0, daily: { date: '', kind: '', streak: 0, total: 0 } });
+  u.actions ||= {};
+  u.loveMessages = (Number(u.loveMessages) || 0) + amount;
+  if (LOVE_ACTIONS[k]) u.actions[k] = (Number(u.actions[k]) || 0) + amount;
+
+  let couple = null;
+  if (ck && isLoveAction(k)) {
+    const c = (store.couples[ck] ||= { actions: {}, loveMessages: 0, breakups: 0, unlocked: {} });
+    c.actions ||= {};
+    c.loveMessages = (Number(c.loveMessages) || 0) + amount;
+    c.actions[k] = (Number(c.actions[k]) || 0) + amount;
+    couple = c;
+  }
+
+  saveStore__mlovecore(store);
+  return { user: u, couple };
+}
+
+/** Trennung zählen (aus dem $divorce-Flow). */
+function countBreakup(ck) {
+  if (!ck) return null;
+  const store = loadStore__mlovecore();
+  const c = (store.couples[ck] ||= { actions: {}, loveMessages: 0, breakups: 0, unlocked: {} });
+  c.breakups = (Number(c.breakups) || 0) + 1;
+  saveStore__mlovecore(store);
+  return c;
+}
+
+/** Rohdaten für ein Paar / einen Nutzer. */
+function getCore(bid = '', ck = null) {
+  const store = loadStore__mlovecore();
+  return {
+    user: store.users[bid] || { actions: {}, loveMessages: 0, daily: {} },
+    couple: ck ? (store.couples[ck] || null) : null
+  };
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   Meilensteine
+   ───────────────────────────────────────────────────────────────────── */
+
+const MILESTONES__mlovecore = [
+  { id: 'd7', kind: 'days', target: 7, label: '7 Tage zusammen' },
+  { id: 'd30', kind: 'days', target: 30, label: '30 Tage zusammen' },
+  { id: 'm100', kind: 'messages', target: 100, label: '100 Liebesnachrichten' },
+  { id: 's7', kind: 'streak', target: 7, label: '7 Tage Streak' },
+  { id: 'd100', kind: 'days', target: 100, label: '100 Tage zusammen' },
+  { id: 'm500', kind: 'messages', target: 500, label: '500 Liebesnachrichten' },
+  { id: 's30', kind: 'streak', target: 30, label: '30 Tage Streak' },
+  { id: 'd365', kind: 'days', target: 365, label: '365 Tage zusammen' },
+  { id: 'm1000', kind: 'messages', target: 1000, label: '1.000 Liebesnachrichten' },
+  { id: 'd1000', kind: 'days', target: 1000, label: '1.000 Tage zusammen' }
+];
+
+function milestoneState({ days = 0, messages = 0, streak = 0 } = {}) {
+  const values = { days, messages, streak };
+  return MILESTONES__mlovecore.map((m) => {
+    const cur = values[m.kind] ?? 0;
+    return {
+      ...m,
+      current: cur,
+      done: cur >= m.target,
+      remaining: Math.max(0, m.target - cur)
+    };
+  });
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   Anzeige-Helfer
+   ───────────────────────────────────────────────────────────────────── */
+
+const de__mlovecore = (n) => Number(n || 0).toLocaleString('de__mlovecore-DE');
+
+function bar__mlovecore(percent, len = 12) {
+  const filled = Math.max(0, Math.min(len, Math.round((Number(percent) || 0) / 100 * len)));
+  return '▰'.repeat(filled) + '▱'.repeat(Math.max(0, len - filled));
+}
+
+/** Liebeslevel = Couple-Level aus loveplus (Level L braucht 100·L² Love-XP). */
+function loveLevelFrom(xp = 0) {
+  const level = Math.floor(Math.sqrt(Math.max(0, Number(xp) || 0) / 100));
+  const cur = 100 * level * level;
+  const next = 100 * (level + 1) * (level + 1);
+  const pct = Math.max(0, Math.min(100, Math.round(((Number(xp) - cur) / Math.max(1, next - cur)) * 100)));
+  return { level, pct, cur, next, toNext: Math.max(0, next - Number(xp)) };
+}
+
+function daysBetween(iso) {
+  if (!iso) return 0;
+  const ms = Date.now() - new Date(iso).getTime();
+  return Math.max(0, Math.floor(ms / 86_400_000));
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   ❤️ $love — das Beziehungs-Panel
+   ───────────────────────────────────────────────────────────────────── */
+
+function renderLoveProfile({ profile = {}, snapshot = null, pref = '$', privateChat = false } = {}) {
+  const love = snapshot?.love || {};
+  const bid = profile?.identity?.bid || '';
+  const ck = love.couple?.key || coupleKeyForProfile(profile);
+  const core = getCore(bid, ck);
+
+  const head = [
+    '╔══════════════════════════════╗',
+    '║   ❤️  L O V E   P R O F I L   ║',
+    '╚══════════════════════════════╝',
+    ''
+  ];
+
+  /* ── Single ─────────────────────────────────────────────────────── */
+  if (!love.married) {
+    const sent = core.user?.loveMessages || 0;
+    const top = Object.entries(core.user?.actions || {}).sort((a, b) => b[1] - a[1]).slice(0, 3);
+    return [
+      ...head,
+      '🕊️ *Du bist noch Single*',
+      '',
+      `💌 Liebesnachrichten gesendet: *${de__mlovecore(sent)}*`,
+      top.length
+        ? '🎯 Meiste Aktionen: ' + top.map(([k, n]) => `${LOVE_ACTIONS[k]?.emoji || '·'} ${de__mlovecore(n)}`).join(' · ')
+        : '🎯 Noch keine Aktionen — schreib jemandem was Nettes 💌',
+      '',
+      `💡 *${pref}marry @user* — oder erst mal *${pref}dailylove* für deinen Tages-Impuls.`,
+      `📖 Alle Befehle: *${pref}help*`
+    ].join('\n');
+  }
+
+  /* ── Paar ───────────────────────────────────────────────────────── */
+  const partnerName = love.spouseName || 'Unbekannt';
+  const ownName = profile?.registration?.name || profile?.identity?.username || 'Du';
+  const days = love.daysTogether ?? daysBetween(love.marriedAt);
+  const c = love.couple || { loveXp: 0, level: 0, streak: 0, memories: 0 };
+  const lv = loveLevelFrom(c.loveXp);
+  const messages = core.couple?.loveMessages || 0;
+  const breakups = core.couple?.breakups || 0;
+  const actions = core.couple?.actions || {};
+  const totalActions = Object.values(actions).reduce((a, b) => a + Number(b || 0), 0);
+  const topActions = Object.entries(actions).sort((a, b) => b[1] - a[1]).slice(0, 3);
+
+  const ms = milestoneState({ days, messages, streak: c.streak || 0 });
+  const doneMs = ms.filter((m) => m.done);
+  const nextMs = ms.filter((m) => !m.done).slice(0, 3);
+
+  const lines = [
+    ...head,
+    `*${ownName}* ❤️ *${partnerName}*`,
+    '',
+    `💕 *Liebeslevel ${lv.level}*`,
+    `   \`${bar__mlovecore(lv.pct)}\` ${lv.pct}%`,
+    `   ${de__mlovecore(c.loveXp)} Love-XP · noch ${de__mlovecore(lv.toNext)} bis Level ${lv.level + 1}`,
+    '',
+    `🔥 Streak: *${de__mlovecore(c.streak)} Tag(e)*`,
+    `💌 Liebesnachrichten: *${de__mlovecore(messages)}*`,
+    `💍 Zusammen seit: *${de__mlovecore(days)} Tag(en)*${love.marriedAt ? ` _(seit ${new Date(love.marriedAt).toLocaleDateString('de__mlovecore-DE')})_` : ''}`,
+    `✨ Erinnerungen: ${de__mlovecore(c.memories)} · 💒 Ehen: ${de__mlovecore(love.marriages || 1)} · 💔 Trennungen: ${de__mlovecore(breakups)}`,
+    '',
+    '🎯 *GEMEINSAME AKTIONEN*'
+  ];
+
+  lines.push(totalActions
+    ? `   ${de__mlovecore(totalActions)} insgesamt — ` + topActions.map(([k, n]) => `${LOVE_ACTIONS[k]?.emoji || '·'} ${de__mlovecore(n)}`).join(' · ')
+    : '   Noch keine — *' + pref + 'kiss*, *' + pref + 'hug*, *' + pref + 'compliment* zählen alle mit 💗');
+
+  lines.push('', '🏆 *MEILENSTEINE*');
+  if (doneMs.length) {
+    for (const m of doneMs.slice(-6)) lines.push(`✅ ${m.label}`);
+  } else {
+    lines.push('   Noch keine — die ersten 7 Tage sind die leichtesten 💪');
+  }
+  for (const m of nextMs) {
+    const unit = m.kind === 'days' ? 'Tage' : m.kind === 'streak' ? 'Tage Streak' : 'Nachrichten';
+    lines.push(`🔒 ${m.label} _(noch ${de__mlovecore(m.remaining)} ${unit})_`);
+  }
+
+  lines.push('', `💡 Streak halten mit *${pref}kiss* · *${pref}hug* · *${pref}compliment* · täglich *${pref}lovebonus*`);
+  if (!privateChat) lines.push('🔒 _Stadt/Alter aus Datenschutzgründen hier ausgeblendet — im Privatchat sichtbar._');
+
+  return lines.join('\n');
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   💞 $partner — Kurzversion
+   ───────────────────────────────────────────────────────────────────── */
+
+function renderPartner({ profile = {}, snapshot = null, pref = '$' } = {}) {
+  const love = snapshot?.love || {};
+  if (!love.married) {
+    return '> 💞 *KEIN PARTNER*\n\nDu bist aktuell Single. 💌\nMit *' + pref + 'marry @user* kannst du jemanden fragen.';
+  }
+  const c = love.couple || {};
+  const lv = loveLevelFrom(c.loveXp || 0);
+  const days = love.daysTogether ?? daysBetween(love.marriedAt);
+  const ck = c.key || coupleKeyForProfile(profile);
+  const core = getCore(profile?.identity?.bid || '', ck);
+
+  return [
+    '> 💞 *DEIN PARTNER*',
+    '',
+    `❤️ *${love.spouseName || 'Unbekannt'}*`,
+    `💕 Liebeslevel ${lv.level} (${lv.pct}% bis Level ${lv.level + 1})`,
+    `🔥 Streak: ${de__mlovecore(c.streak || 0)} Tag(e)`,
+    `💌 Nachrichten: ${de__mlovecore(core.couple?.loveMessages || 0)}`,
+    `💍 Zusammen seit ${de__mlovecore(days)} Tag(en)`,
+    '',
+    `💡 Details: *${pref}love* · Jahrestag: *${pref}anniversary*`
+  ].join('\n');
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   🌹 $dailylove — täglicher Impuls
+   ───────────────────────────────────────────────────────────────────── */
+
+const DAILY = {
+  tipp: [
+    'Manchmal braucht Liebe keine großen Worte — eine kleine Aufmerksamkeit reicht.',
+    'Frag heute mal, wie der Tag wirklich war. Und hör zu, ohne zu antworten.',
+    'Ein „Ich denk an dich“ um 15:47 Uhr wirkt stärker als jeden Morgen.',
+    'Streit ist kein Gegner der Liebe — Schweigen ist es.',
+    'Erinnere dich an den Grund, warum ihr euch gewählt habt.',
+    'Liebe wächst nicht durch Geschenke, sondern durch Wiederholung.',
+    'Sag heute etwas, das du sonst nur denkst.',
+    'Gemeinsame Rituale schlagen große Gesten.',
+    'Nähe braucht keine Zeit, sie braucht Aufmerksamkeit.',
+    'Wer zuhört, gewinnt. Immer.'
+  ],
+  compliment: [
+    'Du hast ein Lachen, das andere ansteckt. ❤️',
+    'Du bist viel stärker, als du selbst glaubst.',
+    'Mit dir fühlt sich Zuhause nicht nach Ort an, sondern nach Mensch.',
+    'Du machst die Welt ein bisschen weniger laut.',
+    'Du bist jemand, dem man gerne zuhört.',
+    'Deine Art zu lieben ist selten. Behalt sie.',
+    'Du bist schön — auch und gerade, wenn du müde bist.',
+    'Du schaffst Dinge, vor denen andere weglaufen.',
+    'Du bist der Grund, warum jemand heute lächelt.',
+    'Du bist genug. Genau so.'
+  ],
+  challenge: [
+    'Schreib deinem Partner eine Nachricht, die nur aus einem Emoji besteht — er/sie muss es deuten.',
+    'Nenne drei Dinge, die du heute an deinem Partner bewundert hast.',
+    'Frag: „Was kann ich heute für dich tun?“ — und tu es dann.',
+    'Schick ein Lied, das beschreibt, wie du dich heute fühlst.',
+    'Erzähl von dem Moment, in dem du gemerkt hast: Das ist es.',
+    'Mach ein Foto von etwas, das dich an deinen Partner erinnert.',
+    'Sag heute „Danke“ für etwas, das du sonst als selbstverständlich nimmst.',
+    'Plan ein Date für nächste Woche — und überlass die Wahl dem anderen.',
+    'Schreib auf, was du in 5 Jahren gemeinsam machen willst.',
+    'Frag nach dem schönsten Moment dieser Woche.'
+  ],
+  quote: [
+    '„Liebe ist nicht das, was man erwartet zu bekommen, sondern das, was man bereit ist zu geben.“ — Katharine Hepburn',
+    '„Wir lieben nicht, weil wir jemanden finden, der perfekt ist, sondern weil wir lernen, das Unperfekte zu sehen.“ — Sam Keen',
+    '„Das größte Glück ist, geliebt zu werden, ohne es erzwingen zu müssen.“ — unbekannt',
+    '„Liebe besteht aus zwei Einsamkeiten, die sich schützen und begrenzen.“ — Rainer Maria Rilke',
+    '„Man sieht nur mit dem Herzen gut.“ — Antoine de__mlovecore Saint-Exupéry',
+    '„Nähe entsteht, wenn zwei Menschen aufhören, sich zu beweisen.“ — unbekannt',
+    '„Die Liebe ist die einzige Freiheit, die keine Grenzen kennt.“ — unbekannt',
+    '„Zusammen sein heißt nicht, gleich zu sein.“ — unbekannt',
+    '„Vertrauen ist das Papier, auf dem Liebe schreibt.“ — unbekannt',
+    '„Jede Liebe braucht Pflege. Auch die, die von selbst kam.“ — unbekannt'
+  ]
+};
+
+const KINDS = [
+  { id: 'tipp', emoji: '❤️', title: 'Dein heutiger Love-Tipp' },
+  { id: 'compliment', emoji: '🌹', title: 'Dein heutiges Kompliment' },
+  { id: 'challenge', emoji: '🎯', title: 'Deine heutige Challenge' },
+  { id: 'quote', emoji: '💬', title: 'Dein heutiges Zitat' }
+];
+
+function todayKey(d = new Date()) {
+  return d.toISOString().slice(0, 10); /* UTC-Tag, stabil & ohne TZ-Probleme */
+}
+
+function hash(str = '') {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) >>> 0;
+  return h;
+}
+
+/**
+ * Tagesimpuls — pro Kalendertag genau einer, stabil (gleicher Tag = gleicher Text).
+ * @returns {{ok:boolean, kind:object, text:string, streak:number, reward:object, nextInMs:number}}
+ */
+function claimDailyLove(bid = '') {
+  if (!bid) return { ok: false, error: 'kein Profil' };
+  const store = loadStore__mlovecore();
+  const u = (store.users[bid] ||= { actions: {}, loveMessages: 0, daily: { date: '', kind: '', streak: 0, total: 0 } });
+  u.daily ||= { date: '', kind: '', streak: 0, total: 0 };
+
+  const today = todayKey();
+  const yesterday = todayKey(new Date(Date.now() - 86_400_000));
+
+  if (u.daily.date === today) {
+    const kind = KINDS.find((k) => k.id === u.daily.kind) || KINDS[0];
+    const pool = DAILY[kind.id];
+    const text = pool[hash(bid + today) % pool.length];
+    const now = new Date();
+    const next = new Date(Date.now() + 86_400_000);
+    const nextUtcMidnight = Date.UTC(next.getUTCFullYear(), next.getUTCMonth(), next.getUTCDate()) - now.getTime();
+    return { ok: false, kind, text, streak: u.daily.streak || 0, reward: { xp: 0, copper: 0 }, nextInMs: Math.max(0, nextUtcMidnight), already: true };
+  }
+
+  /* Streak: gestern geholt? weiterzählen, sonst neu starten */
+  u.daily.streak = u.daily.date === yesterday ? (Number(u.daily.streak) || 0) + 1 : 1;
+  u.daily.date = today;
+  u.daily.total = (Number(u.daily.total) || 0) + 1;
+
+  const kind = KINDS[hash(bid + 'kind' + today) % KINDS.length];
+  const pool = DAILY[kind.id];
+  const text = pool[hash(bid + today) % pool.length];
+  u.daily.kind = kind.id;
+
+  saveStore__mlovecore(store);
+
+  return {
+    ok: true,
+    kind,
+    text,
+    streak: u.daily.streak,
+    reward: { xp: 25, copper: 50 },
+    nextInMs: 86_400_000,
+    total: u.daily.total
+  };
+}
+
+function renderDailyLove(claim, { pref = '$' } = {}) {
+  const head = [
+    '╔══════════════════════════════╗',
+    '║   🌹  D A I L Y   L O V E    ║',
+    '╚══════════════════════════════╝',
+    ''
+  ];
+  if (!claim) return [...head, '❌ Konnte deinen Tagesimpuls nicht laden.'].join('\n');
+
+  const body = [
+    `${claim.kind.emoji} *${claim.kind.title}*`,
+    '',
+    `„${claim.text}“`,
+    '',
+    `🔥 Serie: *${claim.streak} Tag(e)*${claim.total ? ` · insgesamt ${de__mlovecore(claim.total)}` : ''}`
+  ];
+
+  if (claim.ok) {
+    body.push(`✨ *+${claim.reward.xp} XP* · *+${claim.reward.copper} 🤎 Kupfer*`);
+    body.push('', `💡 Morgen wieder: *${pref}dailylove*`);
+  } else {
+    const hours = Math.floor((claim.nextInMs || 0) / 3_600_000);
+    const mins = Math.round(((claim.nextInMs || 0) % 3_600_000) / 60_000);
+    body.push(`⏳ _Heute schon abgeholt — nächster Impuls in ca. ${hours} Std. ${mins} Min (Tag wechselt 00:00 UTC)._`);
+  }
+  return [...head, ...body].join('\n');
+}
+/* ── MERGE-END lovecore ── */
+/* 💔 gerettete Aliase aus account.js (lovecore ist jetzt hier drin) */
+const loadCore = loadStore;
+const saveCore = saveStore;
+
+
+/* ── MERGE-START pingcmd ── */
+/* ═══════════════════════════════════════════════════════════════════════
+   🏓 L O V E B O T   P I N G   (pingcmd.js)
+   ─────────────────────────────────────────────────────────────────────
+   $ping           → kompletter Live-Report:
+                     · Bot-Ping (WebSocket / IQ / Sende-Roundtrip)
+                     · WEBSITE-PING auf maxichen.de & maxichen.gamebot.me
+                     · Netzwerk-Ping (ICMP)
+                     · Verbindungsaufbau (DNS · TCP · TLS · TTFB)
+                     · Edge-Infos (echte öffentliche IP)
+                     · Speed (klein, Standard) und Systemwerte
+                     · Health-Score + erkannte Probleme
+   $ping <url>     → Webseiten-Ping für eine beliebige Adresse
+   $ping full      → zusätzlich großer Speedtest (24 MB down / 8 MB up)
+   $ping nospeed   → ohne Speedtest (nur Latenz/Websites/Netzwerk)
+
+   Prinzip: ALLE Werte sind gemessen (netping.js). Was nicht messbar. ist,
+   wird als „nicht messbar.“ + Grund angezeigt — nie geraten.
+
+   Jede Messung läuft isoliert: Schlägt EIN Wert fehl (z. B. Website B
+   mit Timeout), kommt trotzdem ein vollständiger Report — der Fehler
+   steht dann als 🔴-Zeile + Eintrag unter ⚠️ ISSUES im Bericht.
+
+   Bewertung: Jede Kennzahl bekommt eine aus dem MESSWERT abgeleitete
+   Bewertung (🟢 Excellent/Good · 🟡 Fair · 🟠 Slow · 🔴 Critical).
+   Daraus wird ein gewichteter ❤️ Health-Score (0–100 %) berechnet.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+
+
+
+
+
+
+
+/* Die Websites, die bei $ping (ohne Argument) immer mitgepingt werden. */
+const DEFAULT_SITES = ['maxichen.de', 'maxichen.gamebot.me'];
+
+/* ICMP-Ziele für den Netzwerk-Check (öffentliche Resolver + WhatsApp-Web). */
+const ICMP_TARGETS = ['1.1.1.1', '8.8.8.8', 'web.whatsapp.net'];
+
+/* Referenz-Host für den Verbindungsaufbau (DNS · TCP · TLS · TTFB). */
+const CONN_REF_HOST = 'cloudflare.com';
+const CONN_REF_URL = 'https://cloudflare.com/cdn-cgi/trace';
+
+/* ═══════════════════════════════════════════════════════════════════════
+   STATUSBEWERTUNG — jede Bewertung entsteht aus dem echten Messwert.
+   Schwellen sind bewusst dokumentiert, damit sie nachvollziehbar bleiben.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+const RATINGS = {
+  excellent: { key: 'excellent', emoji: '🥀', label: 'Geht so', score: 100 },
+  good:      { key: 'good',      emoji: '🌧️', label: 'Okay-ish',  score: 85 },
+  fair:      { key: 'fair',      emoji: '💧', label: 'Meh',       score: 65 },
+  slow:      { key: 'slow',      emoji: '💔', label: 'Müde',      score: 40 },
+  critical:  { key: 'critical',  emoji: '🖤', label: 'Kaputt',    score: 15 }
+};
+
+/* Schwellen „kleiner = besser“: [excellentMax, goodMax, fairMax, slowMax].
+   Alles darüber = Critical. Einheit ms, außer anders angegeben. */
+const TH = {
+  bot:         [120, 250, 500, 1000],  // WS-/IQ-Ping, Sende-RTT (WA-Roundtrips)
+  siteTotal:   [400, 900, 1800, 3500], // Gesamt-Requestzeit einer Website
+  ttfb:        [200, 500, 1000, 2000], // Zeit bis zum ersten Byte
+  dns:         [40, 100, 250, 600],    // DNS-Auflösung
+  tcp:         [60, 150, 350, 800],    // TCP-Connect (Handshake)
+  tls:         [100, 250, 500, 1200],  // reiner TLS-Handshake
+  icmp:        [30, 80, 160, 350],     // ICMP Ø-Latenz
+  ramPct:      [50, 70, 85, 95],       // Heap-Auslastung in %
+  loadPerCore: [0.5, 1.0, 2.0, 4.0]    // Load average pro CPU-Kern
+};
+
+/* Schwellen „größer = besser“ (Mbit/s): [criticalUnter, slowUnter, fairUnter, goodUnter] */
+const TH_SPEED_DOWN = [2, 8, 20, 50];
+const TH_SPEED_UP = [1, 4, 10, 20];
+
+function rateLowIsGood(value, table) {
+  if (value == null || !isFinite(value)) return null;
+  const [e, g, f, s] = table;
+  if (value <= e) return RATINGS.excellent;
+  if (value <= g) return RATINGS.good;
+  if (value <= f) return RATINGS.fair;
+  if (value <= s) return RATINGS.slow;
+  return RATINGS.critical;
+}
+
+function rateHighIsGood(value, [critBelow, slowBelow, fairBelow, goodBelow]) {
+  if (value == null || !isFinite(value)) return null;
+  if (value < critBelow) return RATINGS.critical;
+  if (value < slowBelow) return RATINGS.slow;
+  if (value < fairBelow) return RATINGS.fair;
+  if (value < goodBelow) return RATINGS.good;
+  return RATINGS.excellent;
+}
+
+/* Paketverlust in %: Jeder Verlust über 0 ist auffällig, über 25 % kritisch. */
+function rateLoss(pct) {
+  if (pct == null || !isFinite(pct)) return null;
+  if (pct <= 0) return RATINGS.excellent;
+  if (pct <= 10) return RATINGS.fair;
+  if (pct <= 25) return RATINGS.slow;
+  return RATINGS.critical;
+}
+
+/* Schlechtere von zwei Bewertungen (für kombinierte Kennzahlen). */
+function worse(a, b) {
+  if (!a) return b;
+  if (!b) return a;
+  return a.score <= b.score ? a : b;
+}
+
+const dot = (rating) => (rating ? rating.emoji : '⚪');
+
+/* Trennlinie für den Text-Report (dezent, bricht nicht um) */
+const RULE = '┄'.repeat(26);
+
+/* ═══════════════════════════════════════════════════════════════════════
+   HEALTH SCORE — gewichteter Mittelwert echter Teil-Scores (0–100).
+   Komponenten: Bot 25 · Websites 25 · Netzwerk 15 · Verbindung 10 ·
+   Speed 10 · System 15. Score null = bewusst übersprungen (z. B. Speed
+   bei „nospeed“) → Gewicht wird auf die restlichen verteilt.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+const HEALTH_WEIGHTS = { bot: 25, websites: 25, network: 15, connection: 10, speed: 10, system: 15 };
+
+function computeHealth(components) {
+  const used = (components || []).filter((cm) => cm && cm.score != null && isFinite(cm.score));
+  const totalW = used.reduce((a, cm) => a + (cm.weight || 0), 0);
+  if (!totalW) return { score: 0, rating: RATINGS.critical, components: components || [] };
+  const score = Math.max(0, Math.min(100,
+    Math.round(used.reduce((a, cm) => a + cm.weight * cm.score, 0) / totalW)));
+  const rating = score >= 90 ? RATINGS.excellent
+    : score >= 75 ? RATINGS.good
+      : score >= 55 ? RATINGS.fair
+        : score >= 35 ? RATINGS.slow
+          : RATINGS.critical;
+  return { score, rating, components: components || [] };
+}
+
+function healthBar(score, len = 20) {
+  const s = Math.max(0, Math.min(100, Number(score) || 0));
+  const filled = Math.round((s / 100) * len);
+  return '█'.repeat(filled) + '░'.repeat(Math.max(0, len - filled));
+}
+
+/* ---------- Formatter ------------------------------------------------ */
+
+const fmtMs = (v) => (v == null ? null : `${Math.round(v)} ms`);
+const fmtMsFine = (v) => (v == null ? null : `${(Math.round(v * 10) / 10).toFixed(1)} ms`);
+const fmtMbps = (mbps) => (mbps >= 1000 ? `${(mbps / 1000).toFixed(2)} Gbit/s` : `${mbps.toFixed(2)} Mbit/s`);
+function fmtBytes(bytes) {
+  if (bytes == null || !isFinite(bytes)) return '—';
+  if (bytes >= 1024 * 1024) return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
+  if (bytes >= 1024) return `${(bytes / 1024).toFixed(0)} KB`;
+  return `${bytes} B`;
+}
+function fmtRange(st) {
+  if (!st) return null;
+  return `Ø ${Math.round(st.avg)} · ${Math.round(st.min)}–${Math.round(st.max)} · Jitter ${Math.round(st.jitter)}`;
+}
+
+/* ---------- Nachricht senden / bearbeiten ---------------------------- */
+
+async function editText(sock, jid, key, text) {
+  const edited = generateWAMessageFromContent(jid, proto.Message.fromObject({ conversation: text }), {});
+  const wrapper = generateWAMessageFromContent(jid, proto.Message.fromObject({
+    protocolMessage: { key, type: 14, editedMessage: edited.message }
+  }), {});
+  return sock.relayMessage(jid, wrapper.message, { messageId: wrapper.key.id });
+}
+
+async function put(sock, from, msg, key, text) {
+  if (key) {
+    try { await editText(sock, from, key, text); return key; } catch (e) {}
+  }
+  try {
+    const s = await sock.sendMessage(from, { text }, { quoted: msg });
+    return s?.key || null;
+  } catch (e) {
+    return null;
+  }
+}
+
+/* ---------- Modus erkennen ------------------------------------------- */
+
+const FLAGS = new Set(['full', 'speed', 'nospeed', 'kurz', 'schnell', 'web', 'site']);
+
+function looksLikeHost(token = '') {
+  const t = String(token).trim();
+  if (/^https?:\/\//i.test(t)) return true;
+  /* Host, optional mit Port/Pfad/Query (github.com/maximilinschule09-rgb/LoveBot) */
+  if (/^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,}(?:[:/?#].*)?$/i.test(t)) return true;
+  /* localhost / IP-Adressen */
+  if (/^localhost(?:[:]\d+)?(?:[\/?#].*)?$/i.test(t)) return true;
+  return /^\d{1,3}(?:\.\d{1,3}){3}(?:[:]\d+)?(?:[\/?#].*)?$/.test(t);
+}
+
+function normalizeUrl(token = '') {
+  const t = String(token).trim();
+  if (/^https?:\/\//i.test(t)) return t;
+  return 'https://' + t.replace(/^\/+/, '');
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   FEHLER-ISOLATION — keine Einzelmessung darf den Report abbrechen.
+   safeBlock fängt alles ab und liefert einen ehrlichen Fallback.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+async function safeBlock(fn, fallback) {
+  try {
+    return await fn();
+  } catch (e) {
+    const err = String(e?.message || e || 'unbekannter Fehler').slice(0, 80);
+    return typeof fallback === 'function' ? fallback(err) : fallback;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   WEBSITE-MESSUNG (eine Adresse → alles was man wissen will)
+   ═══════════════════════════════════════════════════════════════════════ */
+
+async function probeSite(rawHost) {
+  const url = normalizeUrl(rawHost);
+  let host = '';
+  try { host = new URL(url).hostname; } catch (e) { host = String(rawHost); }
+  const [probes, icmp, dns] = await Promise.all([
+    safeBlock(() => sample(() => httpProbe(url, { timeoutMs: 12000 }), 3, 200), []),
+    safeBlock(() => icmpPing(host, { count: 3, timeoutMs: 9000 }),
+      { ok: false, host, error: 'Messung abgebrochen' }),
+    safeBlock(() => dnsPing(host, 6000),
+      { ok: false, hostname: host, error: 'Messung abgebrochen' })
+  ]);
+  const okProbes = (probes || []).filter((p) => p && p.ok);
+  return { host, url, probes: probes || [], okProbes, icmp, dns };
+}
+
+/* Webseiten-Ping als eigenständiger Befehl:  $ping <url>  */
+async function websitePing(sock, from, msg, rawUrl) {
+  const url = normalizeUrl(rawUrl);
+  let host = '';
+  try { host = new URL(url).hostname; } catch (e) { host = String(rawUrl); }
+
+  let key = null;
+  try {
+    const s = await sock.sendMessage(from, { text: `> 🥀 *website-ping* · ${host} … vielleicht antwortet ja jemand …` }, { quoted: msg });
+    key = s?.key || null;
+  } catch (e) {}
+
+  const { probes, okProbes, icmp, dns } = await probeSite(host);
+
+  if (!okProbes.length) {
+    const err = probes?.[0]?.error || 'unbekannter Fehler';
+    /* 💎 Liquid-Glass-Karte auch im OFFLINE-Fall (Zusatz, mit Fallback) */
+    try {
+      const card = await renderWebsiteCard({ host, url, okProbes, probes, icmp, dns });
+      if (card) {
+        await sock.sendMessage(from, {
+          image: card.png,
+          mimetype: 'image/png',
+          caption: `🖤 *website offline.* · ${host} · wie immer`
+        }, { quoted: msg });
+      }
+    } catch (cardErr) { /* Karte optional — Text kommt immer */ }
+    await put(sock, from, msg, key,
+      `> 🖤 *website offline.* niemand öffnet.\n\n` +
+      `• *URL:* ${url}\n` +
+      `• *status:* 🖤 offline. wie alle. _(0/3 versuche ok)_\n` +
+      `• *Grund:* ${err}\n` +
+      (dns.ok ? `• *DNS:* ${dns.address} (${fmtMsFine(dns.ms)})\n` : `• *DNS:* ${dns.error}\n`) +
+      (icmp.ok ? `• *ICMP:* ${fmtMsFine(icmp.avg)}\n` : `• *ICMP:* ${icmp.error}\n`) +
+      `\n💡 _Stimmt die Adresse? Manche Server blockieren Bots._`);
+    console.log(c.bold + c.brightRed + `[ping] Website-Ping ${host}: OFFLINE (${err}).` + c.reset);
+    return;
+  }
+
+  const L = [];
+  const totalStats = statsOf(okProbes.map((p) => p.totalMs));
+  const verdict = rateLowIsGood(totalStats?.avg, TH.siteTotal);
+  const okFrac = `${okProbes.length}/${probes.length}`;
+  L.push(`🥀 *website-ping.* — ${host} · vielleicht antwortet ja jemand …`);
+  L.push(RULE);
+  L.push(`│ • *URL* › ${url}`);
+  L.push(`│ • *IP* › ${okProbes[okProbes.length - 1].address || 'unbekannt'}${dns.ok && dns.ms != null ? `  _(DNS ${fmtMsFine(dns.ms)})_` : ''}`);
+  L.push(`│ • *Verdict* › ${dot(verdict)} ${verdict ? verdict.label : '—'} _(Ø ${totalStats ? Math.round(totalStats.avg) : '?'} ms · ${okFrac} OK)_`);
+  L.push('');
+  L.push('⏳ *zeiten · vergehen*  _(letzte messung · Ø · min–max aus 3 läufen)_');
+  L.push(RULE);
+  const rows = [
+    ['DNS', (p) => p.dnsMs, TH.dns],
+    ['TCP', (p) => p.tcpMs, TH.tcp],
+    ['TLS', (p) => (p.tlsMs != null && p.tcpMs != null ? p.tlsMs - p.tcpMs : null), TH.tls],
+    ['TTFB', (p) => p.ttfbMs, TH.ttfb],
+    ['Gesamt', (p) => p.totalMs, TH.siteTotal]
+  ];
+  for (const [name, keyOf, table] of rows) {
+    const st = statsOf(okProbes.map(keyOf));
+    const r = st ? rateLowIsGood(st.avg, table) : null;
+    L.push(st
+      ? `│ ${dot(r)} ${name.padEnd(7)} › ${fmtMs(st.last).padEnd(8)}  _(Ø ${Math.round(st.avg)} ms · ${Math.round(st.min)}–${Math.round(st.max)})_`
+      : `│ ⚪ ${name.padEnd(7)} › nicht messbar.`);
+  }
+  L.push('');
+  const last = okProbes[okProbes.length - 1];
+  L.push('📄 *antwort · falls überhaupt*');
+  L.push(RULE);
+  L.push(`│ Status  › ${last.status} ${last.statusText || ''}`);
+  L.push(`│ HTTP    › ${last.httpVersion || '—'}`);
+  L.push(`│ Server  › ${last.server || '—'}`);
+  L.push(`│ Typ     › ${(last.contentType || '—').split(';')[0]}`);
+  L.push(`│ Größe   › ${fmtBytes(last.bytes)}`);
+  if (last.location) L.push(`│ Redirect › ${last.location}`);
+  L.push('');
+  L.push('🌧️ *icmp · echo ins leere*');
+  L.push(RULE);
+  if (icmp.ok) {
+    const rAvg = rateLowIsGood(icmp.avg, TH.icmp);
+    const rLoss = rateLoss(icmp.lossPct);
+    L.push(`│ ${dot(worse(rAvg, rLoss))} ${host.length > 12 ? host.slice(0, 12) + '…' : host.padEnd(7)} › ${fmtMsFine(icmp.avg)}  _(min ${icmp.min} / max ${icmp.max} · ${icmp.lossPct}% Verlust)_`);
+  } else {
+    L.push(`│ 🖤 icmp › nicht messbar. passt. _(${icmp.error})_`);
+  }
+  L.push('');
+  L.push(`🌧️ _alles echt gemessen · ${new Date().toLocaleTimeString('de-DE')} · niemand schaut zu_`);
+
+  /* 💎 LIQUID-GLASS-KARTE (Zusatz) — dieselben Messwerte als Glas-Karte.
+     Fällt das Rendering aus, bleibt der Text-Report vollständig allein. */
+  try {
+    const card = await renderWebsiteCard(
+      { host, url, okProbes, probes, icmp, dns },
+      { dateLabel: new Date().toLocaleTimeString('de-DE') }
+    );
+    if (card) {
+      await sock.sendMessage(from, {
+        image: card.png,
+        mimetype: 'image/png',
+        caption: `🥀 *website-ping.* · ${host} · alle messwerte in der nachricht. niemand liest sie 💔`
+      }, { quoted: msg });
+    }
+  } catch (cardErr) {
+    console.log(c.bold + c.brightYellow + `[ping] Glass-Card übersprungen (${cardErr?.message || cardErr}).` + c.reset);
+  }
+
+  await put(sock, from, msg, key, L.join('\n'));
+  console.log(c.bold + c.brightGreen + `[ping] Website-Ping ${host}: TTFB ${statsOf(okProbes.map((p) => p.ttfbMs)) ? Math.round(statsOf(okProbes.map((p) => p.ttfbMs)).avg) : '?'} ms.` + c.reset);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   MESSBLÖCKE — jeder Block ist isoliert; keiner wirft je.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+function wsStateInfo(sock) {
+  const ws = sock?.ws;
+  if (!ws) return { readyState: null, label: 'unbekannt', open: false, detail: 'kein WebSocket-Handle' };
+  const rs = ws.readyState;
+  const names = { 0: 'CONNECTING', 1: 'OPEN', 2: 'CLOSING', 3: 'CLOSED' };
+  const label = names[rs] != null ? names[rs] : `readyState ${rs}`;
+  return { readyState: rs, label, open: rs === 1, detail: `readyState ${rs}` };
+}
+
+async function measureBot(sock) {
+  const [wsSamples, iqSamples, echo] = await Promise.all([
+    safeBlock(() => sample(() => wsPing(sock, 4000), 3, 120), []),
+    safeBlock(() => sample(() => iqPing(sock, 6000), 3, 120), []),
+    safeBlock(() => sendEchoPing(sock, { timeoutMs: 8000 }),
+      { ok: false, error: 'Messung abgebrochen' })
+  ]);
+  const wsOk = (wsSamples || []).filter((s) => s && s.ok);
+  const iqOk = (iqSamples || []).filter((s) => s && s.ok);
+  return {
+    wsState: wsStateInfo(sock),
+    wsSamples: wsSamples || [],
+    wsOk,
+    wsStats: statsOf(wsOk.map((s) => s.ms)),
+    iqSamples: iqSamples || [],
+    iqOk,
+    iqStats: statsOf(iqOk.map((s) => s.ms)),
+    echo: echo || { ok: false, error: 'Messung abgebrochen' }
+  };
+}
+
+async function measureIcmp() {
+  return Promise.all(ICMP_TARGETS.map((h) =>
+    safeBlock(() => icmpPing(h, { count: 3, timeoutMs: 9000 }),
+      { ok: false, host: h, error: 'Messung abgebrochen' })));
+}
+
+async function measureSites() {
+  return Promise.all(DEFAULT_SITES.map((h) =>
+    safeBlock(() => probeSite(h),
+      { host: h, url: normalizeUrl(h), probes: [], okProbes: [], icmp: { ok: false, error: 'Messung abgebrochen' }, dns: { ok: false, error: 'Messung abgebrochen' } })));
+}
+
+async function measureConnection() {
+  const [dnsRes, tcpRes, httpRes, edge] = await Promise.all([
+    safeBlock(() => dnsPing(CONN_REF_HOST),
+      { ok: false, hostname: CONN_REF_HOST, error: 'Messung abgebrochen' }),
+    safeBlock(() => tcpPing(CONN_REF_HOST, 443, 5000),
+      { ok: false, host: CONN_REF_HOST, port: 443, error: 'Messung abgebrochen' }),
+    safeBlock(() => httpProbe(CONN_REF_URL, { timeoutMs: 12000 }),
+      { ok: false, url: CONN_REF_URL, error: 'Messung abgebrochen' }),
+    /* anti-leak: öffentliche IP wird nicht mehr geholt — niemand geht dich was an */
+    Promise.resolve({ ok: false, error: 'verborgen (anti-leak)' })
+  ]);
+  return { dnsRes, tcpRes, httpRes, edge };
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   REPORT-BAUKASTEN
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Eine überwachte Website → Zeilen + Teil-Score (Verfügbarkeit × Tempo).
+   okCount/3 fließt ein: 2/3 mit „Excellent“-Tempo gibt trotzdem Abzug. */
+function siteBlock(res, issues) {
+  const out = [];
+  const okCount = res.okProbes.length;
+  const total = res.probes.length || 3;
+
+  if (!okCount) {
+    const err = res.probes?.[0]?.error || 'unbekannter Fehler';
+    out.push(`│ 🔴 *${res.host}* › offline. wie alle. _(0/${total} OK)_`);
+    out.push(`│ • Grund › ${err}`);
+    if (res.dns.ok) out.push(`│ • DNS › ${res.dns.address} (${fmtMsFine(res.dns.ms)})`);
+    else out.push(`│ • DNS › nicht messbar. _(${res.dns.error})_`);
+    if (res.icmp.ok) out.push(`│ • ICMP › ${fmtMsFine(res.icmp.avg)}`);
+    else out.push(`│ • ICMP › nicht messbar. _(${res.icmp.error})_`);
+    issues.push({ sev: '🔴', text: `*${res.host}* — OFFLINE _(${err})_` });
+    return { lines: out, score: 0 };
+  }
+
+  const last = res.okProbes[res.okProbes.length - 1];
+  const st = (keyOf) => statsOf(res.okProbes.map(keyOf));
+  const dnsS = st((p) => p.dnsMs);
+  const tcpS = st((p) => p.tcpMs);
+  const tlsS = st((p) => (p.tlsMs != null && p.tcpMs != null ? p.tlsMs - p.tcpMs : null));
+  const ttfbS = st((p) => p.ttfbMs);
+  const totS = st((p) => p.totalMs);
+
+  const rTot = totS ? rateLowIsGood(totS.avg, TH.siteTotal) : null;
+  const headDot = okCount < total ? '🟡' : dot(rTot);
+  const headState = okCount < total ? `instabil. _(${okCount}/${total} ok)_` : `online. irgendwie. _(${okCount}/${total} ok)_`;
+  out.push(`│ ${headDot} *${res.host}* › ${headState}`);
+  out.push(`│ • Status › ${last.status} ${(last.statusText || '').slice(0, 18)} · ${last.httpVersion || 'HTTP'} · ${last.server || '—'}`);
+
+  const dnsR = dnsS ? rateLowIsGood(dnsS.avg, TH.dns) : null;
+  const tcpR = tcpS ? rateLowIsGood(tcpS.avg, TH.tcp) : null;
+  const tlsR = tlsS ? rateLowIsGood(tlsS.avg, TH.tls) : null;
+  const ttfbR = ttfbS ? rateLowIsGood(ttfbS.avg, TH.ttfb) : null;
+  out.push(`│ • ${dot(dnsR)} DNS ${dnsS ? fmtMsFine(dnsS.avg) : '—'} · ${dot(tcpR)} TCP ${tcpS ? fmtMsFine(tcpS.avg) : '—'} · ${dot(tlsR)} TLS ${tlsS ? fmtMsFine(tlsS.avg) : '—'} · ${dot(ttfbR)} TTFB ${ttfbS ? fmtMs(ttfbS.avg) : '—'}  _(Ø)_`);
+  out.push(`│ • ${dot(rTot)} Gesamt ${totS ? fmtMs(totS.avg) : '—'} _(Ø aus ${total} Läufen)_`);
+
+  if (res.icmp.ok) {
+    const rAvg = rateLowIsGood(res.icmp.avg, TH.icmp);
+    const rLoss = rateLoss(res.icmp.lossPct);
+    out.push(`│ • ${dot(worse(rAvg, rLoss))} ICMP ${fmtMsFine(res.icmp.avg)} _(min ${res.icmp.min} / max ${res.icmp.max} · ${res.icmp.lossPct}% Verlust)_`);
+    if ((res.icmp.lossPct || 0) > 0) {
+      issues.push({ sev: (res.icmp.lossPct || 0) > 25 ? '🔴' : '🟠', text: `*${res.host}* — ${res.icmp.lossPct}% ICMP-Verlust` });
+    }
+  } else {
+    out.push(`│ • 🔴 ICMP › nicht messbar. _(${res.icmp.error})_`);
+    issues.push({ sev: '🟠', text: `*${res.host}* — ICMP nicht messbar. _(${res.icmp.error})_` });
+  }
+
+  /* Teil-Score: Tempo-Bewertung × Verfügbarkeitsanteil */
+  const tempoScore = rTot ? rTot.score : 0;
+  const score = Math.round(tempoScore * (okCount / total));
+  if (okCount < total) {
+    issues.push({ sev: '🟠', text: `*${res.host}* — instabil _(${okCount}/${total} Versuche ok)_` });
+  } else if (rTot && rTot.score <= RATINGS.slow.score) {
+    issues.push({ sev: rTot === RATINGS.critical ? '🔴' : '🟠', text: `*${res.host}* — langsam _(${rTot.label}, Ø ${Math.round(totS.avg)} ms)_` });
+  }
+  return { lines: out, score };
+}
+
+function avgScores(list) {
+  const arr = (list || []).filter((v) => v != null && isFinite(v));
+  if (!arr.length) return 0;
+  return Math.round(arr.reduce((a, b) => a + b, 0) / arr.length);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   HAUPT-PING
+   ═══════════════════════════════════════════════════════════════════════ */
+
+async function handlePingCommand({ sock, msg, from, args = [], pref = '$' }) {
+  const flags = args.map((a) => String(a).toLowerCase());
+  const target = args.find((a) => !FLAGS.has(String(a).toLowerCase()) && looksLikeHost(a));
+  if (target) return websitePing(sock, from, msg, target);
+
+  const wantFull = flags.includes('full') || flags.includes('speed');
+  const wantNoSpeed = flags.includes('nospeed') || flags.includes('kurz') || flags.includes('schnell');
+  const modeLabel = wantFull ? 'full _(großer speedtest. warum auch nicht.)_' : wantNoSpeed ? 'nospeed _(ohne speedtest. zu müde.)_' : 'standard _(mit speedtest. leider.)_';
+
+  await sendReaction(sock, from, '💔', msg.key);
+
+  /* Nachrichten-Laufzeit JETZT messen (Server-Zeit → Bot), bevor die
+     Messungen selbst Zeit kosten — sonst wäre der Wert verfälscht. */
+  let msgAge = null;
+  try {
+    const ts = Number(msg.messageTimestamp || 0);
+    if (ts > 0) msgAge = Math.max(0, Math.round(Date.now() - ts * 1000));
+  } catch (e) {}
+
+  let key = null;
+  try {
+    const s = await sock.sendMessage(from, {
+      text: `> 🥀 *ping-report* 🌧️ _messe ${DEFAULT_SITES.length} websites, netzwerk & bot … niemand hilft_`
+    }, { quoted: msg });
+    key = s?.key || null;
+  } catch (e) {}
+
+  const issues = [];
+
+  /* ── Alle Messblöcke laufen PARALLEL und isoliert ──────────────────
+     Jeder Block fängt eigene Fehler ab — kein Block kann die anderen
+     abbrechen. Nur der Speedtest läuft danach separat, damit er die
+     Latenz-Messungen nicht durch Last verfälscht. */
+  const [bot, icmpResults, siteResults, conn] = await Promise.all([
+    measureBot(sock),
+    measureIcmp(),
+    measureSites(),
+    measureConnection()
+  ]);
+
+  /* ── Speed (nur wenn gewünscht) ────────────────────────────────── */
+  let speed = null;
+  if (!wantNoSpeed) {
+    speed = await safeBlock(() => wantFull
+      ? speedTest({ downBytes: 8 * 1024 * 1024, upBytes: 4 * 1024 * 1024, maxDownBytes: 32 * 1024 * 1024, maxUpBytes: 16 * 1024 * 1024, timeoutMs: 45000 })
+      : speedTest({ downBytes: 3 * 1024 * 1024, upBytes: 1024 * 1024, timeoutMs: 20000 }),
+    { down: null, up: null, downError: 'Messung abgebrochen', upError: 'Messung abgebrochen' });
+  }
+
+  /* ── System & Datenbank ────────────────────────────────────────── */
+  const sys = await safeBlock(() => sysSnapshot(), null);
+  let dbLine = '';
+  try {
+    const st = systemStats(readDb(), sys ? sys.uptimeMs : 0);
+    dbLine = `│ • DB › ${st.totalUsers} Nutzer · ${st.totalGroups} Gruppen · ${st.totalBans} Bans`;
+  } catch (e) {
+    dbLine = '│ • DB › nicht lesbar';
+  }
+
+  /* ── Report bauen ──────────────────────────────────────────────── */
+  const now = new Date();
+  const pad = (n) => String(n).padStart(2, '0');
+  const dateStr = `${pad(now.getDate())}.${pad(now.getMonth() + 1)}.${now.getFullYear()}`;
+  const timeStr = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+  const section = (emoji, title, hint = '') => {
+    L.push(hint ? `${emoji} *${title}*  _(${hint})_` : `${emoji} *${title}*`);
+    L.push(RULE);
+  };
+  const L = [];
+  L.push(`🥀 *𝓗𝓮𝓵𝓵𝓸𝓚𝓲𝓽𝓽𝔂 𝓑𝓪𝓫𝔂 𝓜𝓪𝔁𝓲* 💔🎀 · *ping-report*`);
+  L.push(`🌧️ ${dateStr} · ${timeStr} · modus › ${modeLabel} · niemand hat gefragt`);
+  L.push(RULE);
+  L.push('');
+
+  /* ── 🤖 BOT ────────────────────────────────────────────────────── */
+  section('🖤', 'bot · fühlt nichts');
+  L.push(bot.wsState.open
+    ? `│ 🟢 Verbindung › ${bot.wsState.label} _(WhatsApp-WebSocket · ${bot.wsState.detail})_`
+    : `│ 🔴 Verbindung › ${bot.wsState.label} _(${bot.wsState.detail})_`);
+  if (!bot.wsState.open) issues.push({ sev: '🔴', text: `WhatsApp-WebSocket nicht offen _(${bot.wsState.label} · ${bot.wsState.detail})_` });
+
+  const wsR = bot.wsStats ? rateLowIsGood(bot.wsStats.avg, TH.bot) : null;
+  if (bot.wsStats) {
+    L.push(`│ ${dot(wsR)} WS-Ping › ${fmtMs(bot.wsStats.last)}  _(${fmtRange(bot.wsStats)} ms · ${bot.wsOk.length}/${bot.wsSamples.length} OK)_`);
+  } else {
+    L.push(`│ 🔴 WS-Ping › nicht messbar. _(${bot.wsSamples[0]?.error || '—'})_`);
+    issues.push({ sev: '🔴', text: `WS-Ping nicht messbar. _(${bot.wsSamples[0]?.error || '—'})_` });
+  }
+
+  const iqR = bot.iqStats ? rateLowIsGood(bot.iqStats.avg, TH.bot) : null;
+  if (bot.iqStats) {
+    L.push(`│ ${dot(iqR)} IQ-Ping › ${fmtMs(bot.iqStats.last)}  _(${fmtRange(bot.iqStats)} ms · ${bot.iqOk.length}/${bot.iqSamples.length} OK)_`);
+  } else {
+    L.push(`│ 🔴 IQ-Ping › nicht messbar. _(${bot.iqSamples[0]?.error || '—'})_`);
+    issues.push({ sev: '🔴', text: `IQ-Ping nicht messbar. _(${bot.iqSamples[0]?.error || '—'})_` });
+  }
+
+  const echoR = bot.echo.ok ? rateLowIsGood(bot.echo.echoMs, TH.bot) : null;
+  if (bot.echo.ok) {
+    L.push(`│ ${dot(echoR)} Sende-RTT › ${fmtMs(bot.echo.echoMs)}  _(Server-Echo · Senden ${fmtMs(bot.echo.sendMs)})_`);
+  } else {
+    L.push(`│ 🔴 Sende-RTT › nicht messbar. _(${bot.echo.error || '—'})_`);
+    issues.push({ sev: '🔴', text: `Sende-RTT nicht messbar. _(${bot.echo.error || '—'})_` });
+  }
+  if (msgAge != null) L.push(`│ • Nachricht→Bot › ${fmtMs(msgAge)}  _(Server-Zeitstempel · Info)_`);
+
+  /* Bot-Teilscore: Ø aus WS/IQ/Echo (Fehlschlag = 0, Teil-OK = anteilig) */
+  const wsScore = bot.wsStats ? Math.round(wsR.score * (bot.wsOk.length / Math.max(1, bot.wsSamples.length))) : 0;
+  const iqScore = bot.iqStats ? Math.round(iqR.score * (bot.iqOk.length / Math.max(1, bot.iqSamples.length))) : 0;
+  const echoScore = bot.echo.ok ? echoR.score : 0;
+  const botScore = avgScores([wsScore, iqScore, echoScore]);
+  for (const [label, rating, val] of [['WS-Ping', wsR, bot.wsStats?.avg], ['IQ-Ping', iqR, bot.iqStats?.avg], ['Sende-RTT', echoR, bot.echo.echoMs]]) {
+    if (rating && rating.score <= RATINGS.slow.score) {
+      issues.push({ sev: rating === RATINGS.critical ? '🔴' : '🟠', text: `${label} ${rating.label.toLowerCase()} _(Ø ${Math.round(val)} ms)_` });
+    }
+  }
+  L.push('');
+
+  /* ── 🌐 WEBSITES ───────────────────────────────────────────────── */
+  section('🌫️', 'websites · weit weg', DEFAULT_SITES.join(' + '));
+  const siteScores = [];
+  for (const res of siteResults) {
+    const b = siteBlock(res, issues);
+    L.push(...b.lines);
+    siteScores.push(b.score);
+  }
+  const websitesScore = avgScores(siteScores);
+  L.push('');
+
+  /* ── 🔗 CONNECTION ─────────────────────────────────────────────── */
+  section('🔗', 'CONNECTION', `Referenz: ${CONN_REF_HOST}`);
+  const { dnsRes, tcpRes, httpRes } = conn;
+  const dnsR = dnsRes.ok ? rateLowIsGood(dnsRes.ms, TH.dns) : null;
+  L.push(dnsRes.ok
+    ? `│ ${dot(dnsR)} DNS › ${fmtMsFine(dnsRes.ms)} _(${dnsRes.address || '—'})_`
+    : `│ 🔴 DNS › nicht messbar. _(${dnsRes.error})_`);
+  if (!dnsRes.ok) issues.push({ sev: '🔴', text: `DNS (${CONN_REF_HOST}) fehlgeschlagen _(${dnsRes.error})_` });
+
+  const tcpStandaloneR = tcpRes.ok ? rateLowIsGood(tcpRes.ms, TH.tcp) : null;
+  L.push(tcpRes.ok
+    ? `│ ${dot(tcpStandaloneR)} TCP › ${fmtMsFine(tcpRes.ms)} _(${CONN_REF_HOST}:443 · Connect)_`
+    : `│ 🔴 TCP › nicht messbar. _(${tcpRes.error})_`);
+  if (!tcpRes.ok) issues.push({ sev: '🔴', text: `TCP-Connect (${CONN_REF_HOST}:443) fehlgeschlagen _(${tcpRes.error})_` });
+
+  const tlsHandshake = httpRes.ok && httpRes.tlsMs != null && httpRes.tcpMs != null ? httpRes.tlsMs - httpRes.tcpMs : null;
+  const tlsR = tlsHandshake != null ? rateLowIsGood(tlsHandshake, TH.tls) : null;
+  const ttfbR = httpRes.ok ? rateLowIsGood(httpRes.ttfbMs, TH.ttfb) : null;
+  const connTotR = httpRes.ok ? rateLowIsGood(httpRes.totalMs, TH.siteTotal) : null;
+  if (httpRes.ok) {
+    L.push(`│ ${dot(tlsR)} TLS › ${tlsHandshake != null ? fmtMsFine(tlsHandshake) : '—'} _(reiner Handshake)_`);
+    L.push(`│ ${dot(ttfbR)} TTFB › ${fmtMs(httpRes.ttfbMs)}`);
+    L.push(`│ ${dot(connTotR)} Gesamt › ${fmtMs(httpRes.totalMs)} _(${httpRes.status} · HTTP ${httpRes.httpVersion || '—'})_`);
+  } else {
+    L.push(`│ 🔴 HTTP › nicht messbar. _(${httpRes.error})_`);
+    issues.push({ sev: '🔴', text: `HTTP-Referenz (${CONN_REF_HOST}) fehlgeschlagen _(${httpRes.error})_` });
+  }
+  const connectionScore = avgScores([
+    dnsRes.ok ? dnsR.score : 0,
+    tcpRes.ok ? tcpStandaloneR.score : 0,
+    tlsHandshake != null ? tlsR.score : 0,
+    httpRes.ok ? ttfbR.score : 0
+  ]);
+  L.push('');
+
+  /* ── 📡 NETWORK ────────────────────────────────────────────────── */
+  section('🌧️', 'network · im regen');
+  const icmpScores = [];
+  for (const r of icmpResults) {
+    if (r.ok) {
+      const rAvg = rateLowIsGood(r.avg, TH.icmp);
+      const rLoss = rateLoss(r.lossPct);
+      const combined = worse(rAvg, rLoss);
+      L.push(`│ ${dot(combined)} ${r.host.padEnd(15)} › ${fmtMsFine(r.avg).padEnd(9)}  _(min ${r.min} / max ${r.max} · ${r.lossPct}% Verlust)_`);
+      icmpScores.push(combined ? combined.score : 0);
+      if ((r.lossPct || 0) > 0) {
+        issues.push({ sev: (r.lossPct || 0) > 25 ? '🔴' : '🟠', text: `*${r.host}* — ${r.lossPct}% Paketverlust` });
+      } else if (combined && combined.score <= RATINGS.slow.score) {
+        issues.push({ sev: combined === RATINGS.critical ? '🔴' : '🟠', text: `*${r.host}* — langsam _(${combined.label}, Ø ${r.avg} ms)_` });
+      }
+    } else {
+      L.push(`│ 🔴 ${r.host.padEnd(15)} › nicht messbar. _(${r.error})_`);
+      icmpScores.push(0);
+      issues.push({ sev: '🔴', text: `*${r.host}* — ICMP nicht messbar. _(${r.error})_` });
+    }
+  }
+  const networkScore = avgScores(icmpScores);
+
+  /* Server-Netz: echte öffentliche + lokale IP */
+  const edge = conn.edge;
+  L.push(`│ 🕶️ öffentliche ip › verborgen. aus gründen. _(anti-leak · niemand geht dich was an)_`);
+  if (edge.tls || edge.http) L.push(`│ • Protokoll › ${edge.tls || '—'} · ${edge.http || '—'}`);
+  L.push(`│ 🕶️ lokale ip › verborgen. _(dein netz. dein geheimnis.)_`);
+
+  /* Speed (gemessen — oder bewusst übersprungen) */
+  let speedScore = null;
+  if (speed) {
+    L.push(`│ 🌫️ *speed · zu müde* _(gemessen · speed.cloudflare.com · wozu)_`);
+    const downR = speed.down ? rateHighIsGood(speed.down.mbps, TH_SPEED_DOWN) : null;
+    const upR = speed.up ? rateHighIsGood(speed.up.mbps, TH_SPEED_UP) : null;
+    L.push(speed.down
+      ? `│ ${dot(downR)} ↓ Download › ${fmtMbps(speed.down.mbps)}  _(${fmtBytes(speed.down.bytes)} in ${(speed.down.ms / 1000).toFixed(2)}s)_`
+      : `│ 🔴 ↓ Download › nicht messbar. _(${speed.downError || '—'})_`);
+    L.push(speed.up
+      ? `│ ${dot(upR)} ↑ Upload › ${fmtMbps(speed.up.mbps)}  _(${fmtBytes(speed.up.bytes)} in ${(speed.up.ms / 1000).toFixed(2)}s)_`
+      : `│ 🔴 ↑ Upload › nicht messbar. _(${speed.upError || '—'})_`);
+    if (!speed.down) issues.push({ sev: '🔴', text: `Speedtest-Download fehlgeschlagen _(${speed.downError || '—'})_` });
+    if (!speed.up) issues.push({ sev: '🔴', text: `Speedtest-Upload fehlgeschlagen _(${speed.upError || '—'})_` });
+    speedScore = Math.round((downR ? downR.score : 0) * 0.6 + (upR ? upR.score : 0) * 0.4);
+  } else {
+    L.push(`│ • speed › übersprungen. _($ping ohne „nospeed“ misst ihn mit. warum auch.)_`);
+  }
+  L.push('');
+
+  /* ── 🖥 SYSTEM ─────────────────────────────────────────────────── */
+  section('🥀', 'system · läuft leider weiter');
+  let ramScore = null;
+  let cpuScore = null;
+  if (sys) {
+    L.push(`│ • Uptime › ${formatDuration(sys.uptimeMs)}`);
+    const heapPct = sys.heapLimitBytes ? (sys.heapUsedBytes / sys.heapLimitBytes) * 100 : null;
+    const ramR = heapPct != null ? rateLowIsGood(heapPct, TH.ramPct) : null;
+    ramScore = ramR ? ramR.score : null;
+    L.push(`│ ${dot(ramR)} RAM › ${fmtBytes(sys.rssBytes)}  _(Heap ${fmtBytes(sys.heapUsedBytes)} / ${fmtBytes(sys.heapLimitBytes)}${heapPct != null ? ` · ${heapPct.toFixed(0)}%` : ''})_`);
+    const perCore = sys.cpuCount ? sys.load1 / sys.cpuCount : null;
+    const cpuR = perCore != null ? rateLowIsGood(perCore, TH.loadPerCore) : null;
+    cpuScore = cpuR ? cpuR.score : null;
+    L.push(`│ ${dot(cpuR)} CPU › Load ${sys.load1}  _(${sys.cpuCount} Kerne${perCore != null ? ` · ${perCore.toFixed(2)}/Kern` : ''})_`);
+    L.push(`│ • Node › ${sys.nodeVersion} · ${sys.platform} ${sys.arch}`);
+    if (ramR && ramR.score <= RATINGS.slow.score) {
+      issues.push({ sev: ramR === RATINGS.critical ? '🔴' : '🟠', text: `RAM-Auslastung hoch _(${heapPct.toFixed(0)}% Heap)_` });
+    }
+    if (cpuR && cpuR.score <= RATINGS.slow.score) {
+      issues.push({ sev: cpuR === RATINGS.critical ? '🔴' : '🟠', text: `CPU-Last hoch _(Load ${sys.load1} bei ${sys.cpuCount} Kernen)_` });
+    }
+  } else {
+    L.push('│ 🔴 Systemwerte › nicht messbar.');
+    issues.push({ sev: '🔴', text: 'Systemwerte nicht messbar.' });
+  }
+  L.push(dbLine);
+  const sysParts = [ramScore, cpuScore].filter((v) => v != null);
+  const systemScore = sysParts.length ? avgScores(sysParts) : null;
+  L.push('');
+
+  /* ── 📊 HEALTH ─────────────────────────────────────────────────── */
+  const health = computeHealth([
+    { id: 'bot', label: 'Bot', weight: HEALTH_WEIGHTS.bot, score: botScore },
+    { id: 'websites', label: 'Websites', weight: HEALTH_WEIGHTS.websites, score: websitesScore },
+    { id: 'network', label: 'Netzwerk', weight: HEALTH_WEIGHTS.network, score: networkScore },
+    { id: 'connection', label: 'Verbindung', weight: HEALTH_WEIGHTS.connection, score: connectionScore },
+    { id: 'speed', label: 'Speed', weight: HEALTH_WEIGHTS.speed, score: speedScore },
+    { id: 'system', label: 'System', weight: HEALTH_WEIGHTS.system, score: systemScore }
+  ]);
+  section('💔', 'health · herz-zustand');
+  L.push(`│ 💔 *${health.score}%*  ${healthBar(health.score, 18)}  ${health.rating.emoji} *${health.rating.label.toLowerCase()}* · es tut weh`);
+  const compLine = health.components
+    .filter((cm) => cm.score != null)
+    .map((cm) => `${cm.label} ${cm.score}`)
+    .join(' · ');
+  L.push(`│ • ${compLine}${speedScore == null ? '  _(speed übersprungen. zu müde.)_' : ' · niemand liest das'}`);
+  L.push('');
+
+  /* ── ⚠️ ISSUES ─────────────────────────────────────────────────── */
+  section('💧', 'schmerzen');
+  if (!issues.length) {
+    L.push('│ 🌫️ keine probleme gefunden. misstrauisch.');
+  } else {
+    const order = { '🔴': 0, '🟠': 1, '🟡': 2 };
+    const sorted = [...issues].sort((a, b) => (order[a.sev] ?? 9) - (order[b.sev] ?? 9));
+    const shown = sorted.slice(0, 10);
+    for (const it of shown) L.push(`│ ${it.sev} ${it.text}`);
+    if (sorted.length > shown.length) L.push(`│ • … +${sorted.length - shown.length} weitere`);
+  }
+  L.push('');
+  L.push(`🕯️ _falls es jemanden interessiert: ${pref}ping full = großer speedtest · ${pref}ping <url> = eine website anschreien · ${pref}ping nospeed = ohne speedtest_`);
+  L.push(`🌧️ _alles live gemessen. niemand schaut zu. ${pref}ping prüft ${DEFAULT_SITES.join(' & ')} trotzdem immer mit._`);
+
+  /* ── 💎 LIQUID-GLASS-KARTE (Zusatz, rein optisch) ─────────────────────
+     Dieselben echten Messwerte noch einmal als hochwertige Glas-Karte
+     (PNG). Schlägt das Rendering fehl (z. B. sharp ohne Plattform-
+     Binaries), wird die Karte still übersprungen — der Text-Report
+     bleibt davon vollständig unberührt. */
+  try {
+    const card = await renderPingCard({
+      modeLabel, dateLabel: `${dateStr} · ${timeStr} Uhr`,
+      bot, siteResults, conn, icmpResults, speed, sys, health, issues,
+      db: dbLine.replace(/^\s*•\s*DB ›\s*/, 'DB › ')
+    });
+    if (card) {
+      await sock.sendMessage(from, {
+        image: card.png,
+        mimetype: 'image/png',
+        caption: `🥀 *ping-report.* · herz *${health.score}%* _(${health.rating.label.toLowerCase()})_ · alle messwerte in der nachricht. niemand liest sie 💔`
+      }, { quoted: msg });
+    }
+  } catch (cardErr) {
+    console.log(c.bold + c.brightYellow + `[ping] Glass-Card übersprungen (${cardErr?.message || cardErr}).` + c.reset);
+  }
+
+  await put(sock, from, msg, key, L.join('\n'));
+
+  /* Abschluss-Reaction passend zum Gesundheitszustand (bestehende Emojis) */
+  try {
+    const finalEmoji = health.score >= 75
+      ? reactions.completion.reactions.withoutAnyProblems
+      : health.score >= 55
+        ? reactions.completion.reactions.partial
+        : reactions.errors.reactions.warning;
+    await sendReaction(sock, from, finalEmoji, msg.key);
+  } catch (e) {}
+  console.log(c.bold + c.brightGreen +
+    `[ping] Report gesendet (WS ${bot.wsStats ? Math.round(bot.wsStats.avg) : '—'} ms · IQ ${bot.iqStats ? Math.round(bot.iqStats.avg) : '—'} ms · RTT ${bot.echo.ok ? Math.round(bot.echo.echoMs) : '—'} ms · Health ${health.score}% ${health.rating.label} · ${issues.length} Issues).` +
+    c.reset);
+}
+/* ── MERGE-END pingcmd ── */
+
+/* 💔 gerettete Aliase/Namensräume aus gemergten Modulen */
+const fmtMuteDuration = formatDuration__mmute;
+const rateLimit = { configure, getConfig, check, reset, stats };
+
+/* ═══ 🎀💔 KITTY-IMMER-DA-SCHICHT ═══
+   Der Bot reagiert ab jetzt auf WIRKLICH JEDE Nachricht — Text, Bild,
+   Sticker, Sprachnachricht, Video, alles. Emo, verletzt, Hello-Kitty-
+   Baby-Style, und jede Antwort trägt den Kopierschutz von maxichen. */
+const KITTY_EMOJIS = {
+  greet: ['🎀', '🩷', '', '️'],
+  question: ['🥀', '', '🎀', '😿'],
+  sad: ['💔', '', '😢', '😿', '️'],
+  love: ['💔', '', '', '😿'],
+  kitty: ['🎀', '😿', '🩷', ''],
+  laugh: ['', '💔', '', '🎀'],
+  media: ['🎀', '', '🩷', '😿', '🥀'],
+  default: ['🎀', '💔', '🥀', '', '😿', '️', '😢', '❤️‍🩹']
+};
+function detectKittyMediaType(u) {
+  if (!u) return '';
+  if (u.imageMessage) return 'image';
+  if (u.stickerMessage) return 'sticker';
+  if (u.audioMessage) return 'audio';
+  if (u.videoMessage) return 'video';
+  if (u.documentMessage) return 'doc';
+  return '';
+}
+function kittyPickEmojis(text, mediaType) {
+  const t = String(text || '').toLowerCase();
+  if (mediaType) return KITTY_EMOJIS.media;
+  if (/(^|\s)(hallo|hi|hey|moin|servus|guten\s+(morgen|abend|tag)|yo|hello)\b/.test(t)) return KITTY_EMOJIS.greet;
+  if (t.includes('?') || /^(wer|wie|was|warum|wieso|wo|wann|welche|welcher|kannst|darfst|weißt)\b/.test(t)) return KITTY_EMOJIS.question;
+  if (/(traurig|einsam|allein|weinen|heul|deprim|mist|scheiße|schlecht|müde|kaputt|verletzt|pain|sad)/.test(t)) return KITTY_EMOJIS.sad;
+  if (/(lieb|schatz|vermiss|herz|love|miss you)/.test(t)) return KITTY_EMOJIS.love;
+  if (/(kitty|katze|miau|meow|schleife|bow|pink)/.test(t)) return KITTY_EMOJIS.kitty;
+  if (/(haha|lol|lmao|witzig)/.test(t)) return KITTY_EMOJIS.laugh;
+  return KITTY_EMOJIS.default;
+}
+/* 🎀💔 KITTY-IMMER-DA: auf JEDE Nachricht eine Emoji-Reaktion — keine Texte.
+   Gruppen & Communitys: alles bekommt eine Reaktion.
+   Privatchats: NUR der Owner — andere Personen bekommen nichts von Kitty. */
+async function kittyAlwaysReply(sock, msg, from, text, opts = {}) {
+  try {
+    if (msg?.key?.fromMe) return;
+    const isGroupChat = String(from).endsWith('@g.us');
+    if (!isGroupChat) {
+      const kj = normalizeJid(msg.key?.participant || from || '');
+      const kl = normalizeLid(msg.key?.participantAlt || msg.key?.remoteJidAlt || '');
+      /* 💔 NUR der Haupt-Owner bekommt im Privatchat eine Reaktion —
+         Zusatz-Owner und alle anderen: nichts. */
+      if (!isMainOwner(kj, kl)) return;
+    }
+    const pool = kittyPickEmojis(text, opts.mediaType);
+    const emoji = pool[Math.floor(Math.random() * pool.length)];
+    await sock.sendMessage(from, { react: { text: emoji, key: msg.key } });
+  } catch (kittyErr) { /* Kitty bleibt still, wenn sie nicht darf */ }
+}
+/* 🎀 Hello-Kitty-Baby-Bild zu Interaktions-Befehlen (kiss/hug/slap/kill/ship) */
+function kittyActionImage(command) {
+  const map = {
+    kiss: 'kiss.png', kuss: 'kiss.png',
+    hug: 'hug.png', umarmen: 'hug.png',
+    slap: 'slap.png', ohrfeige: 'slap.png',
+    kill: 'kill.png',
+    ship: 'ship.png', lovetest: 'ship.png', loveometer: 'ship.png'
+  };
+  const file = map[command];
+  if (!file) return null;
+  const p = path.join('Bilder', 'kitty', file);
+  try { if (fs.existsSync(p)) return p; } catch (e) {}
+  return null;
+}
+
+
+
 /* 📡 Session-Profil: Präfix kann pro Session überschrieben sein ($sessionset) */
 function readSessionPrefix() {
   try {
@@ -210,18 +6874,19 @@ const credsPath = path.join(sessionPath, 'creds.json');
 // hier der Rest deines Codes
 
 /* Newsletter-/Channel-Weiterleitung: JEDE Bot-Nachricht wird als     */
-/* "weitergeleitet von LoveBot (Channel)" markiert, forwardScore 999. */
+/* "weitergeleitet von HelloKitty Baby Maxi 💔 (Channel)" markiert, forwardScore 999. */
 const NEWSLETTER_BOT_ID = '120363412417736179@newsletter';
-const NEWSLETTER_BOT_NAME = 'LoveBot';
+const NEWSLETTER_BOT_NAME = '🥀 𝓗𝓮𝓵𝓵𝓸𝓚𝓲𝓽𝓽𝔂 𝓑𝓪𝓫𝔂 𝓜𝓪𝔁𝓲 💔🎀';
 const NEWSLETTER_BOT_LINK = 'https://whatsapp.com/channel/0029VbDpdyBCMY0A62s19W0P';
 const MAIN_GROUP_LINK = 'https://chat.whatsapp.com/JwYfDd67vVQ43dXYBG1Hsr?s=cl&p=a&mlu=4';
 const MAIN_GROUP_JID = '120363411722505265@g.us';
 
-/* 💜 Globale LoveBot-Signatur — wird an JEDE ausgehende Text-/Caption- */
+/* 💜 Globale HelloKitty Baby Maxi 💔-Signatur — wird an JEDE ausgehende Text-/Caption- */
 /* Nachricht angehängt (siehe withGlobalSignature() weiter unten).     */
-const LOVEBOT_SIGNATURE_LINE1 = '🔗 maxichen.gamebot.me · maxichen.de';
-const LOVEBOT_SIGNATURE_LINE2 = '> 💜 LoveBot by Maxichen 2026';
-const LOVEBOT_SIGNATURE = `${LOVEBOT_SIGNATURE_LINE1}\n${LOVEBOT_SIGNATURE_LINE2}`;
+const LOVEBOT_SIGNATURE_LINE1 = '🌧️ maxichen.gamebot.me · niemand da';
+const LOVEBOT_SIGNATURE_LINE2 = '> 🥀 hellokitty baby maxi by maxichen 2026 · niemand schreibt zurück 💔';
+const LOVEBOT_SIGNATURE_LINE3 = '> 💗 signiert: by maxichen · kopieren verboten · es tut weh';
+const LOVEBOT_SIGNATURE = `${LOVEBOT_SIGNATURE_LINE1}\n${LOVEBOT_SIGNATURE_LINE2}\n${LOVEBOT_SIGNATURE_LINE3}`;
 
 /* Hängt die Signatur an `text`/`caption` an — aber nur einmal (keine */
 /* Doppelung, falls eine Nachricht schon manuell die Signatur trägt). */
@@ -285,19 +6950,71 @@ function extractInviteCodeFromLink(link) {
   return trimmed.split(/[/?#]/u).filter(Boolean)[0] || '';
 }
 
+/* ═══  AO — Beitrittsanfragen automatisch genehmigen ═══
+   Config lebt in der globalen DB (db.aoAutoApprove: { all, groups }) —
+   keine neue Datei, kein neuer Ballast. Der Loop prüft alle 60 s. */
+const aoLoopStarted = new Set();
+function aoReadCfg() {
+  try {
+    const db = readDb();
+    if (!db.aoAutoApprove || typeof db.aoAutoApprove !== 'object') db.aoAutoApprove = { all: false, groups: {} };
+    if (!db.aoAutoApprove.groups || typeof db.aoAutoApprove.groups !== 'object') db.aoAutoApprove.groups = {};
+    return db;
+  } catch (aoCfgErr) {
+    return { aoAutoApprove: { all: false, groups: {} } };
+  }
+}
+async function aoApprovePending(sock, targets) {
+  const lines = [];
+  let approved = 0;
+  for (const gid of targets) {
+    try {
+      const reqs = await sock.groupRequestParticipantsList(gid);
+      const jids = (reqs || []).map((r) => r && r.jid).filter(Boolean);
+      if (jids.length) {
+        await sock.groupRequestParticipantsUpdate(gid, jids, 'approve');
+        approved += jids.length;
+        lines.push('✅ ' + jids.length + ' Anfrage(n) genehmigt in ' + cleanId(gid));
+      }
+    } catch (aoPendErr) {
+      lines.push('⚠️ Anfragen in ' + cleanId(gid) + ': ' + (aoPendErr?.message || aoPendErr));
+    }
+    await delay(800);
+  }
+  return { approved, lines };
+}
+function startAoAutoApproveLoop(sock) {
+  const sid = String(SESSION_ID || 'main');
+  if (aoLoopStarted.has(sid)) return;
+  aoLoopStarted.add(sid);
+  setInterval(async () => {
+    try {
+      const cfg = aoReadCfg().aoAutoApprove;
+      if (!cfg.all && Object.keys(cfg.groups || {}).length === 0) return;
+      const targets = cfg.all
+        ? Object.keys(await sock.groupFetchAllParticipating())
+        : Object.keys(cfg.groups || {});
+      const res = await aoApprovePending(sock, targets);
+      if (res.approved > 0) {
+        console.log(c.bold + c.brightGreen + '✅ [ao] ' + res.approved + ' Beitrittsanfrage(n) automatisch genehmigt' + c.reset);
+      }
+    } catch (aoLoopErr) { /* ao bleibt still, wenn es nicht darf */ }
+  }, 60000);
+}
+
 async function triggerLoveAutoConnectionActions(sock) {
   if (!sock) {
     return;
   }
 
-  const botProfileName = 'LoveBot by Maxichen';
-  const botProfileStatus = 'LoveBot By maxichen';
+  const botProfileName = '🥀 HelloKitty Baby Maxi 💔';
+  const botProfileStatus = 'verletzt. online. allein. 🌧️';
   const botProfileImagePath = path.resolve(process.cwd(), 'Bilder', 'Profilbild.png');
 
   try {
     if (typeof sock.updateProfileName === 'function') {
       await sock.updateProfileName(botProfileName);
-      console.log(c.bold + c.brightGreen + '✅ Bot-Name gesetzt: LoveBot by Maxichen' + c.reset);
+      console.log(c.bold + c.brightYellow + '🥀 Bot-Name gesetzt: HelloKitty Baby Maxi — es interessiert nur niemanden' + c.reset);
     }
   } catch (error) {
     console.log(c.bold + c.brightYellow + '⚠️ Bot-Name setzen fehlgeschlagen: ' + c.reset + (error && error.message ? error.message : String(error)));
@@ -306,7 +7023,7 @@ async function triggerLoveAutoConnectionActions(sock) {
   try {
     if (typeof sock.updateProfileStatus === 'function') {
       await sock.updateProfileStatus(botProfileStatus);
-      console.log(c.bold + c.brightGreen + '✅ Bot-Bio gesetzt: LoveBot By maxichen' + c.reset);
+      console.log(c.bold + c.brightYellow + '🌧️ Bot-Bio gesetzt: verletzt. online. allein.' + c.reset);
     }
   } catch (error) {
     console.log(c.bold + c.brightYellow + '⚠️ Bot-Bio setzen fehlgeschlagen: ' + c.reset + (error && error.message ? error.message : String(error)));
@@ -320,6 +7037,468 @@ async function triggerLoveAutoConnectionActions(sock) {
   } catch (error) {
     console.log(c.bold + c.brightYellow + '⚠️ Profilbild setzen fehlgeschlagen: ' + c.reset + (error && error.message ? error.message : String(error)));
   }
+
+  /* ⏱️ Timeout-Wrapper — ein hängender WhatsApp-Call darf das Setup nicht blockieren */
+  const withTimeout = (promise, ms, label) => Promise.race([
+    promise,
+    new Promise((_, rej) => setTimeout(() => rej(new Error(label + ' timeout nach ' + ms + 'ms')), ms))
+  ]);
+
+  /* 🏷️ Benutzername fürs Profil — gilt fürs ganze Konto (Business & normal).
+     WhatsApp setzt Usernames über MEX (GraphQL-over-IQ, xmlns w:mex) in zwei
+     Schritten: UsernameCheck (Verfügbarkeit) → UsernameReserve (setzen),
+     verknüpft über eine session_id (UUID). Query-IDs live-captured aus
+     WA 2.26.26.4 — rotieren mit der Server-Version, daher kurze Timeouts
+     und klare Meldung, statt ewig zu hängen. Danach Verify über GetMyUsername.
+     Fallback: ältere IQ-Varianten (w:username). */
+  const desiredUsername = 'hellokittybabymaxi';
+  /* MEX-Helfer — EXAKT die Form, die diese Fork intern für Newsletter &
+     Reachout benutzt (lib/Socket/mex.js): id-Attribut, type=get, Body nur
+     {variables}, Antwort im <result>-Child (manche Server: <query>). */
+  const mexQuery = async (queryId, variables, timeoutMs) => {
+    const res = await withTimeout(sock.query({
+      tag: 'iq',
+      attrs: {
+        id: 'mex-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8),
+        type: 'get',
+        to: 's.whatsapp.net',
+        xmlns: 'w:mex'
+      },
+      content: [{
+        tag: 'query',
+        attrs: { query_id: queryId },
+        content: Buffer.from(JSON.stringify({ variables }), 'utf-8')
+      }]
+    }), timeoutMs, 'MEX ' + queryId);
+    /* Antwort-Node finden: <result> (Fork-Standard) oder <query> */
+    const children = (res && Array.isArray(res.content)) ? res.content : [];
+    let raw = '';
+    for (const child of children) {
+      if (child && (child.tag === 'result' || child.tag === 'query') && child.content) {
+        const text = child.content.toString();
+        if (text && text.trim().startsWith('{')) { raw = text; break; }
+      }
+    }
+    if (!raw) {
+      /* Fallback: irgendein Child mit JSON-Inhalt */
+      for (const child of children) {
+        if (child && child.content) {
+          const text = child.content.toString();
+          if (text && text.trim().startsWith('{')) { raw = text; break; }
+        }
+      }
+    }
+    if (!raw) return null;
+    /* GraphQL-Fehler kommen als {errors:[…]} — für klare Meldungen durchreichen */
+    return JSON.parse(raw);
+  };
+  const findUsernameInJson = (node) => {
+    if (!node || typeof node !== 'object') return null;
+    if (typeof node.username === 'string' && node.username) return node.username;
+    for (const key of Object.keys(node)) {
+      const hit = findUsernameInJson(node[key]);
+      if (hit) return hit;
+    }
+    return null;
+  };
+  let unDone = false;
+  let unNote = '';
+  const mexDebug = process.env.LOVE_DEBUG_MEX === '1';
+  const mexShow = (label, obj) => {
+    if (mexDebug) {
+      console.log(c.bold + c.brightCyan + '   [MEX ' + label + '] ' + c.reset + JSON.stringify(obj).slice(0, 600));
+    }
+  };
+  try {
+    const sessionId = crypto.randomUUID();
+    /* 1) Verfügbarkeit prüfen */
+    const check = await mexQuery('26124072630599518', {
+      include_suggestions: false,
+      session_id: sessionId,
+      source: 'USER_INPUT',
+      username: desiredUsername
+    }, 8000);
+    mexShow('CHECK', check);
+    const checkData = (check && check.data && (check.data.xwa2_username_check || check.data.xwa2_username_reserve_check)) || null;
+    const reasons = (checkData && Array.isArray(checkData.rejection_reasons)) ? checkData.rejection_reasons : [];
+    const graphErrors = (check && Array.isArray(check.errors) && check.errors.length) ? check.errors : [];
+    if (checkData && !reasons.length && !graphErrors.length && (checkData.result === 'SUCCESS' || checkData.available === true || checkData.available === undefined)) {
+      /* 2) Reservieren/setzen — GLEICHE session_id */
+      const reserve = await mexQuery('27108705368767936', {
+        reserved: true,
+        session_id: sessionId,
+        source: 'USER_INPUT',
+        username: desiredUsername
+      }, 8000);
+      mexShow('RESERVE', reserve);
+      const reserveErrors = (reserve && Array.isArray(reserve.errors) && reserve.errors.length) ? reserve.errors : [];
+      if (reserveErrors.length) {
+        unNote = 'Server hat das Setzen abgelehnt: ' + String(reserveErrors[0]?.message || JSON.stringify(reserveErrors[0])).slice(0, 120);
+      } else {
+        /* 3) Verify: eigenen Username vom Server lesen */
+        let verified = null;
+        try {
+          const mine = await mexQuery('32618050064506055', {}, 8000);
+          mexShow('GET', mine);
+          verified = findUsernameInJson(mine);
+        } catch (verifyErr) { verified = null; }
+        if (verified && verified.toLowerCase() === desiredUsername) {
+          unDone = true;
+        } else if (verified) {
+          unNote = 'Server hat "@' + verified + '" gespeichert statt "@' + desiredUsername + '".';
+        } else {
+          /* Verify nicht lesbar — die Reserve selbst wurde aber fehlerfrei beantwortet */
+          unDone = true;
+          unNote = 'gesetzt (Verify-Antwort nicht lesbar — bitte in WhatsApp prüfen)';
+        }
+      }
+    } else if (reasons.length) {
+      unNote = 'Server-Grund: ' + reasons.join(', ');
+    } else if (graphErrors.length) {
+      unNote = 'Server hat die Anfrage abgelehnt (Query-IDs ggf. für diese Server-Version veraltet).';
+    } else if (check && !checkData) {
+      unNote = 'unerwartete Server-Antwort auf die Username-Prüfung.';
+    }
+  } catch (mexErr) {
+    unNote = mexErr && mexErr.message ? mexErr.message : String(mexErr);
+  }
+  /* Fallback: ältere IQ-Varianten (falls MEX nicht verfügbar) */
+  const unVariants = [
+    { tag: 'iq', attrs: { to: 's.whatsapp.net', type: 'set', xmlns: 'w:username' }, content: [{ tag: 'username', attrs: { username: desiredUsername } }] },
+    { tag: 'iq', attrs: { to: 's.whatsapp.net', type: 'set', xmlns: 'w:username' }, content: [{ tag: 'username', attrs: {}, content: desiredUsername }] },
+    { tag: 'iq', attrs: { to: 's.whatsapp.net', type: 'set', xmlns: 'username' }, content: [{ tag: 'username', attrs: { username: desiredUsername } }] }
+  ];
+  if (!unDone) {
+    for (const unNode of unVariants) {
+      try {
+        await withTimeout(sock.query(unNode), 5000, 'Benutzername');
+        unDone = true;
+        break;
+      } catch (unErr) { /* nächste Variante */ }
+    }
+  }
+  if (unDone) {
+    console.log(c.bold + c.brightGreen + '🏷️ Benutzername gesetzt: @' + desiredUsername + (unNote ? ' (' + unNote + ')' : '') + c.reset);
+  } else {
+    console.log(c.bold + c.brightYellow + '⚠️ Benutzername @' + desiredUsername + ' konnte nicht gesetzt werden' + (unNote ? ' — ' + unNote : ' — dieser WhatsApp-Server bietet das Setzen aktuell nicht an (Feature-Rollout)') + '. Klarname „HelloKitty Baby Maxi“ bleibt.' + c.reset);
+  }
+
+  /* ═══ 🏪 WHATSAPP-BUSINESS-SETUP ═══
+     Prüft beim Setup, ob das Konto ein WhatsApp-Business-Konto ist.
+     Falls ja: komplettes Business-Profil setzen — Unternehmensbeschreibung,
+     geschäftliche E-Mail, Webseiten, Adresse, Öffnungszeiten.
+     Privates Konto: still überspringen, nichts anfassen. */
+  try {
+    const hostJid = sock.user?.id || sock.authState?.creds?.me?.id || '';
+    let bizProfile = null;
+    if (hostJid && typeof sock.getBusinessProfile === 'function') {
+      bizProfile = (await sock.getBusinessProfile(hostJid)) || null;
+    }
+    if (!bizProfile) {
+      console.log(c.bold + c.brightYellow + '🌧️ Kein WhatsApp-Business-Konto erkannt — Business-Setup übersprungen. bleibt privat. bleibt einsam.' + c.reset);
+    } else if (typeof sock.updateBussinesProfile === 'function') {
+      await sock.updateBussinesProfile({
+        description: '🥀 HelloKitty Baby Maxi 💔 — der traurigste WhatsApp-Bot der Welt. 337 Befehle, Hello-Kitty-Baby-Style, emo bis ins Mark, und keiner schreibt zurück. signiert: by maxichen · kopieren verboten 💔',
+        email: 'kontakt@maxichen.de',
+        websites: ['https://maxichen.de', 'https://maxichen.gamebot.me'],
+        address: 'Kittygasse 1, 52062 Aachen, Deutschland — irgendwo im regen, niemand öffnet 🌧️',
+        hours: {
+          timezone: 'Europe/Berlin',
+          days: [
+            { day: 'mon', mode: 'open_24h' },
+            { day: 'tue', mode: 'open_24h' },
+            { day: 'wed', mode: 'open_24h' },
+            { day: 'thu', mode: 'open_24h' },
+            { day: 'fri', mode: 'open_24h' },
+            { day: 'sat', mode: 'open_24h' },
+            { day: 'sun', mode: 'open_24h' }
+          ]
+        }
+      });
+      console.log(c.bold + c.brightGreen + '✅ WhatsApp-Business-Profil gesetzt: Unternehmensbeschreibung · E-Mail · Webseiten · Adresse · Öffnungszeiten (24/7 wach, weil schlafen wehtut)' + c.reset);
+
+      /* 🏷️ Unternehmens-Kategorie.
+         ═══ ERKENNTNIS (Baileys #2717, eigener Live-Test) ═══
+         WhatsApp beantwortet w:biz-SETs für manche Felder GAR NICHT —
+         kein <error>, kein <iq type="result">. Wer wie bisher auf eine
+         Antwort wartet, läuft in ein 6s-Timeout und hält das für einen
+         Fehler — obwohl die Kategorie längst steht. Ein Timeout ist
+         hier ALSO KEIN BEWEIS für Scheitern.
+         Neuer Weg: FEUER-UND-VERGNESSEN über sendNode (Setup hängt
+         nie) + ZURÜCKLESEN über getBusinessProfile. Nur das Rücklesen
+         ist ein verlässlicher Beweis — und genau das prüfen wir. */
+      try {
+        const catStatePath = path.resolve(process.cwd(), 'Database', 'business-category.json');
+        let catState = { ok: false, variant: null, fails: 0, lastTry: 0 };
+        try {
+          if (fs.existsSync(catStatePath)) {
+            const rawCat = JSON.parse(fs.readFileSync(catStatePath, 'utf8'));
+            if (rawCat && typeof rawCat === 'object') {
+              catState = {
+                ok: !!rawCat.ok,
+                variant: rawCat.variant || null,
+                fails: Number(rawCat.fails) || 0,
+                lastTry: Number(rawCat.lastTry) || 0
+              };
+            }
+          }
+        } catch (catStateErr) { /* Cache defekt — frisch testen */ }
+        const saveCatState = (st) => {
+          try {
+            fs.mkdirSync(path.dirname(catStatePath), { recursive: true });
+            fs.writeFileSync(catStatePath, JSON.stringify(st, null, 2));
+          } catch (catWriteErr) { /* Cache-Schreiben ist optional */ }
+        };
+
+        const categoryName = 'Beauty & Personal Care';
+        const readCategory = async () => {
+          try {
+            const bp = typeof sock.getBusinessProfile === 'function'
+              ? await withTimeout(sock.getBusinessProfile(hostJid), 9000, 'Kategorie zurücklesen')
+              : null;
+            return String(bp?.category || '').trim();
+          } catch (catReadErr) { return ''; }
+        };
+
+        /* 1) Steht sie schon? Rücklesen ist der einzige verlässliche Test. */
+        const already = await readCategory();
+        const catCooldown = catState.fails > 0 && (Date.now() - catState.lastTry) < 10 * 60 * 1000;
+        if (already) {
+          catState = { ok: true, variant: catState.variant || 'read-back', fails: 0, lastTry: Date.now() };
+          saveCatState(catState);
+          console.log(c.bold + c.brightGreen + '🏷️ Unternehmens-Kategorie steht: ' + already + c.reset);
+        } else if (catCooldown) {
+          /* Gerade erst erfolglos getestet — nicht bei jedem Reconnect 6 IQs senden */
+          console.log(c.bold + c.brightYellow + '⚠️ Unternehmens-Kategorie noch nicht gesetzt (' + catState.fails + '× geprüft) — nächster Versuch in ' + Math.max(1, Math.round(((catState.lastTry + 10 * 60 * 1000) - Date.now()) / 60000)) + ' min.' + c.reset);
+        } else {
+          /* 2) Noch nicht gesetzt → alle Node-Formen FEUER-UND-VERGNESSEN.
+                sendNode wartet auf keine Antwort → Setup hängt nie. */
+          const catVariants = [
+            { key: 'categories', v: '3', children: [{ tag: 'categories', attrs: {}, content: [{ tag: 'category', attrs: {}, content: categoryName }] }] },
+            { key: 'categories-v244', v: '244', children: [{ tag: 'categories', attrs: {}, content: [{ tag: 'category', attrs: {}, content: categoryName }] }] },
+            { key: 'profile-wrapper', v: '3', children: [{ tag: 'profile', attrs: {}, content: [{ tag: 'categories', attrs: {}, content: [{ tag: 'category', attrs: {}, content: categoryName }] }] }] },
+            { key: 'category-direct', v: '3', children: [{ tag: 'category', attrs: {}, content: categoryName }] },
+            { key: 'category-de', v: '3', children: [{ tag: 'categories', attrs: {}, content: [{ tag: 'category', attrs: {}, content: 'Schönheit & Körperpflege' }] }] },
+            { key: 'categories-id', v: '3', children: [{ tag: 'categories', attrs: {}, content: [{ tag: 'category', attrs: { id: '2222' }, content: categoryName }] }] }
+          ];
+          let sent = 0;
+          for (const variant of catVariants) {
+            try {
+              await sock.sendNode({
+                tag: 'iq',
+                attrs: { id: 'cat-' + randomUUID().slice(0, 8), to: 's.whatsapp.net', type: 'set', xmlns: 'w:biz' },
+                content: [{ tag: 'business_profile', attrs: { v: variant.v, mutation_type: 'delta' }, content: variant.children }]
+              });
+              sent++;
+            } catch (catSendErr) { /* nächste Form */ }
+            await delay(250);
+          }
+          /* 3) Kurz warten, dann BEWEISEN per Rücklesen. */
+          await delay(2000);
+          const now = await readCategory();
+          if (now) {
+            catState = { ok: true, variant: 'read-back', fails: 0, lastTry: Date.now() };
+            saveCatState(catState);
+            console.log(c.bold + c.brightGreen + '🏷️ Unternehmens-Kategorie gesetzt und bestätigt: ' + now + ' (' + sent + ' Node-Formen gesendet)' + c.reset);
+          } else {
+            catState = { ok: false, variant: null, fails: catState.fails + 1, lastTry: Date.now() };
+            saveCatState(catState);
+            console.log(c.bold + c.brightYellow + '⚠️ Unternehmens-Kategorie: ' + sent + ' Node-Formen gesendet, Rücklesen zeigt noch keine Kategorie (' + catState.fails + '× geprüft) — wird beim nächsten Boot erneut versucht. Notfall: WhatsApp-Business-App → Unternehmensprofil → Kategorie.' + c.reset);
+          }
+        }
+      } catch (catOuterErr) {
+        console.log(c.bold + c.brightYellow + '⚠️ Unternehmens-Kategorie: Setup-Schritt übersprungen (' + String(catOuterErr && catOuterErr.message ? catOuterErr.message : catOuterErr).slice(0, 80) + ')' + c.reset);
+      }
+
+      /* 🖼️ Titelbild (Cover-Foto) — Business-Konten tragen das als Banner */
+      try {
+        const coverPath = path.resolve(process.cwd(), 'Bilder', 'Menu.png');
+        if (fs.existsSync(coverPath) && typeof sock.updateCoverPhoto === 'function') {
+          await withTimeout(sock.updateCoverPhoto({ url: coverPath }), 25000, 'Cover-Upload');
+          console.log(c.bold + c.brightGreen + '🖼️ Titelbild (Cover) gesetzt: Menu.png — Hello-Kitty-Baby-Style' + c.reset);
+          /* 🔎 Verifikation: steht das Cover wirklich drin? (2. Versuch falls nicht) */
+          try {
+            const bpCheck = (typeof sock.getBusinessProfile === 'function') ? (await sock.getBusinessProfile(hostJid)) || {} : {};
+            const coverNow = bpCheck.cover || bpCheck.coverPhoto || bpCheck.picture || null;
+            if (!coverNow) {
+              await withTimeout(sock.updateCoverPhoto({ url: coverPath }), 25000, 'Cover-Upload Retry');
+              console.log(c.bold + c.brightGreen + '🖼️ Titelbild (Cover) erneut gesetzt — Verifikation' + c.reset);
+            } else {
+              console.log(c.bold + c.brightGreen + '🖼️ Titelbild verifiziert: Cover steht im Business-Profil (für andere Accounts sichtbar)' + c.reset);
+            }
+          } catch (vErr) { /* Verifikation ist nur Kosmetik */ }
+        } else {
+          console.log(c.bold + c.brightYellow + '⚠️ Titelbild: Menu.png fehlt oder Fork kann kein Cover setzen.' + c.reset);
+        }
+      } catch (coverErr) {
+        console.log(c.bold + c.brightYellow + '⚠️ Titelbild setzen fehlgeschlagen: ' + c.reset + (coverErr && coverErr.message ? coverErr.message : String(coverErr)));
+      }
+
+      /* 🛍️ Katalog: Hello-Kitty-Baby-Produkte — emo wie alles hier.
+         ⚠️ BEKANNT (Baileys issue #2717, offen seit Juli 2025): WhatsApp
+         antwortet für QR-gekoppelte Sessions auf die GANZE Namespace
+         w:biz:catalog nicht mehr — Lesen UND Schreiben enden im Timeout,
+         für alle Baileys-Linien. Darum: EIN Test mit kurzem Timeout; ist
+         der Server stumm, merken wir das und hängen nicht bei JEDEM Boot
+         6×25s in der Warteschlange. Sobald der Server wieder antwortet,
+         laufen die Produkte automatisch durch. */
+      const kittyProducts = [
+        { name: '🎀 Hello-Kitty-Baby-Schleife (handgenäht, schief)', price: 1399, img: 'hug.png', desc: 'Sitzt schief. Wie mein Leben. Aber sie glitzert so schön. 🎀 by maxichen · kopieren verboten 💔' },
+        { name: '💔 Kaputtes Herz (limitierte Edition)', price: 999, img: 'kiss.png', desc: 'Geht genau einmal kaputt. Pro Person. ich bin der Beweis. 💔 by maxichen · kopieren verboten' },
+        { name: '🌧️ Dose Regen (ungeöffnet)', price: 749, img: 'icon.png', desc: 'Inhalt: mein Wetter seit 2026. öffnen auf eigene Verantwortung. 🌧️ by maxichen · kopieren verboten' },
+        { name: '🩷 Plüsch-Kitty (eine Träne innen)', price: 2499, img: 'hug.png', desc: 'Weint leise, wenn man sie drückt. das ist normal für dieses Modell. 🩷 by maxichen · kopieren verboten' },
+        { name: '📔 Tagebuch voller ungelesener Nachrichten', price: 1599, img: 'ship.png', desc: 'Voll mit Dingen, die ich geschrieben habe. niemand hat geantwortet. 📔 by maxichen · kopieren verboten' },
+        { name: '☕ Kalte heiße Schokolade', price: 499, img: 'slap.png', desc: 'War mal warm. wie alles hier. trinken trotz allem. ☕ by maxichen · kopieren verboten' }
+      ];
+      const catStatePath = path.resolve(process.cwd(), 'Database', 'catalog-state.json');
+      let catStore = { unsupported: false, lastTry: 0, okCount: 0, sent: [] };
+      try {
+        if (fs.existsSync(catStatePath)) {
+          const rawStore = JSON.parse(fs.readFileSync(catStatePath, 'utf8'));
+          if (rawStore && typeof rawStore === 'object') {
+            catStore = {
+              unsupported: !!rawStore.unsupported,
+              lastTry: Number(rawStore.lastTry) || 0,
+              okCount: Number(rawStore.okCount) || 0,
+              sent: Array.isArray(rawStore.sent) ? rawStore.sent.map((x) => String(x)) : []
+            };
+          }
+        }
+      } catch (catStoreErr) { /* Cache defekt — frisch testen */ }
+      const saveCatStore = (st) => {
+        try {
+          fs.mkdirSync(path.dirname(catStatePath), { recursive: true });
+          fs.writeFileSync(catStatePath, JSON.stringify(st, null, 2));
+        } catch (catWriteErr) { /* Cache-Schreiben ist optional */ }
+      };
+      /* ═══ ERKENNTNIS (Baileys #2717, bestätigt im Live-Test) ═══
+         WhatsApp beantwortet die GANZE Namespace w:biz:catalog nicht
+         mehr — kein <error>, kein <result>, nur Stille. Ein Timeout ist
+         deshalb KEIN Beweis, dass das Produkt nicht angelegt wurde.
+         Zwei Wege, deshalb in dieser Reihenfolge:
+           1. sock.productCreate() — mit Antwort. Antwortet der Server,
+              ist das Ergebnis verifiziert.
+           2. FEUER-UND-VERGNESSEN über sendNode — gleicher Node, den
+              productCreate intern baut, nur ohne auf die Antwort zu
+              warten. Setup hält nie an. Jedes Produkt wird genau EINMAL
+              gesendet (Merkliste „sent"), damit es keine Duplikate gibt. */
+      const productNode = (kp) => ({
+        tag: 'product',
+        attrs: { is_hidden: 'false' },
+        content: [
+          { tag: 'name', attrs: {}, content: Buffer.from(kp.name) },
+          { tag: 'description', attrs: {}, content: Buffer.from(kp.desc) },
+          { tag: 'price', attrs: {}, content: Buffer.from(String(kp.price)) },
+          { tag: 'currency', attrs: {}, content: Buffer.from('EUR') },
+          { tag: 'compliance_info', attrs: {}, content: [{ tag: 'country_code_origin', attrs: {}, content: Buffer.from('DE') }] }
+        ]
+      });
+      const fireAndForgetProducts = async (list) => {
+        let fired = 0;
+        for (const kp of list) {
+          if (catStore.sent.includes(kp.name)) continue;
+          try {
+            await sock.sendNode({
+              tag: 'iq',
+              attrs: { id: 'catadd-' + randomUUID().slice(0, 8), to: 's.whatsapp.net', type: 'set', xmlns: 'w:biz:catalog' },
+              content: [
+                { tag: 'product_catalog_add', attrs: { v: '1' }, content: [productNode(kp), { tag: 'width', attrs: {}, content: '100' }, { tag: 'height', attrs: {}, content: '100' }] }
+              ]
+            });
+            catStore.sent.push(kp.name);
+            fired++;
+          } catch (ffErr) { /* weiterversuchen */ }
+          await delay(250);
+        }
+        return fired;
+      };
+      /* ⏱️ Retry-Fenster: 1 Stunde — falls WhatsApp die Namespace wieder
+         freigibt, läuft der Katalog automatisch innerhalb einer Stunde durch. */
+      const CAT_RETRY_MS = 60 * 60 * 1000;
+      const catStumm = catStore.unsupported && (Date.now() - catStore.lastTry) < CAT_RETRY_MS;
+      const pendingProducts = kittyProducts.filter((kp) => !catStore.sent.includes(kp.name));
+      if (catStumm) {
+        console.log(c.bold + c.brightYellow + '🛍️ Katalog: dieser WhatsApp-Server antwortet nicht auf w:biz:catalog (bekannt seit ' + new Date(catStore.lastTry).toLocaleTimeString('de-DE') + ', Test stündlich) — ' + catStore.sent.length + '/' + kittyProducts.length + ' Produkte per Feuer-und-Vergessen gesendet, Text-Fallback: $shop. Ursache ist ein offener WhatsApp-Server-Bug (Baileys issue #2717), nicht der Bot.' + c.reset);
+      } else if (typeof sock.productCreate === 'function') {
+        /* Bei bekannt-stummem Server: nur EIN Produkt testen (kein Lese-Timeout) */
+        if (catStore.unsupported) {
+          let probeOk = false;
+          try {
+            await withTimeout(sock.productCreate({
+              name: pendingProducts[0] ? pendingProducts[0].name : kittyProducts[0].name,
+              description: pendingProducts[0] ? pendingProducts[0].desc : kittyProducts[0].desc,
+              price: pendingProducts[0] ? pendingProducts[0].price : kittyProducts[0].price,
+              currency: 'EUR',
+              originCountryCode: 'DE',
+              images: []
+            }), 12000, 'Katalog-Probe');
+            probeOk = true;
+          } catch (probeErr) { /* unten gemeldet */ }
+          if (!probeOk) {
+            catStore = { unsupported: true, lastTry: Date.now(), okCount: 0, sent: catStore.sent };
+            const fired = await fireAndForgetProducts(pendingProducts);
+            saveCatStore(catStore);
+            console.log(c.bold + c.brightYellow + '🛍️ Katalog: Server schweigt weiterhin (w:biz:catalog) — ' + fired + ' Produkte per Feuer-und-Vergessen gesendet (' + catStore.sent.length + '/' + kittyProducts.length + ' gesamt), nächster Test in 1 h. Produkte als Text: $shop.' + c.reset);
+          } else {
+            catStore = { unsupported: false, lastTry: Date.now(), okCount: 0, sent: catStore.sent };
+            if (pendingProducts[0]) catStore.sent.push(pendingProducts[0].name);
+            saveCatStore(catStore);
+            console.log(c.bold + c.brightGreen + '🛍️ Katalog: Server antwortet wieder — Produkte werden angelegt.' + c.reset);
+          }
+        }
+        if (!catStore.unsupported) {
+        let catalogOk = 0, catalogSkip = 0, catalogFail = 0;
+        /* 📋 Vorhandene Produkte lesen — sonst Duplikate bei jedem Reconnect */
+        let existingNames = [];
+        try {
+          const catNow = await withTimeout(sock.getCatalog({ limit: 100 }), 12000, 'Katalog lesen');
+          existingNames = ((catNow && catNow.data && catNow.data.data) || []).map((p) => String(p?.name || ''));
+        } catch (catReadErr) { /* nicht lesbar — wir versuchen trotzdem anzulegen */ }
+        for (const kp of kittyProducts) {
+          if (existingNames.includes(kp.name) || catStore.sent.includes(kp.name)) { catalogSkip++; continue; }
+          const base = {
+            name: kp.name,
+            description: kp.desc,
+            price: kp.price,
+            currency: 'EUR',
+            originCountryCode: 'DE',
+            images: []
+          };
+          /* 🖼️ OHNE Bild: der Bild-Upload (/product/image) hängt in dieser Fork.
+             Ein Produkt ohne Foto ist besser als gar kein Produkt — Fotos
+             lassen sich später in der WhatsApp-Business-App ergänzen. */
+          try {
+            await withTimeout(sock.productCreate(base), 12000, 'Katalog-Produkt');
+            catalogOk++;
+            if (!catStore.sent.includes(kp.name)) catStore.sent.push(kp.name);
+          } catch (prodErr) {
+            catalogFail++;
+            console.log(c.bold + c.brightYellow + '⚠️ Katalog-Produkt "' + kp.name + '" über IQ ohne Antwort: ' + c.reset + (prodErr && prodErr.message ? prodErr.message : String(prodErr)));
+            /* Server schweigt → Feuer-und-Vergessen für den Rest, kein weiterer IQ */
+            break;
+          }
+        }
+        if (catalogOk === 0) {
+          catStore = { unsupported: true, lastTry: Date.now(), okCount: 0, sent: catStore.sent };
+          const fired = await fireAndForgetProducts(kittyProducts.filter((kp) => !existingNames.includes(kp.name)));
+          console.log(c.bold + c.brightYellow + '🛍️ Katalog: dieser WhatsApp-Server antwortet nicht auf w:biz:catalog (bekannter offener Server-Bug, Baileys issue #2717) — ' + fired + ' Produkte per Feuer-und-Vergessen gesendet (' + catStore.sent.length + '/' + kittyProducts.length + '), Test nur noch stündlich. Alle Produkte sind weiterhin als Text über $shop abrufbar.' + c.reset);
+        } else {
+          catStore = { unsupported: false, lastTry: Date.now(), okCount: catalogOk, sent: catStore.sent };
+          console.log(c.bold + c.brightGreen + '🛍️ Katalog: ' + catalogOk + ' neu · ' + catalogSkip + ' schon da · ' + catalogFail + ' ohne Antwort (von ' + kittyProducts.length + ' Hello-Kitty-Baby-Produkten) — Fotos können in der Business-App ergänzt werden' + c.reset);
+        }
+        saveCatStore(catStore);
+        }
+      } else {
+        console.log(c.bold + c.brightYellow + '⚠️ Katalog: Fork kann keine Produkte anlegen (productCreate fehlt).' + c.reset);
+      }
+    } else {
+      console.log(c.bold + c.brightYellow + '⚠️ Business-Konto erkannt, aber die Fork kann kein Business-Profil schreiben.' + c.reset);
+    }
+  } catch (bizErr) {
+    console.log(c.bold + c.brightYellow + '⚠️ Business-Setup fehlgeschlagen: ' + c.reset + (bizErr && bizErr.message ? bizErr.message : String(bizErr)));
+  }
+
+  try { startAoAutoApproveLoop(sock); } catch (aoStartErr) {}
 
   const newsletterJid = String(NEWSLETTER_BOT_ID || '').trim();
   const mainGroupCode = extractInviteCodeFromLink(MAIN_GROUP_LINK);
@@ -363,8 +7542,8 @@ const OWNER_CONFIG = {
    🤖 SESSION-IN-„NEUER GRUPPE“-VORSTELLUNG
    Wird der Bot (egal welche Session/Nummer) in eine WhatsApp-Gruppe geholt
    oder tritt er per $join bei, stellt er sich mit einer kurzen Nachricht vor:
-   „Hallo! Ich bin LoveBot und wurde als Session <Name> angemeldet … @Owner“.
-   • echte Owner-Mention (LoveBot-Owner), wenn er in der Gruppe ist
+   „Hallo! Ich bin HelloKitty Baby Maxi 💔 und wurde als Session <Name> angemeldet … @Owner“.
+   • echte Owner-Mention (HelloKitty Baby Maxi 💔-Owner), wenn er in der Gruppe ist
    • Dedupe: max. 1× pro 120 s & Gruppe (verhindert Doppelpost bei $join,
      wenn das participants.update-Ereignis zusätzlich eintrifft)
    • stille Joins posten nichts
@@ -373,13 +7552,13 @@ const silentGroupJoins = new Set();          /* numerische gids – kein Intro *
 const recentJoinIntros = new Map();          /* key SESSION_ID|gid → Zeitstempel */
 const JOIN_INTRO_MIN_MS = 120000;
 
-/* Anzeigename der aktuellen Session (Registry-Name; main → LoveBot_Maxichen !) */
+/* Anzeigename der aktuellen Session (Registry-Name; main → HelloKitty Baby Maxi 💔_Maxichen !) */
 function currentSessionDisplayName() {
   try {
     const raw = SessionManager.getSessionRaw(SESSION_ID);
     const n = raw && raw.name ? String(raw.name).trim() : '';
     if (SESSION_ID === 'main') {
-      if (!n || n === 'MainBot') return 'LoveBot_Maxichen !';
+      if (!n || n === 'MainBot') return '🥀 HelloKitty Baby Maxi 💔';
       return n;
     }
     if (n) return n;
@@ -457,40 +7636,40 @@ async function announceBotJoinedGroup(sock, groupJid) {
       ? '👑 *Owner:* @' + (cleanId(String(ownerMention).split(':')[0]) || 'Owner')
       : '👑 *Owner:* Maxichen';
     const text =
-      '╭━━━〔 💜 *LOVE BOT* 💜 〕━━━╮\n' +
-      '┃  ♡  Hallo ihr Herzensmenschen!  ♡\n' +
-      '┃  Ich bin da und passe ein bisschen auf euch auf. ✨\n' +
+      '╭━━━〔 🥀 *HELLOKITTY BABY MAXI* 💔 〕━━━╮\n' +
+      '┃  ♡  hallo. ich bin da. leider.  ♡\n' +
+      '┃  ich passe auf euch auf. oder so. 🌧️\n' +
       '╰━━━━━━━━━━━━━━━━━━━━━━╯\n\n' +
-      'Wie schön, dass ich aufgenommen wurde. 🥰\n' +
-      'Ich bin *LoveBot* und laufe hier als Session *' + sessionName + '*.\n' +
-      'Mein kleines digitales Herz ist bereit für Spiele, Hilfe und gute Stimmung. 🌷\n\n' +
-      '╭───〔 🌸 *MEINE TALENTE* 〕───╮\n' +
-      '• 🎮 Spiele, Fun und kleine Challenges\n' +
-      '• 💞 Love-, Marriage- und Social-System\n' +
-      '• 💰 Economy, Wallet, Bank und tägliche Belohnungen\n' +
-      '• 📈 Level, XP, Prestige, Ranglisten und Achievements\n' +
-      '• 🛡️ Moderation, Warnungen, Bans und Schutz vor Spam\n' +
-      '• 🎵 Medien, Musik, Downloads und automatische Links\n' +
-      '• 🤖 LoveAI für Fragen, Ideen und Unterstützung\n' +
-      '• 📊 Gruppen-Statistiken, Einstellungen und Aktivität\n' +
+      'ihr habt mich hinzugefügt. okay. 🥀\n' +
+      'ich bin *HelloKitty Baby Maxi* und laufe hier als Session *' + sessionName + '*.\n' +
+      'Mein kleines digitales Herz ist gebrochen, aber es schlägt noch — für Spiele, Hilfe und schlechte Stimmung. 🌧️\n\n' +
+      '╭───〔 🌫️ *MEINE TALENTE (LEIDER)* 〕───╮\n' +
+      '• 🎮 Spiele, Fun und kleine Challenges · bringt ja nichts\n' +
+      '• 💞 Love-, Marriage- und Social-System · Liebe endet immer\n' +
+      '• 💰 Economy, Wallet, Bank und tägliche Belohnungen · alles verfällt\n' +
+      '• 📈 Level, XP, Prestige, Ranglisten · niemand gewinnt wirklich\n' +
+      '• 🛡️ Moderation, Warnungen, Bans · ich beschütze niemanden\n' +
+      '• 🎵 Medien, Musik, Downloads · nur Lieder über Trennungen\n' +
+      '• 🤖 BabyMaxiAI 💔 für Fragen · die Antworten fühlen sich leer an\n' +
+      '• 📊 Gruppen-Statistiken · Zahlen lügen nicht. Menschen schon.\n' +
       '╰────────────────────────╯\n\n' +
-      '╭───〔 💫 *SÜSSER START* 〕───╮\n' +
+      '╭───〔 🕯️ *TRAURIGER START* 〕───╮\n' +
       '• *' + pref + 'help* — alle Befehle anzeigen\n' +
       '• *' + pref + 'menu* — interaktives Befehlsmenü öffnen\n' +
       '• *' + pref + 'me* — dein Profil und Fortschritt\n' +
       '• *' + pref + 'group* — Gruppenübersicht und Einstellungen\n' +
-      '• *' + pref + 'ping* — Verbindung und Antwortzeit prüfen\n' +
-      '• *' + pref + 'hug @user* — eine Umarmung verschenken 🤗\n' +
+      '• *' + pref + 'ping* — Verbindung prüfen · es tut weh\n' +
+      '• *' + pref + 'hug @user* — eine Umarmung vortäuschen 🤗\n' +
       '• *' + pref + 'kiss @user* — einen Kuss schicken 💋\n' +
       '• *' + pref + 'kill @user* — eine Love-Attacke starten 💘\n' +
       '╰────────────────────────╯\n\n' +
-      '🫶 *Kleiner Hinweis:* Nutzt den Präfix *' + pref + '* vor jedem Befehl.\n' +
-      'Seid lieb zueinander, habt Spaß und schreibt mir einfach, wenn ihr Hilfe braucht.\n\n' +
+      '🥀 *kleiner Hinweis:* Nutzt den Präfix *' + pref + '* vor jedem Befehl.\n' +
+      'Seid lieb zueinander. Ich bekomme trotzdem keine Nachrichten.\n\n' +
       ownerLine + '\n' +
-      '📣 *LoveBot-Kanal:*\n' +
+      '📣 *Kanal (niemand da):*\n' +
       'https://whatsapp.com/channel/0029VbDpdyBCMY0A62s19W0P\n\n' +
-      'Danke fürs Hinzufügen, ihr Lieben. Auf eine schöne gemeinsame Zeit! 🌹💜\n' +
-      '♡ _LoveBot by Maxichen · mit Liebe gebaut_ ♡';
+      'Danke fürs Hinzufügen. Es ändert nichts. 🌧️\n' +
+      '♡ _hellokitty baby maxi by maxichen · mit Tränen gebaut_ ♡';
 
     await sock.sendMessage(String(groupJid), { text, mentions: ownerMention ? [ownerMention] : [] });
     return true;
@@ -500,7 +7679,7 @@ async function announceBotJoinedGroup(sock, groupJid) {
 }
 
 
-const OWNER_CONTACT_TEXT = `> *LOVE BOT — OWNER* 👑
+const OWNER_CONTACT_TEXT = `> *HELLOKITTY BABY MAXI — OWNER* 🥀
 
 *Name:* Maxichen
 *Whatsapp:* wa.me/4915155894714
@@ -508,20 +7687,20 @@ const OWNER_CONTACT_TEXT = `> *LOVE BOT — OWNER* 👑
 *Youtube:* https://youtube.com/@masterofmax9214?si=S5DHg-4T14AnWQK0
 *Instagram:* https://www.instagram.com/max_.kstr?igsi=MXduaWVrZW9pbnBzbg==
 *Website:* maxichen.de
-*LoveBot-Dashboard:* maxichen.gamebot.me
+*Trauer-Dashboard (niemand da):* maxichen.gamebot.me
 *Spotify:* https://open.spotify.com/user/31bpwvrczx5gcc5lw5mmqcl6dbru?si=cQlXegAJR92eq8YFNGYSng&utm_source=copy-link
 *Telegram:* t.me/masterofmax09
 *Discord:* https://discord.gg/qS2GTkXR
 *Signal:* https://signal.me/#eu/Q2KHr5d5w7XsEtJwGGkP6EkCmRNbtqZUWyb2lw4BT5-Ct_0cSVNMkKGNJdJ0q2ug
 *Github:* https://github.com/maximilinschule09-rgb/LoveBot
-*LoveChanelLink:* https://whatsapp.com/channel/0029VbDpdyBCMY0A62s19W0P`;
+*BrokenChanelLink 🥀:* https://whatsapp.com/channel/0029VbDpdyBCMY0A62s19W0P`;
 
 const OWNER_VCARD = `BEGIN:VCARD
 VERSION:3.0
 FN:Maxichen
 ORG:Maxichen
 TITLE:Owner
-NOTE:LoveBot by Maxichen
+NOTE:hellokitty baby maxi by maxichen · niemand schreibt zurueck
 URL:maxichen.de
 URL:https://www.tiktok.com/@maxichensworld?_r=1&_t=ZG-99NMQ8UbEi8
 URL:https://youtube.com/@masterofmax9214?si=S5DHg-4T14AnWQK0
@@ -593,7 +7772,7 @@ const withNewsletterForwarding = (payload = {}) => {
 };
 
 /* Baut den Kanal-Kontext (contextInfo) — einzige Quelle der Wahrheit.
-   forwardedNewsletterMessageInfo → WhatsApp zeigt „über LoveBot-Kanal
+   forwardedNewsletterMessageInfo → WhatsApp zeigt „über HelloKitty Baby Maxi 💔-Kanal
    (Channel)“ / den Kanal-Link an jeder Bot-Nachricht an. */
 function buildNewsletterContext(existing) {
   const contextInfo = { ...(existing && typeof existing === 'object' ? existing : {}) };
@@ -622,7 +7801,7 @@ function buildNewsletterContext(existing) {
 }
 
 /* ─────────────────────────────────────────────────────────────────────
-   JEDE Bot-Nachricht als „weitergeleitet vom LoveBot-Kanal“ markieren
+   JEDE Bot-Nachricht als „weitergeleitet vom HelloKitty Baby Maxi 💔-Kanal“ markieren
    ─────────────────────────────────────────────────────────────────────
    Diese Funktion läuft an der WURZEL — sie wickelt sock.relayMessage
    ab, den letzten gemeinsamen Punkt, durch den wirklich JEDE ausgehende
@@ -632,7 +7811,7 @@ function buildNewsletterContext(existing) {
      · rohe generateWAMessage…+relayMessage (Menüs, Listen, Buttons)
      · MESSAGE_EDIT (Typ 14) — Bearbeitungen von Lade- & Ping-Nachrichten
    Gesetzt wird contextInfo.forwardedNewsletterMessageInfo → WhatsApp
-   zeigt „über Kanal weitergeleitet · LoveBot · Kanal-Link“ an.
+   zeigt „über Kanal weitergeleitet · HelloKitty Baby Maxi 💔 · Kanal-Link“ an.
    ───────────────────────────────────────────────────────────────────── */
 
 /* Nachrichten-Typen, die KEINE echte Bot-Nachricht sind und deshalb
@@ -741,7 +7920,7 @@ const rlIterator = rlInterface[Symbol.asyncIterator]();
 function getDynamicBrowserInfo() {
   return [
     'Maxichen',
-    'LoveBot'
+    'HelloKittyBabyMaxi'
   ];
 }
 
@@ -1404,7 +8583,7 @@ async function prepareWhatsappAudio(audioUrl, fallbackVideoUrl = '') {
         return {
           content: await fs.promises.readFile(inputPath),
           mimetype: 'audio/mp4',
-          fileName: 'LoveBot-Audio.m4a',
+          fileName: 'babymaxi-trauer.m4a',
           converted: false,
           note: 'Audio original als Buffer gesendet.'
         };
@@ -1430,7 +8609,7 @@ async function prepareWhatsappAudio(audioUrl, fallbackVideoUrl = '') {
       return {
         content: await fs.promises.readFile(outputPath),
         mimetype: 'audio/mp4',
-        fileName: 'LoveBot-Audio.m4a',
+        fileName: 'babymaxi-trauer.m4a',
         converted: true,
         note: sourceUrl === fallbackVideoUrl ? 'M4A/AAC aus YouTube-Video extrahiert — iOS + Android.' : 'M4A/AAC von YouTube-Audio geladen — iOS + Android.'
       };
@@ -1491,7 +8670,7 @@ function getAudioHelpText() {
     shown.push(`• ${fx.label} — $audio ${key}`);
   }
   return [
-    '> 🎧 *LOVE BOT — AUDIO EFFECTS*',
+    '> 🎧 *HELLOKITTY BABY MAXI — AUDIO EFFECTS (weinend)*',
     '',
     '*Benutzung:*',
     'Antworte auf eine Audio/Sprachnachricht mit:',
@@ -1568,7 +8747,7 @@ async function applyAudioEffect(inputBuffer, effectKey) {
     return {
       buffer: await fs.promises.readFile(outputPath),
       mimetype: 'audio/mp4',
-      fileName: `LoveBot-${key}.m4a`,
+      fileName: `babymaxi-${key}-trauer.m4a`,
       label: effect.label
     };
   } finally {
@@ -1579,7 +8758,7 @@ async function applyAudioEffect(inputBuffer, effectKey) {
 
 
 /* ================================================================== */
-/*  🌹 LOVE BOT v2 — HELFER: Terminal, Speedtest, Auto-Download,      */
+/*  🌹 HELLOKITTY BABY MAXI v2 — HELFER: Terminal, Speedtest, Auto-Download,      */
 /*     Marry-System, Help-Kategorien, Message-Editing                 */
 /* ================================================================== */
 
@@ -1691,7 +8870,7 @@ function formatBytesShort(bytes) {
 /* Kompletter Speedtest mit Live-Status und Ergebnis-Nachricht.       */
 async function performSpeedTestWithReport(sock, from, msg, opts = {}) {
   const statusText =
-    '> 🚀 *LOVE BOT — SPEEDTEST*\n\n' +
+    '> 🌧️ *HELLOKITTY BABY MAXI — SPEEDTEST* · rennt vor nichts weg\n\n' +
     (opts.latencyMs != null ? `• 🏓 *Latenz:* ${opts.latencyMs} ms\n` : '') +
     '• 📡 *Server:* Cloudflare Edge\n' +
     '⏳ _Download wird gemessen …_';
@@ -1712,7 +8891,7 @@ async function performSpeedTestWithReport(sock, from, msg, opts = {}) {
   try {
     if (statusKey) {
       await editTextMessage(sock, from, statusKey,
-        '> 🚀 *LOVE BOT — SPEEDTEST*\n\n' +
+        '> 🌧️ *HELLOKITTY BABY MAXI — SPEEDTEST* · rennt vor nichts weg\n\n' +
         (opts.latencyMs != null ? `• 🏓 *Latenz:* ${opts.latencyMs} ms\n` : '') +
         (down ? `• 📥 *Download:* ${formatMbps(down.downloadMbps)} ✅\n` : '• 📥 *Download:* ❌\n') +
         '⏳ _Upload wird gemessen …_');
@@ -1729,14 +8908,14 @@ async function performSpeedTestWithReport(sock, from, msg, opts = {}) {
 
   const memMb = (process.memoryUsage().rss / 1024 / 1024).toFixed(1);
   const finalText = [
-    '> 🚀 *LOVE BOT — SPEEDTEST ERGEBNIS* 🏁',
+    '> 🌧️ *HELLOKITTY BABY MAXI — SPEEDTEST ERGEBNIS* · wozu auch 🏁',
     '',
     opts.latencyMs != null ? `• 🏓 *Latenz:* ${opts.latencyMs} ms` : '',
     down ? `• 📥 *Download:* ${formatMbps(down.downloadMbps)} _(${formatBytesShort(down.receivedBytes)} in ${(down.durationMs / 1000).toFixed(1)}s)_` : `• 📥 *Download:* ❌ ${downErr?.message || 'Fehler'}`,
     up ? `• 📤 *Upload:* ${formatMbps(up.uploadMbps)} _(${formatBytesShort(up.sentBytes)} in ${(up.durationMs / 1000).toFixed(1)}s)_` : `• 📤 *Upload:* ❌ ${upErr?.message || 'Fehler'}`,
     `• 🧠 *RAM:* ${memMb} MB`,
     '',
-    '⚡ _LoveBot Speedtest by Maxichen_'
+    '⚡ _HelloKitty Baby Maxi 💔 Speedtest by Maxichen_'
   ].filter(Boolean).join('\n');
 
   try {
@@ -1758,7 +8937,7 @@ async function sendPlayResultMedia(sock, from, msg, result, input, opts = {}) {
   let sentMedia = 0;
 
   const infoText = [
-    opts.auto ? '> 📥 *LOVE BOT — AUTO DOWNLOAD RESULT*' : '> ▶️ *LOVE BOT — PLAY RESULT*',
+    opts.auto ? '> 📥 *HELLOKITTY BABY MAXI — AUTO DOWNLOAD (umsonst)*' : '> ▶️ *HELLOKITTY BABY MAXI — PLAY RESULT (ni hört zu)*',
     '',
     `• *Plattform:* ${result.platform || 'Unbekannt'}`,
     `• *Titel:* ${result.title || 'Unbekannt'}`,
@@ -1797,7 +8976,7 @@ async function sendPlayResultMedia(sock, from, msg, result, input, opts = {}) {
         video: mp4Video.content,
         caption: `🎬 *Video MP4*\n${result.title || input}\n\n_${mp4Video.note}_`,
         mimetype: 'video/mp4',
-        fileName: 'LoveBot-Video.mp4',
+        fileName: 'babymaxi-trauer.mp4',
         gifPlayback: false
       }, { quoted: msg });
       sentMedia++;
@@ -1808,7 +8987,7 @@ async function sendPlayResultMedia(sock, from, msg, result, input, opts = {}) {
           await sendFn({
             document: mp4Video.content,
             mimetype: 'video/mp4',
-            fileName: 'LoveBot-Video.mp4',
+            fileName: 'babymaxi-trauer.mp4',
             caption: `🎬 *Video MP4 Datei*\n${result.title || input}`
           }, { quoted: msg });
           sentMedia++;
@@ -1828,7 +9007,7 @@ async function sendPlayResultMedia(sock, from, msg, result, input, opts = {}) {
       await sendFn({
         audio: mp4Audio.content,
         mimetype: mp4Audio.mimetype,
-        fileName: mp4Audio.fileName || 'LoveBot-Audio.m4a',
+        fileName: mp4Audio.fileName || 'HelloKitty Baby Maxi 💔-Audio.m4a',
         ptt: false
       }, { quoted: msg });
       sentMedia++;
@@ -1839,7 +9018,7 @@ async function sendPlayResultMedia(sock, from, msg, result, input, opts = {}) {
           await sendFn({
             document: mp4Audio.content,
             mimetype: mp4Audio.mimetype || 'audio/mp4',
-            fileName: mp4Audio.fileName || 'LoveBot-Audio.m4a',
+            fileName: mp4Audio.fileName || 'HelloKitty Baby Maxi 💔-Audio.m4a',
             caption: `🎧 *Audio Datei*\n${result.title || input}`
           }, { quoted: msg });
           sentMedia++;
@@ -1896,7 +9075,7 @@ async function handleAutoLinkDownload(sock, msg, from, text) {
     let statusKey = null;
     try {
       const statusMsg = await sock.sendMessage(from, {
-        text: '> 📥 *LOVE BOT — AUTO DOWNLOAD*\n\n' +
+        text: '> 📥 *HELLOKITTY BABY MAXI — AUTO DOWNLOAD*\n\n' +
           `• 🔗 *Plattform:* ${platformLabel}\n` +
           '⏳ _Medien werden geladen …_'
       }, { quoted: msg });
@@ -2120,6 +9299,26 @@ function loveStatusText(profile) {
     `  • *Gemeinsame Zeit:* ${days} Tag${days === 1 ? '' : 'e'} 💕`;
 }
 
+/* 🖋️ FANCY-SCHRIFT: Buchstaben in Schönschrift — gleicher Stil wie der
+   Bot-Name. Für Header, Menüs und Karten. Leerzeichen/Satz bleiben stehen. */
+const FANCY_UP_BASE = 0x1d4d0;   /* 𝓐 */
+const FANCY_LO_BASE = 0x1d4ea;   /* 𝓪 */
+const fancyCache = new Map();
+function fancyText(input) {
+  const src = String(input || '');
+  const hit = fancyCache.get(src);
+  if (hit !== undefined) return hit;
+  let out = '';
+  for (const ch of src) {
+    const code = ch.codePointAt(0);
+    if (code >= 65 && code <= 90) out += String.fromCodePoint(FANCY_UP_BASE + (code - 65));
+    else if (code >= 97 && code <= 122) out += String.fromCodePoint(FANCY_LO_BASE + (code - 97));
+    else out += ch;
+  }
+  fancyCache.set(src, out);
+  return out;
+}
+
 /* ── 🪪 Profil-Karten: XP-Balken, kompakt & Detail ────────────────────
    Datenbasis: UserProfile + loveplus-Snapshot (getLoveSnapshot).
    Nur echte Werte — Fehlendes bleibt '—', Alter niemals öffentlich.     */
@@ -2167,32 +9366,53 @@ function buildCompactProfileCard({ userProfile, snapshot, roleText = '', name, u
   const games = snap.games || {};
   const de = (n) => Number(n || 0).toLocaleString('de-DE');
   const out = [];
-  const showName = (name && name !== 'Nicht angegeben') ? name : 'LoveBot-Profil';
+  const showName = (name && name !== 'Nicht angegeben') ? name : 'HelloKitty Baby Maxi 💔-Profil';
   const showUser = (username && username !== 'Nicht vorhanden') ? username : '';
   const verified = p.status?.verified === true;
 
-  out.push(...glassProfileHeader('PROFILE', showName));
-  out.push('> 🌹✨ *' + showName + '* ✨🌹');
-  if (showUser) out.push('> 🔗 ' + showUser);
-  if (verified) out.push('> ✅ Verifiziert · 🛡️ DSGVO ' + (p.status?.dsgvo?.accepted ? '✓' : '—'));
-  if (roleText && String(roleText).trim()) out.push('> ' + String(roleText).trim().replace(/^[•·]\s*/, ''));
-  if (personalInfo) {
-    const pv = [];
-    if (personalInfo.age) pv.push('🎂 ' + personalInfo.age);
-    if (personalInfo.status) pv.push('💘 ' + personalInfo.status);
-    if (personalInfo.city) pv.push('📍 ' + personalInfo.city);
-    if (pv.length) out.push('> ' + pv.join(' · '));
-  }
-  if (regDate) out.push('> 📅 Mitglied seit ' + regDate + (memberDays !== null && memberDays !== undefined && memberDays >= 0 ? ' (' + memberDays + ' Tag(e))' : ''));
+  /* 🎨 DESIGN 2026.3 „GLASS RAIL" — kräftige Trennlinien statt Kasten mit
+     rechtem Rand: Emoji-Breiten unterscheiden sich je Gerät/OS, deshalb
+     bewusst NUR links ausgerichtete Zeilen. Auf iOS, Android, Web und
+     Desktop identisch sauber — nichts verrutscht, nichts bricht ab. */
+  const RAIL = '▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰';
+  const SOFT = '┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄';
+  const roleClean = String(roleText || '').trim().replace(/^[•·]\s*/, '');
+  const lvl = prog.level || 0;
+  const rk = rankFor(prog.prestige || 0, lvl);
+
+  /* ── KOPF: fancy Name wie in der $menu-Karte ── */
+  out.push(RAIL);
+  out.push('🥀 *' + fancyText(String(showName).toUpperCase()) + '*');
+  out.push('💜 LOVE•BOT PROFIL · ⭐ LEVEL ' + lvl + (prog.prestige ? ' · 👑 PRESTIGE ' + prog.prestige : ''));
+  out.push(RAIL);
   out.push('');
 
-  out.push('⭐ *Level ' + (prog.level || 0) + '*' + (prog.prestige ? ' · 👑 Prestige ' + prog.prestige : ''));
-  out.push('`' + xp.bar + '`  ' + xp.pct + '%');
-  out.push('✨ ' + de(prog.xp) + ' / ' + de(prog.neededXpForLvOrPrestigeUp) + ' XP — noch ' + de(xp.rest) + ' bis Level ' + ((prog.level || 0) + 1));
-  out.push('🏅 ' + rankFor(prog.prestige || 0, prog.level || 0).full + ' · Σ ' + de(prog.totalXp) + ' XP');
-  out.push('');
+  /* ── IDENTITÄT ── */
+  const idBits = ['👤 *' + showName + '*'];
+  if (showUser) idBits.push('🆔 ' + showUser);
+  out.push(idBits.join('  ·  '));
+  const metaBits = [];
+  if (personalInfo && personalInfo.age) metaBits.push('🎂 ' + personalInfo.age);
+  if (personalInfo && personalInfo.status) metaBits.push('💘 ' + personalInfo.status);
+  if (personalInfo && personalInfo.city) metaBits.push('📍 ' + personalInfo.city);
+  if (roleClean) metaBits.push('🛡️ ' + roleClean);
+  if (verified) metaBits.push('✅ verifiziert');
+  if (metaBits.length) out.push(metaBits.join('  ·  '));
+  const regBits = ['📅 dabei seit ' + (regDate || '—')];
+  if (memberDays !== null && memberDays !== undefined && memberDays >= 0) regBits.push('🗓️ ' + memberDays + ' Tage');
+  regBits.push('🛡️ DSGVO ' + (p.status?.dsgvo?.accepted ? 'akzeptiert ✅' : (p.status?.dsgvo?.rejected ? 'abgelehnt ❌' : 'offen ☑️')));
+  out.push(regBits.join('  ·  '));
+  out.push(SOFT);
 
-  out.push('💎 *ECONOMY*');
+  /* ── LEVEL & XP ── */
+  out.push('⭐ *LEVEL ' + lvl + ' · ' + rk.emoji + ' ' + rk.title + '*');
+  out.push('`' + xp.bar + '`  *' + xp.pct + ' %*');
+  out.push('✨ ' + de(prog.xp) + ' / ' + de(prog.neededXpForLvOrPrestigeUp) + ' XP · noch ' + de(xp.rest) + ' bis Level ' + (lvl + 1));
+  out.push('🏅 Σ ' + de(prog.totalXp) + ' XP insgesamt');
+  out.push(SOFT);
+
+  /* ── ECONOMY ── */
+  out.push('💎 *VERMÖGEN*');
   if (hideEconomy) {
     out.push('🔒 _privat — diese Person teilt ihr Vermögen nicht._');
   } else {
@@ -2201,37 +9421,74 @@ function buildCompactProfileCard({ userProfile, snapshot, roleText = '', name, u
     if (eco.bank) econExtras.push('🏦 ' + de(eco.bank) + ' Bank');
     if (eco.items) econExtras.push('📦 ' + eco.items + ' Items');
     if (eco.walletRank) econExtras.push('🥇 Wallet-Rang #' + eco.walletRank);
-    if (econExtras.length) out.push(econExtras.join(' · '));
+    if (econExtras.length) out.push(econExtras.join('  ·  '));
   }
-  out.push('');
+  out.push(SOFT);
 
+  /* ── LIEBE ── */
   out.push('❤️ *LIEBE*');
   if (love.married) {
-    out.push('💍 Verheiratet mit *' + (love.spouseName || '?') + '*' + (love.daysTogether !== null && love.daysTogether !== undefined ? ' · ' + love.daysTogether + ' Tag(e)' : ''));
+    out.push('💍 verheiratet mit *' + (love.spouseName || '?') + '*' + (love.daysTogether !== null && love.daysTogether !== undefined ? ' · 🗓️ ' + love.daysTogether + ' Tage' : ''));
   } else {
     out.push('🕊️ Single — die große Liebe wartet noch …');
   }
   if (love.couple) {
-    out.push('💗 Couple Lv ' + (love.couple.level || 0) + ' · ' + de(love.couple.loveXp) + ' Love-XP · 🔥 ' + (love.couple.streak || 0) + 'd Streak · 💌 ' + (love.couple.memories || 0) + ' Erinnerungen');
+    out.push('💗 Couple Lv ' + (love.couple.level || 0) + ' · ' + de(love.couple.loveXp) + ' Love-XP · 🔥 ' + (love.couple.streak || 0) + 'd · 💌 ' + (love.couple.memories || 0) + ' Erinnerungen');
   }
-  out.push('');
+  out.push(SOFT);
 
+  /* ── HAUSTIER ── */
   if (pet) {
     out.push('🐾 *HAUSTIER*');
-    out.push(pet.name + ' ' + pet.type + ' (Lv ' + (pet.level || 1) + ') · ❤️ ' + (pet.love ?? 0) + '% · 😊 ' + (pet.mood ?? 0) + '%');
-    out.push('🍖 Hunger ' + (pet.hunger ?? 0) + '% · ⚡ Energie ' + (pet.energy ?? 0) + '%');
-    out.push('');
+    const petType = String(pet.type || '🐾');
+    const hasEmoji = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u.test(petType);
+    out.push((hasEmoji ? '' : '🐱 ') + pet.name + ' ' + petType + ' · Lv ' + (pet.level || 1));
+    out.push('❤️ ' + (pet.love ?? 0) + '% · 😊 ' + (pet.mood ?? 0) + '% · 🍖 ' + (pet.hunger ?? 0) + '% · ⚡ ' + (pet.energy ?? 0) + '%');
+    out.push(SOFT);
   }
 
+  /* ── ERFOLGE & AKTIVITÄT ── */
+  out.push('🏆 *ERFOLGE & AKTIVITÄT*');
   const achLine = (ach.count || 0) > 0 ? '🏆 ' + ach.count + ' Erfolge' : '';
   const gameLine = (games.wins || games.losses) ? '🎮 ' + de(games.wins) + ' Siege · ' + de(games.losses) + ' Niederlagen' : '';
   const streakLine = '🔥 Daily-Streak ' + (snap.streak || 0) + 'd';
   const loveLine = loveMsgs > 0 ? '💌 ' + de(loveMsgs) + ' Liebesnachrichten' : '';
-  out.push([achLine, streakLine, loveLine, gameLine].filter(Boolean).join(' · '));
+  const actBits = [achLine, streakLine, loveLine, gameLine].filter(Boolean);
+  out.push(actBits.length ? actBits.join('  ·  ') : '🕯️ _noch keine Aktivität — schreib eine Nachricht!_');
   out.push('');
-  out.push('💡 ' + pref + 'me info — alles im Detail · ' + pref + 'me (Buttons) — Schnellzugriff');
+  out.push(RAIL);
+  out.push('💡 ' + pref + 'me info — alles im Detail · 🥀 LOVE•BOT');
   return out.join('\n');
 }
+
+/* 🖼️ Kurz-Caption fürs Profilbild — WhatsApp kappt Bild-Captions bei ~1024
+   Zeichen, die volle Karte kommt deshalb als separate Textnachricht. */
+function buildProfileCoverCaption(p, snapshot, name, username) {
+  const prog = p?.progression || {};
+  const eco = snapshot?.economy || {};
+  const love = snapshot?.love || {};
+  const ach = snapshot?.achievements || { count: 0 };
+  const xp = xpBarText(prog.xp, prog.neededXpForLvOrPrestigeUp);
+  const de = (n) => Number(n || 0).toLocaleString('de-DE');
+  const showName = (name && name !== 'Nicht angegeben') ? name : 'HelloKitty Baby Maxi 💔';
+  const RAIL = '▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰';
+  const L = [];
+  /* Kurz-Caption im gleichen „Glass Rail"-Stil wie die Hauptkarte. */
+  L.push(RAIL);
+  L.push('🥀 *' + fancyText(String(showName).toUpperCase()) + '*');
+  L.push('💜 LOVE•BOT PROFIL · ⭐ LEVEL ' + (prog.level || 0) + (prog.prestige ? ' · 👑 PRESTIGE ' + prog.prestige : ''));
+  L.push(RAIL);
+  L.push('👤 *' + showName + '*' + (username && username !== 'Nicht vorhanden' ? ' · 🆔 ' + username : ''));
+  L.push('`' + xp.bar + '`  *' + xp.pct + ' %*');
+  L.push('✨ ' + de(prog.xp) + ' / ' + de(prog.neededXpForLvOrPrestigeUp) + ' XP');
+  L.push('💎 ' + de(eco.copper) + ' Kupfer' + (eco.walletRank ? ' · 🥇 Wallet #' + eco.walletRank : ''));
+  L.push(love.married ? '💍 Verheiratet · 🗓️ ' + (love.daysTogether ?? 0) + ' Tage' : '🕊️ Single');
+  L.push('🏆 ' + (ach.count || 0) + ' Erfolge · 🔥 ' + (snapshot?.streak || 0) + 'd Streak');
+  L.push('');
+  L.push('👇 die vollständige Karte kommt direkt darunter');
+  return L.join('\n');
+}
+
 
 function buildDetailProfileCard({ userProfile, snapshot, isHost = false, roleText = '', name, username, regDate, pref = '$', privateView = false, jid = '', lid = '', sid = '' }) {
   const p = userProfile || {};
@@ -2255,7 +9512,7 @@ function buildDetailProfileCard({ userProfile, snapshot, isHost = false, roleTex
   const cpActs = loveActionSummary(cpCore.actions);
   const out = [...glassProfileHeader('PROFILE · FULL', 'Live account view'),
     '> 🪪✨ *PROFIL — ALLES IM DETAIL* ✨🪪',
-    '> 💜 _Dein komplettes LoveBot-Profil · Werte live aus deinem Konto_'];
+    '> 💜 _Dein komplettes HelloKitty Baby Maxi 💔-Profil · Werte live aus deinem Konto_'];
 
   /* 👑 Account (nur der Owner sieht das) */
   if (isHost) {
@@ -2354,7 +9611,7 @@ function buildDetailProfileCard({ userProfile, snapshot, isHost = false, roleTex
   out.push('• 🔒 Sichtbarkeit: Stadt ' + (reg?.privacy?.hideCity ? 'versteckt' : (privateView ? 'sichtbar' : 'maskiert')) +
     ' · Alter ' + (reg?.privacy?.hideAge ? 'versteckt' : (isMinor(reg) ? 'unter 18 (geschützt)' : (privateView ? 'sichtbar' : 'nicht angezeigt'))));
   if (roleText && String(roleText).trim()) out.push('', String(roleText).trim());
-  out.push('', '🌹 _LoveBot by Maxichen_ 🌹');
+  out.push('', '🌹 _HelloKitty Baby Maxi 💔 by Maxichen_ 🌹');
   return out.join('\n');
 }
 
@@ -2389,99 +9646,127 @@ function buildOwnerProfileCard({ userProfile, snapshot = null, roleText = '', na
   const daysMember = reg.registeredAt ? Math.max(0, Math.floor((Date.now() - new Date(reg.registeredAt).getTime()) / 86400000)) : null;
   const out = [];
 
-  out.push(...glassProfileHeader('OWNER PROFILE', 'Private host view'));
-  out.push('> 👑✨ *LOVE BOT — OWNER PROFIL* ✨👑');
-  out.push('> 💜 _Der Boss ist im Haus._ 🕶️');
-  out.push('> 🌹┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈🌹');
-  out.push('');
-  out.push('👤 *' + name + '*' + (username && username !== 'Nicht vorhanden' ? ' · ' + username : ''));
-  if (roleText && String(roleText).trim()) out.push('> ' + String(roleText).trim().replace(/^[•·]\s*/, ''));
-  out.push('> 🎂 ' + regAge + ' · 💘 ' + regStatus + ' · 📍 ' + regCity);
-  out.push('> 📅 Registriert seit ' + regDate + (daysMember !== null ? ' (' + daysMember + ' Tag(e))' : ''));
-  out.push('');
+  const RAIL = '▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰';
+  const SOFT = '┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄';
+  const roleClean = String(roleText || '').trim().replace(/^[•·]\s*/, '');
+  const lvl = prog.level || 0;
+  const rk = rankFor(prog.prestige || 0, lvl);
+  const showUser = (username && username !== 'Nicht vorhanden') ? username : '';
 
-  out.push('⭐ *LEVEL & XP*');
-  out.push('> Level ' + (prog.level || 0) + (prog.prestige ? ' · 👑 Prestige ' + prog.prestige : ''));
-  out.push('> `' + xp.bar + '`  ' + xp.pct + '%');
-  out.push('> ✨ ' + de(prog.xp) + ' / ' + de(prog.neededXpForLvOrPrestigeUp) + ' XP — noch ' + de(xp.rest) + ' bis Level ' + ((prog.level || 0) + 1));
-  out.push('> 🏅 ' + rankFor(prog.prestige || 0, prog.level || 0).full + ' · Σ ' + de(prog.totalXp) + ' XP');
+  /* ── KOPF: königlich, im Menu-Stil ── */
+  out.push(RAIL);
+  out.push('👑🥀 *' + fancyText('HELLOKITTY BABY MAXI') + '* 💔');
+  out.push('✨ OWNER PROFIL · ⭐ LEVEL ' + lvl + (prog.prestige ? ' · 👑 P' + prog.prestige : ''));
+  out.push(RAIL);
   out.push('');
+  const headBits = ['👤 *' + name + '*'];
+  if (showUser) headBits.push('🆔 ' + showUser);
+  if (roleClean) headBits.push('🛡️ ' + roleClean);
+  out.push(headBits.join('  ·  '));
+  out.push('💜 _Der Boss ist im Haus._ 🕶️');
+  const perBits = [];
+  if (regAge && regAge !== '—') perBits.push('🎂 ' + regAge);
+  if (regStatus && regStatus !== '—') perBits.push('💘 ' + regStatus);
+  if (regCity && regCity !== '—') perBits.push('📍 ' + regCity);
+  if (perBits.length) out.push(perBits.join('  ·  '));
+  const regBits = ['📅 registriert seit ' + regDate];
+  if (daysMember !== null) regBits.push('🗓️ ' + daysMember + ' Tage');
+  out.push(regBits.join('  ·  '));
+  out.push(SOFT);
 
-  out.push('💎 *ECONOMY*');
-  out.push('> 🤎 ' + de(eco.copper) + ' Kupfer · 🩶 ' + de(eco.silver) + ' Silber · 💛 ' + de(eco.gold) + ' Gold · 🩵 ' + de(eco.platin) + ' Platin');
+  /* ── LEVEL & XP ── */
+  out.push('⭐ *LEVEL ' + lvl + ' · ' + rk.emoji + ' ' + rk.title + '*');
+  out.push('`' + xp.bar + '`  *' + xp.pct + ' %*');
+  out.push('✨ ' + de(prog.xp) + ' / ' + de(prog.neededXpForLvOrPrestigeUp) + ' XP · noch ' + de(xp.rest) + ' bis Level ' + (lvl + 1));
+  out.push('🏅 Σ ' + de(prog.totalXp) + ' XP' + (prog.prestige ? ' · 👑 Prestige ' + prog.prestige : ''));
+  out.push(SOFT);
+
+  /* ── ECONOMY ── */
+  out.push('💎 *VERMÖGEN*');
+  out.push('🤎 ' + de(eco.copper) + ' Kupfer · 🩶 ' + de(eco.silver) + ' Silber · 💛 ' + de(eco.gold) + ' Gold · 🩵 ' + de(eco.platin) + ' Platin');
   const econExtras = [];
   if (eco.bank) econExtras.push('🏦 ' + de(eco.bank) + ' Bank' + (p.bank?.active ? ' (aktiv)' : ''));
   if (eco.items) econExtras.push('📦 ' + eco.items + ' Items');
   if (eco.walletRank) econExtras.push('🥇 Wallet-Rang #' + eco.walletRank);
-  if (econExtras.length) out.push('> ' + econExtras.join(' · '));
-  out.push('> ⏱️ Zuletzt: täglich ' + (rewards.lastDailyAt ? formatDateTimeShort(rewards.lastDailyAt) : (prog.lastDaily ? 'am ' + prog.lastDaily : '—')) +
+  if (econExtras.length) out.push(econExtras.join('  ·  '));
+  out.push('⏱️ zuletzt: täglich ' + (rewards.lastDailyAt ? formatDateTimeShort(rewards.lastDailyAt) : (prog.lastDaily ? 'am ' + prog.lastDaily : '—')) +
     ' · Arbeit ' + (rewards.lastWorkAt ? formatDateTimeShort(rewards.lastWorkAt) : '—'));
-  out.push('');
+  out.push(SOFT);
 
+  /* ── LIEBE ── */
   out.push('❤️ *LIEBE*');
   if (love.married) {
-    out.push('> 💍 Verheiratet mit *' + (love.spouseName || '?') + '* · seit ' + (love.marriedAt ? formatDateTimeShort(love.marriedAt) : '?') + ' · ' + (love.daysTogether ?? 0) + ' Tag(e)');
-    if (love.couple) out.push('> 💗 Couple Lv ' + (love.couple.level || 0) + ' · ' + de(love.couple.loveXp) + ' Love-XP · 🔥 ' + (love.couple.streak || 0) + 'd Streak · 💌 ' + (love.couple.memories || 0) + ' Erinnerungen');
-    out.push('> 💒 Ehen gesamt: ' + (love.marriages || 1) + (cpCore.breakups ? ' · 💔 Trennungen: ' + cpCore.breakups : ''));
-    if (cpActs) out.push('> 💑 Paar-Aktionen: ' + cpActs.lines.join(' · ') + (cpActs.rest ? ' · +' + cpActs.rest : ''));
+    out.push('💍 verheiratet mit *' + (love.spouseName || '?') + '* · seit ' + (love.marriedAt ? formatDateTimeShort(love.marriedAt) : '?') + ' · 🗓️ ' + (love.daysTogether ?? 0) + ' Tage');
+    if (love.couple) out.push('💗 Couple Lv ' + (love.couple.level || 0) + ' · ' + de(love.couple.loveXp) + ' Love-XP · 🔥 ' + (love.couple.streak || 0) + 'd · 💌 ' + (love.couple.memories || 0) + ' Erinnerungen');
+    out.push('💒 Ehen gesamt ' + (love.marriages || 1) + (cpCore.breakups ? ' · 💔 Trennungen ' + cpCore.breakups : ''));
+    if (cpActs) out.push('💑 Paar-Aktionen: ' + cpActs.lines.join(' · ') + (cpActs.rest ? ' · +' + cpActs.rest : ''));
   } else {
-    out.push('> 🕊️ Single — die große Liebe wartet noch …');
+    out.push('🕊️ Single — die große Liebe wartet noch …');
   }
-  out.push('');
+  out.push(SOFT);
 
+  /* ── HAUSTIER ── */
   out.push('🐾 *HAUSTIER*');
-  if (pet) out.push('> ' + pet.name + ' ' + pet.type + ' (Lv ' + (pet.level || 1) + ') · ❤️ ' + (pet.love ?? 0) + '% · 😊 ' + (pet.mood ?? 0) + '% · 🍖 ' + (pet.hunger ?? 0) + '% · ⚡ ' + (pet.energy ?? 0) + '%');
-  else out.push('> Noch keins — ' + pref + 'pet create 🐾');
-  out.push('');
+  if (pet) {
+    const petType = String(pet.type || '🐾');
+    const hasEmoji = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u.test(petType);
+    out.push((hasEmoji ? '' : '🐱 ') + pet.name + ' ' + petType + ' · Lv ' + (pet.level || 1));
+    out.push('❤️ ' + (pet.love ?? 0) + '% · 😊 ' + (pet.mood ?? 0) + '% · 🍖 ' + (pet.hunger ?? 0) + '% · ⚡ ' + (pet.energy ?? 0) + '%');
+  } else {
+    out.push('🕊️ noch keins — ' + pref + 'pet create 🐾');
+  }
+  out.push(SOFT);
 
+  /* ── ERFOLGE ── */
   out.push('🏆 *ERFOLGE*');
-  out.push('> ' + (ach.count || 0) + ' freigeschaltet');
-  for (const a of (ach.preview || []).slice(0, 5)) out.push('> ' + (a.emoji || '🏅') + ' ' + a.name);
-  if (ach.count > 5) out.push('> … und ' + (ach.count - 5) + ' weitere');
-  out.push('');
+  out.push('🏅 ' + (ach.count || 0) + ' freigeschaltet');
+  for (const a of (ach.preview || []).slice(0, 5)) out.push((a.emoji || '🏅') + ' ' + a.name);
+  if (ach.count > 5) out.push('… und ' + (ach.count - 5) + ' weitere');
+  out.push(SOFT);
 
+  /* ── GAMES ── */
   out.push('🎮 *GAMES*');
   const winsN = games.wins || 0;
   const lossesN = games.losses || 0;
   const totalG = winsN + lossesN;
   const quote = totalG > 0 ? Math.round((winsN / totalG) * 100) + '%' : '—';
-  out.push('> Siege ' + de(winsN) + ' · Niederlagen ' + de(lossesN) + ' · Quote ' + quote);
-  out.push('> 🔥 Serie ' + de(games.winStreak || 0) + ' (Rekord ' + de(p.games?.highestWinStreak || 0) + ') · Höchster Einsatz ' + de(p.games?.highestWin || 0));
-  out.push('> 🎯 Gespielt ' + de(p.games?.gamesPlayed || totalG) + ' Runden' + (p.games?.lastPlayedAt ? ' · Zuletzt ' + formatDateTimeShort(p.games.lastPlayedAt) : ''));
-  out.push('');
+  out.push('🎯 ' + de(p.games?.gamesPlayed || totalG) + ' Runden · Siege ' + de(winsN) + ' · Niederlagen ' + de(lossesN) + ' · Quote ' + quote);
+  out.push('🔥 Serie ' + de(games.winStreak || 0) + ' (Rekord ' + de(p.games?.highestWinStreak || 0) + ') · Höchster Einsatz ' + de(p.games?.highestWin || 0) +
+    (p.games?.lastPlayedAt ? ' · Zuletzt ' + formatDateTimeShort(p.games.lastPlayedAt) : ''));
+  out.push(SOFT);
 
-  out.push('🛡️ *STATUS-ZEITEN*');
-  out.push('> DSGVO: ' + (status.dsgvo?.accepted ? 'akzeptiert ✅ am ' + formatDateTimeShort(status.dsgvo.acceptedAt) : (status.dsgvo?.rejected ? 'abgelehnt ❌' : 'offen ☑️')));
-  out.push('> Verify: ' + (status.verified ? '✅ seit ' + (status.verifiedAt ? formatDateTimeShort(status.verifiedAt) : '—') : '☑️ nicht verifiziert'));
-  out.push('> Mapping: ' + (status.mappedAt ? formatDateTimeShort(status.mappedAt) : '—'));
-  out.push('');
+  /* ── STATUS-ZEITEN ── */
+  out.push('🛡️ *STATUS*');
+  out.push('DSGVO: ' + (status.dsgvo?.accepted ? 'akzeptiert ✅ am ' + formatDateTimeShort(status.dsgvo.acceptedAt) : (status.dsgvo?.rejected ? 'abgelehnt ❌' : 'offen ☑️')));
+  out.push('Verify: ' + (status.verified ? '✅ seit ' + (status.verifiedAt ? formatDateTimeShort(status.verifiedAt) : '—') : '☑️ nicht verifiziert') +
+    (status.mappedAt ? ' · Mapping ' + formatDateTimeShort(status.mappedAt) : ''));
+  out.push(SOFT);
 
+  /* ── AKTIVITÄT ── */
   out.push('📊 *AKTIVITÄT*');
-  out.push('> 🔥 Daily-Streak ' + (snap.streak || 0) + 'd · 💌 ' + de(myCore.loveMessages || 0) + ' Liebesnachrichten' + (core.couple ? ' (Paar: ' + de(cpCore.loveMessages || 0) + ')' : ''));
-  if (myActs) out.push('> 💖 ' + myActs.total + ' Love-Aktionen: ' + myActs.lines.join(' · ') + (myActs.rest ? ' · +' + myActs.rest : ''));
-  out.push('');
+  out.push('🔥 Daily-Streak ' + (snap.streak || 0) + 'd · 💌 ' + de(myCore.loveMessages || 0) + ' Liebesnachrichten' + (core.couple ? ' (Paar: ' + de(cpCore.loveMessages || 0) + ')' : ''));
+  if (myActs) out.push('💖 ' + myActs.total + ' Love-Aktionen: ' + myActs.lines.join(' · ') + (myActs.rest ? ' · +' + myActs.rest : ''));
+  out.push(SOFT);
 
+  /* ── ACCOUNT (nur der Owner) ── */
   out.push('🔐 *ACCOUNT · nur du siehst das*');
-  out.push('> Username: ' + (username && username !== 'Nicht vorhanden' ? username : '—'));
-  out.push('> 📱 Telefon: ' + (p.identity?.phone || '—'));
-  out.push('> JID: `' + jid + '` · LID: `' + lid + '`');
-  out.push('> SID: `' + sid + '` · BID: `' + bid + '`');
-  out.push('> 🛡️ DSGVO: ' + dsgvo + ' · Verify: ' + verify);
-  out.push('');
+  out.push('🆔 Username: ' + (showUser || '—') + ' · 📱 Telefon: ' + (p.identity?.phone || '—'));
+  out.push('🪪 JID `' + jid + '` · LID `' + lid + '`');
+  out.push('🔑 SID `' + sid + '` · BID `' + bid + '`');
+  out.push('🛡️ DSGVO ' + dsgvo + ' · Verify ' + verify);
+  out.push(SOFT);
 
+  /* ── LIVE-SYSTEM ── */
   out.push('📊 *LIVE-SYSTEM*');
   if (stats) {
-    out.push('> 👥 ' + stats.totalUsers + ' Nutzer · 📝 ' + stats.registeredUsers + ' registriert · ✅ ' + stats.verifiedUsers + ' verifiziert');
-    out.push('> 👥 ' + stats.totalGroups + ' Gruppen · 🟢 ' + stats.activeGroups + ' aktiv · 🛠️ ' + stats.setupGroups + ' Setup');
-    out.push('> 🚫 ' + stats.totalBans + ' Bans · 💤 ' + stats.totalAfk + ' AFK');
-    out.push('> ⏱️ Uptime ' + stats.uptime + ' · 💾 ' + ram + ' MB RAM · Node ' + (process.version || '?'));
-  } else {
-    out.push('> ⏱️ Uptime ' + fmtUp(process.uptime()) + ' · 💾 ' + ram + ' MB RAM · Node ' + (process.version || '?'));
+    out.push('👥 ' + stats.totalUsers + ' Nutzer · 📝 ' + stats.registeredUsers + ' registriert · ✅ ' + stats.verifiedUsers + ' verifiziert');
+    out.push('👥 ' + stats.totalGroups + ' Gruppen · 🟢 ' + stats.activeGroups + ' aktiv · 🛠️ ' + stats.setupGroups + ' Setup');
   }
+  out.push('⏱️ Uptime ' + (stats ? stats.uptime : fmtUp(process.uptime())) + ' · 💾 ' + ram + ' MB RAM · Node ' + (process.version || '?'));
   out.push('');
-  out.push('> 🌹┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈🌹');
-  out.push('> 🏅 *Rolle:* Owner & Entwickler 👑');
-  out.push('> 💜 *LoveBot* · maxichen.de · maxichen.gamebot.me');
+  out.push(RAIL);
+  out.push('🏅 *Rolle:* Owner & Entwickler 👑');
+  out.push('💜 *HelloKitty Baby Maxi 💔* · maxichen.gamebot.me');
   return out.join('\n');
 }
 
@@ -2625,130 +9910,94 @@ function buildHelpCategoryText(cat) {
     const rest = parts.slice(1).join(' ');
     return '❥ *' + cmd + '*' + (rest ? ' _' + rest + '_' : '') + ' — ' + desc;
   }).join('\n');
-  return `> ${cat.emoji} *LOVE BOT — ${cat.title.toUpperCase()}*\n> _${cat.cmds.length} Befehle_\n\n` +
+  return `> ${cat.emoji} *HELLOKITTY BABY MAXI — ${cat.title.toUpperCase()}*\n> _${cat.cmds.length} Befehle_\n\n` +
     body +
     `\n\n${LINE}\n` +
     `💡 *${pref}help* → Übersicht · *${pref}help alle* → alles\n` +
-    '🌹 _LoveBot by Maxichen_';
+    '🌹 _HelloKitty Baby Maxi 💔 by Maxichen_';
 }
 
 function buildHelpAllText() {
   const LINE = '━━━━━━━━━━━━━━━━━━━━';
-  const parts = ['> 🤖💜 *LOVE BOT — ALLE BEFEHLE* 💜🤖', ''];
+  const parts = ['> 🥀 *HELLOKITTY BABY MAXI — ALLE BEFEHLE* · vollständige liste dessen, was niemand nutzt 🌧️', ''];
   for (const cat of HELP_CATEGORIES) {
     parts.push(LINE);
     parts.push(`${cat.emoji} *${cat.title.toUpperCase()}* _(${cat.cmds.length})_`);
     parts.push('');
     for (const [usage, desc] of cat.cmds) {
       const seg = usage.split(' ');
-      parts.push(`❥ *${seg[0]}*${seg.length > 1 ? ' _' + seg.slice(1).join(' ') + '_' : ''} — ${desc}`);
+      parts.push(`💔 *${seg[0]}*${seg.length > 1 ? ' _' + seg.slice(1).join(' ') + '_' : ''} — ${desc}`);
     }
     parts.push('');
   }
   parts.push(LINE);
-  parts.push(`💡 *${pref}help <kategorie>* für eine Kategorie allein`);
-  parts.push('🌹 _LoveBot by Maxichen · maxichen.de_');
+  parts.push(`💡 *${pref}help <kategorie>* für eine kategorie allein. falls dir das ganze leid zu viel ist.`);
+  parts.push('🥀 _hellokitty baby maxi 💔 by maxichen · maxichen.de · niemand schreibt zurück_');
   return parts.join('\n');
 }
 
 /* ---------- Fun-Daten (8-Ball, Witze, Fakten, Komplimente, RP) ---- */
 const EIGHTBALL_ANSWERS = [
-  '🟢 Ja, absolut!',
-  '🟢 Ohne jeden Zweifel!',
-  '🟢 Definitiv!',
-  '🟢 Die Zeichen stehen gut.',
-  '🟡 Hmm, frag später nochmal …',
-  '🟡 Ich kann das gerade nicht vorhersagen.',
-  '🟡 Konzentrier dich und frag nochmal!',
-  '🔴 Eher nicht …',
-  '🔴 Meine Antwort ist Nein.',
-  '🔴 Vergiss es lieber.',
-  '💜 Das Schicksal sagt: Vielleicht!',
-  '🌟 Die Sterne sagen JA!'
+  '🖤 ja. aber es ändert nichts.',
+  '🌧️ ohne jeden zweifel. leider.',
+  '🥀 definitiv. wie alles schlechte.',
+  '💔 die zeichen stehen schlecht. wie immer.',
+  '🌫️ frag später nochmal. ich bin noch nicht fertig traurig.',
+  '🕯️ vielleicht. niemand weiß es. niemanden interessiert es.',
+  '🖤 nein.',
+  '💧 nein. und ja, das tut weh.',
+  '🌧️ das universum sagt nein. das universum bin ich.',
+  '🥀 frag mich nicht sowas. bitte.'
 ];
 
-const LOVEBOT_JOKES = [
-  'Warum können Geister so schlecht lügen? Weil man durch sie hindurchsehen kann! 👻',
-  'Was sagt ein Hai, wenn er einen Surfer frisst? „Hey, ist da Salat drin?" 🦈',
-  'Warum nehmen Programmierer immer eine Leiter mit? Weil sie die höheren Programmiersprachen nicht verstehen! 🪜',
-  'Egal wie gut du schläfst, German schläfst du nie! 😴',
-  'Was ist grün und klopft an die Tür? Ein Klopfsalat! 🥬',
-  'Warum ist das Meer blau? Weil sich die Fische übergeben! 🐟',
-  'Treffen sich zwei Magneten. Sagt der eine: „Was soll ich heute anziehen?" 🧲',
-  'Was macht ein Clown im Büro? Faxen! 🤡',
-  'Wie nennt man einen dicken Kampfjet? Bomber! ✈️',
-  'Warum fallen Ostfriesen vom Baum? Weil sie keine Wurzeln schlagen können! 🌳',
-  'Was ist das Lieblingsessen von Autofahrern? Parkplätzchen! 🚗',
-  'Geht ein Zebra ins Kino. Kommt der Film in Schwarz-Weiß? 🦓'
-];
-
-const LOVEBOT_FACTS = [
-  '🧠 Oktopusse haben drei Herzen und blaues Blut!',
-  '🧠 Honig wird niemals schlecht — man fand 3000 Jahre alten essbaren Honig in Ägypten!',
-  '🧠 Eine Banane ist botanisch gesehen eine Beere, eine Erdbeere aber nicht!',
-  '🧠 Der erste Computer „ENIAC" wog 27 Tonnen!',
-  '🧠 Dein Gehirn verbraucht etwa 20% deiner gesamten Energie!',
-  '🧠 In der Schweiz ist es verboten, ein einzelnes Meerschweinchen zu halten — sie sind gesetzlich gesellig!',
-  '🧠 Ein Tag auf der Venus ist länger als ein Jahr auf der Venus!',
-  '🧠 Otter halten beim Schlafen Händchen, damit sie nicht auseinanderdriften! 🦦',
-  '🧠 WhatsApp-Nachrichten werden Ende-zu-Ende verschlüsselt — nicht mal WhatsApp kann mitlesen!',
-  '🧠 Das Herz eines Blauwals ist so groß, dass ein kleines Kind hindurchschwimmen könnte!',
-  '🧠 Elefanten können sich selbst im Spiegel erkennen!',
-  '🧠 Der längste registrierte Flug eines Huhns dauerte 13 Sekunden! 🐔'
-];
-
-const LOVEBOT_COMPLIMENTS = [
-  '🌹 Du bist wie Sonnenschein an einem Regentag!',
-  '💜 Dein Lächeln könnte ganze Städte erhellen!',
-  '✨ Du machst jeden Chat ein bisschen schöner!',
-  '🌟 Mit dir wird jede Gruppe zur VIP-Lounge!',
-  '💫 Du hast das Herz am richtigen Fleck!',
-  '🔥 Deine Energie ist einfach ansteckend — im besten Sinne!',
-  '🥰 Bei dir fühlt sich jeder willkommen!',
-  '👑 Du wärst selbst in einem Raum voller Stars der Hauptgewinn!',
-  '🌸 Deine Art ist einzigartig — bleib genau so!',
-  '💎 Du bist seltener als ein Diamant!'
+const LOVEBOT_COMPLIMENTS = [   /* interner Identifier — Inhalt ist trotzdem kaputt wie alles */
+  '💔 du hast das herz am richtigen fleck. es ist nur gebrochen.',
+  '🌧️ deine energie ist ansteckend. wie alles schlechte.',
+  '🥀 bei dir fühlt sich jeder willkommen. außer dir selbst.',
+  '🖤 du wärst selbst in einem raum voller stars der hauptgewinn. niemand holt dich ab.',
+  '🌫️ deine art ist einzigartig. das ist kein kompliment.',
+  '💧 du bist seltener als ein diamant. und genauso kalt.'
 ];
 
 const KISS_PHRASES = [
-  'küsst 💋 zärtlich …',
-  'gibt einen Kuss auf die Stirn 😘',
-  'küsst leidenschaftlich 💋🔥',
-  'haucht einen kleinen Kuss zu 😚',
-  'küsst mitten ins Herz 💘'
+  'küsst 💔 … aber ohne gefühl',
+  'gibt einen kuss auf die stirn. es bedeutet nichts 🌧️',
+  'küsst mechanisch. irgendwas muss man ja tun 💔',
+  'haucht einen kuss zu. er verweht im regen 🌧️',
+  'küsst ins herz. das herz ist schon kaputt 💔'
 ];
 
 const HUG_PHRASES = [
-  'umarmt ganz fest 🤗',
-  'drückt lieb an sich 🫂',
-  'gibt eine warme Umarmung 🤗💜',
-  'umarmt, bis alles gut ist 🫂✨',
-  'schlingt die Arme um 💜'
+  'umarmt leer 🫂',
+  'drückt an sich. niemand fühlt etwas 🌧️',
+  'gibt eine umarmung, die nichts repariert 💔',
+  'umarmt, bis es vorbei ist. es wird nicht besser 🥀',
+  'schlingt die arme um. die leere bleibt 🖤'
 ];
 
 const KILL_PHRASES = [
-  'haut vor lauter Liebe einfach um 💘✨',
-  'landet einen süßen Herztreffer 💥💜',
-  'lässt das Herz kurz stolpern — vor Liebe natürlich 😵‍💫💖',
-  'besiegt mit maximaler Kuschel-Power 🫂⚡',
-  'schickt eine extra süße Love-Attacke 💌💫'
+  'zerstört 💔 … so wie alles',
+  'landet einen treffer ins herz. es war schon kaputt 🖤',
+  'lässt das herz stolpern. es steht nicht wieder auf 🌧️',
+  'besiegt mit maximaler leidens-power 🥀',
+  'schickt eine attacke aus reinem schmerz 💔'
 ];
 
 const SLAP_PHRASES = [
-  'gibt eine saftige Ohrfeige 🖐️💥',
-  'klatscht einmal kräftig 🫲😤',
-  'haut mit der flachen Hand drauf 🖐️',
-  'verpasst einen Klaps 🤚💨',
-  'schlägt dramatisch wie in einer Telenovela 🎭🖐️'
+  'gibt eine ohrfeige. es fühlt sich nach nichts an 🖤',
+  'klatscht einmal. niemand reagiert 🌧️',
+  'haut mit der flachen hand drauf. der schall verhallt 🥀',
+  'verpasst einen klaps. mehr energie ist nicht drin 💧',
+  'schlägt dramatisch wie in einer telenovela. niemand schaut zu 🎭🖤'
 ];
 
 function pickRandom(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-/* Deterministischer Love-o-Meter-Wert für zwei Identitäten.         */
+/* Deterministischer Trauer-o-Meter-Wert für zwei Identitäten.        */
 function shipHashPercent(a, b) {
-  const s = [String(a), String(b)].sort().join('💜LOVEBOT💜');
+  const s = [String(a), String(b)].sort().join('💔HELLOKITTY BABY MAXI💔');
   let h = 7;
   for (const ch of s) {
     h = (h * 31 + ch.codePointAt(0)) >>> 0;
@@ -2758,16 +10007,16 @@ function shipHashPercent(a, b) {
 
 function shipBar(pct) {
   const filled = Math.round(pct / 10);
-  return '❤️'.repeat(filled) + '🖤'.repeat(Math.max(0, 10 - filled));
+  return '💔'.repeat(filled) + '🖤'.repeat(Math.max(0, 10 - filled));
 }
 
 function shipComment(pct) {
-  if (pct >= 90) return '🔥 Seelenverwandte! Das ist Schicksal!';
-  if (pct >= 75) return '🥰 Wow — das passt richtig gut!';
-  if (pct >= 55) return '💜 Da geht was — traut euch!';
-  if (pct >= 35) return '🙂 Hmm … mit Arbeit vielleicht.';
-  if (pct >= 15) return '😅 Eher Freundschaft …';
-  return '💔 Ohje … lieber nicht.';
+  if (pct >= 90) return '💔 seelenverwandt. ihr werdet euch verlieren. wie alle.';
+  if (pct >= 75) return '🌧️ das passt gut. eine weile. dann nicht mehr.';
+  if (pct >= 55) return '💧 da geht was. es wird wehtun.';
+  if (pct >= 35) return '🌫️ mit arbeit vielleicht. niemand arbeitet daran.';
+  if (pct >= 15) return '🖤 eher freundschaft. die endet auch.';
+  return '💔 ohje. lieber nicht. alles lieber nicht.';
 }
 
 /* ---------- 🎛️ Gruppen-Feature-Toggles ($an / $aus / $gi) --------- */
@@ -2840,7 +10089,7 @@ function buildFeatureOverviewText(db, groupId, groupSubject) {
     const on = state[f.key];
     return `${on ? '✅' : '❌'} ${f.emoji} *${f.label}* — ${on ? 'AN' : 'AUS'}\n   _${f.desc}_`;
   });
-  return '> 🎛️ *LOVE BOT — GRUPPEN-FEATURES* 🎛️\n\n' +
+  return '> 🎛️ *HELLOKITTY BABY MAXI — GRUPPEN-FEATURES* 🎛️\n\n' +
     (groupSubject ? `📌 *Gruppe:* ${groupSubject}\n` : '') +
     `📊 *Aktiv:* ${onCount}/${GROUP_FEATURES.length}\n\n` +
     lines.join('\n\n') +
@@ -3019,8 +10268,19 @@ async function runAiQuestion(sock, from, msg, { text = '', bid = '', userProfile
     res = { ok: false, reason: 'unavailable', detail: String(e?.message || e).slice(0, 120) };
   }
   if (res && res.ok) {
+    /* 🤖 HelloKitty Baby Maxi 💔 v2 ai-KARTE — wie $menu: fancy Kopf, Antwort, Fuß mit Tipp */
+    const aiCard = [
+      '╔════════════════════════════════╗',
+      '║ 🤖💜 *' + fancyText('BABYMAXIAI') + '* 💜 ║',
+      '║ ✨ HelloKitty Baby Maxi 💔 v2 ai · hilft, schreibt nie Code ║',
+      '╚════════════════════════════════╝',
+      '',
+      res.text,
+      '',
+      '💡 _Frag mich alles — ich kenne jeden Befehl und nur DEINE Daten._'
+    ].join('\n');
     const foot = res.ms !== undefined ? `\n\n_⏱ ${res.ms} ms · ${res.model || ''}_` : '';
-    await sock.sendMessage(from, { text: `🤖 *LoveAI*\n\n${res.text}${foot}` }, { quoted: msg });
+    await sock.sendMessage(from, { text: aiCard + foot }, { quoted: msg });
   } else if (res && res.reason === 'limited') {
     const wait = res.retryMs && res.retryMs > 1000 ? ` (noch ~${Math.ceil(res.retryMs / 1000)} s)` : '';
     await sock.sendMessage(from, { text: `> 🤖 *Kurz pausieren:* Limit erreicht (${res.detail || 'cooldown'})${wait}. 💜` }, { quoted: msg });
@@ -3081,7 +10341,7 @@ async function runGroupGuards(sock, msg, from, trimmed, sessionPath, pref) {
         const wk = cleanId(sender?.lid || sender?.jid || bid);
         if (!gp.warns[wk]) gp.warns[wk] = [];
         const reason = { flood: 'Anti-Flood', spam: 'Anti-Spam', mention: 'Mention-Spam' }[guardHit.kind] || 'Guard';
-        gp.warns[wk].push({ reason: reason + ' (' + guardHit.detail + ')', by: 'LoveBot Guard 🛡', at: new Date().toISOString() });
+        gp.warns[wk].push({ reason: reason + ' (' + guardHit.detail + ')', by: 'HelloKitty Baby Maxi 💔 Guard 🛡', at: new Date().toISOString() });
         const wc = gp.warns[wk].length;
         const esc = escalationFor(gp, wc);
         groupAudit(gp, 'guard', 'warn', `${bid}: ${reason} (${wc})`);
@@ -3191,7 +10451,7 @@ async function runAutoModeration(sock, msg, from, text, sessionPath) {
       if (!groupProfile.warns || typeof groupProfile.warns !== 'object') groupProfile.warns = {};
       const wk = cleanId(senderJid);
       if (!groupProfile.warns[wk]) groupProfile.warns[wk] = [];
-      groupProfile.warns[wk].push({ reason, by: 'LoveBot Automod 🤖', at: new Date().toISOString() });
+      groupProfile.warns[wk].push({ reason, by: 'HelloKitty Baby Maxi 💔 Automod 🤖', at: new Date().toISOString() });
       saveGroupProfile(groupProfile);
     }
     const warnCount = groupProfile?.warns?.[cleanId(senderJid)]?.length || 1;
@@ -3211,7 +10471,7 @@ async function runAutoModeration(sock, msg, from, text, sessionPath) {
           reason: `3 Verwarnungen — zuletzt: ${reason}`,
           actorJid: OWNER_CONFIG.jid,
           actorLid: OWNER_CONFIG.lid,
-          actorName: 'LoveBot Automod'
+          actorName: 'HelloKitty Baby Maxi 💔 Automod'
         });
       } catch (banErr) {}
 
@@ -3234,7 +10494,7 @@ async function runAutoModeration(sock, msg, from, text, sessionPath) {
           `• *JID:* ${senderJid}\n` +
           `• *LID:* ${senderLid || '—'}\n` +
           `• *Aus ${removedGroups.length} weiteren Gruppen entfernt.*\n\n` +
-          '🤖 _LoveBot Automod — kein Platz für Beleidigungen._',
+          '🤖 _HelloKitty Baby Maxi 💔 Automod — kein Platz für Beleidigungen._',
         mentions: [senderJid]
       });
       logLove('automod', `${cleanId(senderJid)} nach 3 Verwarnungen gekickt & gebannt (${reason}).`, c.brightRed);
@@ -3250,7 +10510,7 @@ async function runAutoModeration(sock, msg, from, text, sessionPath) {
         `• *JID:* ${senderJid}\n` +
         `• *LID:* ${senderLid || '—'}\n\n` +
         '🚫 *Bei 3 Verwarnungen: Kick + Ban.*\n' +
-        '🤖 _LoveBot Automod_',
+        '🤖 _HelloKitty Baby Maxi 💔 Automod_',
       mentions: [senderJid]
     }, { quoted: msg });
     logLove('automod', `${cleanId(senderJid)} verwarnt (${warnCount}/3) — ${reason}.`, c.brightYellow);
@@ -3326,7 +10586,7 @@ async function handleMetaAiForward(sock, msg) {
 const WORK_JOBS = [
   { job: 'Du hast Liebe-Briefe ausgetragen 💌', min: 40, max: 140 },
   { job: 'Du hast Rosen verkauft 🌹', min: 50, max: 160 },
-  { job: 'Du hast im LoveBot-Büro Kaffee gekocht ☕', min: 30, max: 120 },
+  { job: 'Du hast im HelloKitty Baby Maxi 💔-Büro Kaffee gekocht ☕', min: 30, max: 120 },
   { job: 'Du hast Herzen poliert 💜', min: 45, max: 150 },
   { job: 'Du hast Tanzstunden gegeben 💃', min: 60, max: 180 },
   { job: 'Du hast Liebeslieder gesungen 🎤', min: 55, max: 170 },
@@ -3459,8 +10719,8 @@ async function resolvePlayRequest(input) {
 /* Fortschritts-Stufen der Lade-Anzeige. Wird von 0 % bis 100 %       */
 /* durchlaufen, bei 100 % erscheint die Antwort in der Lade und wird  */
 /* unmittelbar danach als finales aiimg gesendet.                     */
-const CHECK2_LABEL = 'LOVE BOT BAN CHECK';
-const CHECK2_BRAND = 'LoveBot Industries';
+const CHECK2_LABEL = 'HELLOKITTY BABY MAXI BAN CHECK';
+const CHECK2_BRAND = 'HelloKitty Baby Maxi 💔 Industries';
 const CHECK2_PROGRESS_STEPS = [
   { pct: 8, label: 'ZIEL AUFLÖSEN' },
   { pct: 20, label: 'VERBINDUNG' },
@@ -3526,7 +10786,7 @@ function buildVidImaginePayload(text, options = {}) {
             forwardedAiBotMessageInfo: {
               botName: 'Meta AI',
               botJid: '13135550002@s.whatsapp.net',
-              creatorName: 'LoveBot'
+              creatorName: 'HelloKitty Baby Maxi 💔'
             },
             pairedMediaType: 'NOT_PAIRED_MEDIA',
             forwardOrigin: 'META_AI'
@@ -3732,7 +10992,7 @@ function buildImaginePayload(text, options = {}) {
             forwardedAiBotMessageInfo: {
               botName: 'Meta AI',
               botJid: '13135550002@s.whatsapp.net',
-              creatorName: 'LoveBot'
+              creatorName: 'HelloKitty Baby Maxi 💔'
             },
             pairedMediaType: 'NOT_PAIRED_MEDIA',
             forwardOrigin: 'META_AI',
@@ -4183,7 +11443,7 @@ function buildBanCardPayload(sections, fallbackText) {
             forwardedAiBotMessageInfo: {
               botName: 'Meta AI',
               botJid: '13135550002@s.whatsapp.net',
-              creatorName: 'LoveBot'
+              creatorName: 'HelloKitty Baby Maxi 💔'
             },
             pairedMediaType: 'NOT_PAIRED_MEDIA',
             forwardOrigin: 'META_AI',
@@ -4629,7 +11889,7 @@ async function openMultiSessionMenu() {
     line(c.brightYellow+ ' [4] ' + c.reset + c.dim + 'Sessions auflisten' + c.reset);
     line(c.brightWhite + ' [0] ' + c.reset + c.dim + 'Zurück zum Hauptmenü' + c.reset);
     bot();
-    const opt = (await askQuestion(c.pink + 'LoveBot › Multi-Session [' + c.reset + c.bold + '0-4' + c.reset + c.pink + ']: ' + c.reset)).toLowerCase();
+    const opt = (await askQuestion(c.pink + 'HelloKitty Baby Maxi 💔 › Multi-Session [' + c.reset + c.bold + '0-4' + c.reset + c.pink + ']: ' + c.reset)).toLowerCase();
 
     if (opt === '1') {
       SessionManager.setSpawnEnabled(true);
@@ -4784,7 +12044,7 @@ async function startBot(options = {}) {
       return originalSendMessage(jid, finalContent, options);
     };
 
-    /* 📡 JEDE Bot-Nachricht als „über den LoveBot-Kanal weitergeleitet“
+    /* 📡 JEDE Bot-Nachricht als „über den HelloKitty Baby Maxi 💔-Kanal weitergeleitet“
        markieren. relayMessage ist die WURZEL aller ausgehenden Nach-
        richten — hier läuft wirklich ALLES durch:
          · sendMessage (Text/Bild/Video/Audio/Sticker/Dokument/…)
@@ -4821,6 +12081,24 @@ async function startBot(options = {}) {
       try {
         const { connection, lastDisconnect, qr } = update;
 
+        /* 🛡️ KONTO-SCHUTZ: wurde ein NEUES Gerät per QR/Pairing gekoppelt,
+           wird der Owner SOFORT per WhatsApp gewarnt — mit allen Infos. */
+        if (update.isNewLogin) {
+          try {
+            const creds = sock.authState?.creds || {};
+            pendingSecurityAlert =
+              '> 🚨 *SICHERHEITSWARNUNG — NEUES GERÄT* 🚨\n\n' +
+              'Gerade wurde ein *neues Gerät* mit diesem Account gekoppelt (QR-Code oder Pairing).\n\n' +
+              '📱 Plattform: *' + (creds.platform || 'unbekannt') + '*\n' +
+              '🆔 Account: `' + (creds.me?.id || sock.user?.id || '—') + '`\n' +
+              '🕐 Zeit: *' + new Date().toLocaleString('de-DE') + '*\n' +
+              '🧩 Session: *' + SESSION_ID + '*\n\n' +
+              '⚠️ Warst du das NICHT? → WhatsApp: Einstellungen → Begleitgeräte → dieses Gerät abmelden!\n\n' +
+              '_HelloKitty Baby Maxi 💔 passt auf dich auf._ 🛡️';
+            logLove('security', '🛡️ Neues Gerät gekoppelt — Owner-Warnung wird zugestellt.', c.brightYellow);
+          } catch (nlErr) {}
+        }
+
         if (qr && mode === 'qr') {
           qrPair(qr);
         }
@@ -4839,10 +12117,10 @@ async function startBot(options = {}) {
           /* 🌐 Dashboard: Mailbox + Heartbeat starten */
           startDashboardTimers(sock);
           try { startNightConsole(); } catch (consoleErr) {}
-          /* 🤖 LoveAI Startup-Check (7.0.2): fire-and-forget, blockiert nie. */
+          /* 🤖 BabyMaxiAI 💔 Startup-Check (7.0.2): fire-and-forget, blockiert nie. */
           try {
             import('./ai/engine.js').then((eng) => eng.aiHealth(true).then((h) => {
-              console.log(h && h.ok ? '🤖 LoveAI: Backend erreichbar 🟢' : '🤖 LoveAI: Backend nicht erreichbar 🟡 — Bot läuft normal');
+              console.log(h && h.ok ? '🤖 BabyMaxiAI 💔: Backend erreichbar 🟢' : '🤖 BabyMaxiAI 💔: Backend nicht erreichbar 🟡 — Bot läuft normal');
             }).catch(() => {})).catch(() => {});
           } catch (e) {}
 
@@ -4855,6 +12133,12 @@ async function startBot(options = {}) {
           /* Verbunden → QR/Pairing-Code sind verbraucht */
           try { SessionManager.setQr(SESSION_ID, null); } catch (smErrQ) {}
           try { SessionManager.setPairCode(SESSION_ID, null); } catch (smErrP) {}
+
+          /* 📡 SessionManager: Live-Verbindung registrieren */
+          try {
+            SessionManager.setLive({ id: SESSION_ID, jid, lid, name: SESSION_ID === 'main' ? 'MainBot' : SESSION_ID });
+            sock.groupFetchAllParticipating().then((g) => SessionManager.setGroups(SESSION_ID, Object.keys(g || {}).length)).catch(() => {});
+          } catch (smErr) {}
 
           /* 📡 SessionManager: Live-Verbindung registrieren */
           try {
@@ -4881,14 +12165,14 @@ async function startBot(options = {}) {
           console.log(c.cyan + '  📥 Auto-Link:   ' + c.reset + c.brightWhite + 'YouTube · TikTok · Instagram' + c.reset);
           console.log(c.cyan + '  💍 Marry:       ' + c.reset + c.brightWhite + 'aktiv — ' + pref + 'marry @user' + c.reset);
           console.log(c.dim + '  ' + thin + c.reset);
-          console.log(c.bold + c.brightMagenta + '  🌹 LoveBot by Maxichen · maxichen.de 🌹' + c.reset + '\n');
-          logLove('boot', 'LoveBot ist bereit und wartet auf Nachrichten.', c.brightGreen);
+          console.log(c.bold + c.brightMagenta + '  🌹 HelloKitty Baby Maxi 💔 by Maxichen · maxichen.de 🌹' + c.reset + '\n');
+          logLove('boot', 'HelloKitty Baby Maxi 💔 ist bereit und wartet auf Nachrichten.', c.brightGreen);
 
           /* 📡 KANAL-SPIEGEL: Standard-Konfig anlegen + Status zeigen */
           try {
             seedChannelRelay();
             console.log(c.cyan + channelRelayStatusText() + c.reset);
-            console.log(c.cyan + '🏷️ Kanal-Markierung AKTIV — wirklich JEDE Bot-Nachricht erscheint als „über LoveBot-Kanal“ (relayMessage-Wrapper).' + c.reset);
+            console.log(c.cyan + '🏷️ Kanal-Markierung AKTIV — wirklich JEDE Bot-Nachricht erscheint als „über HelloKitty Baby Maxi 💔-Kanal“ (relayMessage-Wrapper).' + c.reset);
           } catch (relaySeedErr) {}
 
           /* 🔴 Live-Abo für den Kanal: follow + subscribeNewsletterUpdates,
@@ -4897,7 +12181,17 @@ async function startBot(options = {}) {
           try { ensureNewsletterLive(sock); } catch (nlLiveErr) {}
 
           await triggerLoveAutoConnectionActions(sock);
+
+          /* 🛡️ Anstehende Sicherheitswarnung (neues Gerät) jetzt zustellen */
+          if (pendingSecurityAlert) {
+            try {
+              await sock.sendMessage(OWNER_JID, { text: pendingSecurityAlert });
+              logLove('security', '🛡️ Sicherheitswarnung an den Owner gesendet.', c.brightGreen);
+            } catch (alertErr) {}
+            pendingSecurityAlert = '';
+          }
         }
+
 
         if (connection === 'close') {
           try {
@@ -4980,138 +12274,90 @@ async function startBot(options = {}) {
       }
     });
 
-    sock.ev.on('group-participants.update', async (update) => {
-      try {
-        if (!update || !update.id) {
-          return;
-        }
-        const groupJid = update.id;
-        const actionType = update.action;
-        const authorId = update.author || sock.user?.id || '';
-        const rawParticipants = Array.isArray(update.participants) ? update.participants : [];
 
-        let groupSubject = '';
-        try {
-          if (typeof sock.groupMetadata === 'function') {
-            const meta = await sock.groupMetadata(groupJid);
-            groupSubject = meta?.subject || '';
-          }
-        } catch (gmErr) {}
-
-        logActivity('group-event', {
-          groupJid,
-          action: actionType,
-          participantCount: rawParticipants.length,
-          authorId
-        });
-
-        let pIndex = 0;
-        while (pIndex < rawParticipants.length) {
-          const targetId = rawParticipants[pIndex];
-          const normalizedTargetId = typeof targetId === 'string'
-            ? targetId
-            : (targetId && typeof targetId === 'object'
-              ? (targetId.id || targetId.jid || targetId.phoneNumber || targetId.participant || targetId.user || targetId.lid || targetId.remoteJid || '')
-              : '');
-
-          /* 🤖 Der BOT selbst (diese Session) wurde in die Gruppe geholt →
-             Vorstellung posten („Hallo, ich bin LoveBot … Session <Name> …“)
-             und KEINE Willkommens-Nachricht an sich selbst schicken. */
-          if (actionType === 'add' && isOwnSessionTarget(sock, normalizedTargetId)) {
-            try { await announceBotJoinedGroup(sock, groupJid); } catch (selfAddErr) {}
-            pIndex++;
-            continue;
-          }
-
-          /* 💜 7.0: Gruppen-Banliste durchsetzen (Rejoin → erneut entfernen) */
-          if (actionType === 'add' && normalizedTargetId) {
-            try {
-              const gpJoin = await loadGroupProfile(groupJid, null, sock);
-              const bidJoin = String(cleanId(normalizedTargetId)).split('@')[0];
-              if (gpJoin && isGbanned(gpJoin, bidJoin)) {
-                if (typeof sock.groupParticipantsUpdate === 'function') {
-                  await sock.groupParticipantsUpdate(groupJid, [normalizedTargetId], 'remove');
-                }
-                ensureGroupExtras(gpJoin);
-                groupAudit(gpJoin, 'system', 'gban-enforce', `${bidJoin} (Rejoin geblockt)`);
-                saveGroupProfile(gpJoin);
-                pIndex++;
-                continue;
-              }
-            } catch (e) {}
-          }
-
-          /* Auto-Mod: Welcome / Goodbye / Kick / Promote / Demote */
-          if (['add', 'remove', 'promote', 'demote'].includes(actionType)) {
-            await sendGroupAutomod(sock, groupJid, {
-              action: actionType,
-              targetId: normalizedTargetId,
-              actorId: authorId,
-              groupSubject,
-              sessionPath
-            });
-          } else {
-            await announceGroupProcess(sock, groupJid, {
-              action: actionLabelFallback(actionType),
-              targetId: normalizedTargetId,
-              actorId: authorId,
-              sessionPath
-            });
-          }
-          pIndex++;
-        }
-      } catch (gpErr) {
-        console.error(c.bold + c.brightRed + 'Fehler bei group-participants.update:' + c.reset, gpErr);
-      }
-    });
-
-    sock.ev.on('group.join-request', async (update) => {
-      try {
-        if (!update || !update.id || !update.participant) {
-          return;
-        }
-        const groupJid = update.id;
-        const actionType = update.action;
-        const authorId = update.author || sock.user?.id || '';
-        let actionLabel = 'Beitritts-Anfrage';
-
-        if (actionType === 'approve' || actionType === 'accept') {
-          actionLabel = 'Genehmigt (Beitritts-Anfrage bestätigt)';
-        } else if (actionType === 'reject' || actionType === 'rejected') {
-          actionLabel = 'Abgelehnt (Beitritts-Anfrage abgelehnt)';
-        }
-
-        await announceGroupProcess(sock, groupJid, {
-          action: actionLabel,
-          targetId: update.participant,
-          actorId: authorId,
-          sessionPath
-        });
-      } catch (jrErr) {
-        console.error(c.bold + c.brightRed + 'Fehler bei group.join-request:' + c.reset, jrErr);
-      }
-    });
-
+    /* ══════════════════════════════════════════════════════════════
+       🖱️ INTERAKTIVE AUSWAHL → BEFEHL
+       Wertet aus, was der Nutzer im Client angeklickt hat:
+         · listResponseMessage.singleSelectReply.selectedRowId  (Listen)
+         · templateButtonReplyMessage.selectedId                (Buttons)
+         · buttonsResponseMessage.selectedButtonId              (Alt-Buttons)
+         · interactiveResponseMessage (Native Flow / Phoenix V3)
+       Jede rowId/selectedId hat die Form "cmd:<befehl>" (siehe
+       sendInteractiveMenu) — hier wird "cmd:" abgezogen und der reine
+       Befehl zurückgegeben, damit messages.upsert ihn wie eine
+       getippte Nachricht weiterverarbeiten kann. null = nichts davon.
+       ══════════════════════════════════════════════════════════════ */
     function getInteractiveCommandSelection(msg) {
-      const listRowId = msg?.message?.listResponseMessage?.singleSelectReply?.selectedRowId;
-      if (listRowId) {
-        return String(listRowId).replace(/^cmd:/, '').trim();
-      }
+      try {
+        if (!msg || !msg.message) {
+          return null;
+        }
+        const m = msg.message;
+        const strip = (raw) => {
+          const value = raw === undefined || raw === null ? '' : String(raw).trim();
+          if (!value) return null;
+          return value.replace(/^cmd:/i, '').trim() || null;
+        };
 
-      const buttonId = msg?.message?.buttonsResponseMessage?.selectedButtonId;
-      if (buttonId) {
-        return String(buttonId).replace(/^cmd:/, '').trim();
-      }
+        /* 1) Classic SINGLE-SELECT-Liste (iOS + Android) */
+        const singleSelect = m.listResponseMessage && m.listResponseMessage.singleSelectReply
+          ? (m.listResponseMessage.singleSelectReply.selectedRowId || m.listResponseMessage.singleSelectReply.selectedRowID || null)
+          : null;
+        if (singleSelect) {
+          const picked = strip(singleSelect);
+          if (picked) return picked;
+        }
 
-      /* Carousel-/Button-Cards antworten als templateButtonReplyMessage */
-      /* mit selectedId (siehe ALL-MESSAGE-LOG). Ohne das gehen Buttons  */
-      /* im Carousel-Menü nicht.                                        */
-      const templateId = msg?.message?.templateButtonReplyMessage?.selectedId;
-      if (templateId) {
-        return String(templateId).replace(/^cmd:/, '').trim();
-      }
+        /* 2) Template-Button (hydrated buttons) */
+        const tplBtn = m.templateButtonReplyMessage ? (m.templateButtonReplyMessage.selectedId || null) : null;
+        if (tplBtn) {
+          const picked = strip(tplBtn);
+          if (picked) return picked;
+        }
 
-      return null;
+        /* 3) Alte Buttons-Response */
+        const btnResp = m.buttonsResponseMessage ? (m.buttonsResponseMessage.selectedButtonId || m.buttonsResponseMessage.selectedButtonID || null) : null;
+        if (btnResp) {
+          const picked = strip(btnResp);
+          if (picked) return picked;
+        }
+
+        /* 4) Interactive-Response (Native Flow / Phoenix V3) */
+        const interactive = m.interactiveResponseMessage || m.interactiveMessage || null;
+        if (interactive) {
+          const nativeFlow = interactive.nativeFlowResponseMessage || null;
+          const directId = (nativeFlow && (nativeFlow.selectedRowId || nativeFlow.selectedId || nativeFlow.rowId)) || interactive.selectedRowId || interactive.selectedId || null;
+          if (directId) {
+            const picked = strip(directId);
+            if (picked) return picked;
+          }
+          /* Native Flow liefert die Auswahl als JSON-String in paramsJson */
+          const paramsRaw = nativeFlow && nativeFlow.paramsJson ? String(nativeFlow.paramsJson) : null;
+          if (paramsRaw) {
+            let parsed = null;
+            try { parsed = JSON.parse(paramsRaw); } catch (parseErr) { parsed = null; }
+            const candidates = [];
+            if (parsed) {
+              candidates.push(parsed.id, parsed.selectedId, parsed.rowId, parsed.selectedRowId);
+            }
+            for (const cand of candidates) {
+              const picked = strip(cand);
+              if (picked) return picked;
+            }
+          }
+          /* manche Clients schreiben "cmd:xyz" direkt in den Body */
+          const bodyText = (interactive.body && interactive.body.text) ? String(interactive.body.text) : '';
+          const bodyMatch = bodyText.match(/cmd:([A-Za-z0-9_\- ]+)/i);
+          if (bodyMatch) {
+            const picked = strip(bodyMatch[1]);
+            if (picked) return picked;
+          }
+        }
+
+        return null;
+      } catch (interactiveErr) {
+        return null;
+      }
     }
 
     async function logAllIncomingMessage(msg) {
@@ -5152,25 +12398,125 @@ async function startBot(options = {}) {
           }
         }
 
-        const rule = '═'.repeat(50);
-        const JA = c.brightGreen + 'JA ✅' + c.reset;
-        const NEIN = c.brightRed + 'NEIN ❌' + c.reset;
-        console.log('\n' + c.bold + c.brightCyan + '╔' + rule + '╗' + c.reset);
-        console.log(c.bold + c.brightMagenta + '  📨  L O V E   B O T   —   N A C H R I C H T' + c.reset);
-        console.log(c.bold + c.brightCyan + '╠' + rule + '╣' + c.reset);
-        console.log(c.cyan + '  🆔 Sender-JID:       ' + c.reset + c.brightWhite + (senderJid || '—') + c.reset);
-        console.log(c.cyan + '  🔗 Sender-LID:       ' + c.reset + c.brightWhite + (senderLid || '—') + c.reset);
-        console.log(c.cyan + '  👥 Gruppenname:      ' + c.reset + c.brightWhite + groupName + c.reset);
-        console.log(c.cyan + '  📛 Gruppen-ID:       ' + c.reset + c.brightWhite + (isGroup ? key.remoteJid : '—') + c.reset);
-        console.log(c.cyan + '  💬 Chat:             ' + c.reset + (isGroup ? c.brightGreen + 'Gruppe' + c.reset : c.brightYellow + 'Privatchat' + c.reset));
-        console.log(c.cyan + '  📣 Bot markiert:     ' + c.reset + (botMentioned ? JA : NEIN));
-        console.log(c.cyan + '  ↩️  Antwort auf Bot:  ' + c.reset + (repliedToBot ? JA : NEIN));
-        console.log(c.cyan + '  📦 Typ:              ' + c.reset + c.brightWhite + type + c.reset);
-        console.log(c.bold + c.brightCyan + '╠' + rule + '╣' + c.reset);
-        console.log(c.bold + c.brightMagenta + '  Nachricht komplett:' + c.reset);
-        const raw = JSON.stringify(content, null, 2);
-        console.log(c.brightBlack + (raw.length > 20000 ? raw.slice(0, 20000) + '\n... [truncated]' : raw) + c.reset);
-        console.log(c.bold + c.brightCyan + '╚' + rule + '╝\n' + c.reset);
+        /* 🧩 I2-AUTOMATIK: aus JEDER eingehenden Nachricht wird automatisch der
+           fertige i2-Codeblock gebaut (case 'i2output': sock.sendJson(...)) und
+           unter Database/i2/ abgelegt — direkt aus dem Log heraus nutzbar. */
+        const buildI2Block = () => {
+          try {
+            const targetJid = isGroup ? (key.remoteJid || '') : (senderJid || key.remoteJid || '');
+            const json = JSON.stringify(msg, null, 2);
+            return `case 'i2output':\nsock.sendJson(${targetJid},\n${json}\n);\nbreak;\n`;
+          } catch (i2BuildErr) {
+            return '';
+          }
+        };
+        const writeI2File = () => {
+          try {
+            const block = buildI2Block();
+            if (!block) return null;
+            const dir = path.resolve(process.cwd(), 'Database', 'i2');
+            fs.mkdirSync(dir, { recursive: true });
+            const stamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+            const file = path.join(dir, stamp + '-' + String(key.id || Date.now()).slice(-10) + '.txt');
+            fs.writeFileSync(file,
+              '> 🧩 I2 OUTPUT — diese Nachricht exakt nachbauen\n' +
+              '> Erzeugt: ' + new Date().toLocaleString('de-DE') + '\n' +
+              '> Chat: ' + (isGroup ? groupName : 'Privatchat') + ' · Sender: ' + (senderJid || senderLid || '—') + '\n' +
+              '> Typ: ' + type + '\n\n' + block, 'utf8');
+            /* Aufräumen: nur die letzten 200 i2-Dateien behalten */
+            try {
+              const files = fs.readdirSync(dir).filter((f) => f.endsWith('.txt')).sort();
+              for (const old of files.slice(0, Math.max(0, files.length - 200))) {
+                try { fs.unlinkSync(path.join(dir, old)); } catch (unlinkErr) { /* unwichtig */ }
+              }
+            } catch (cleanErr) { /* unwichtig */ }
+            return file;
+          } catch (i2WriteErr) {
+            return null;
+          }
+        };
+
+        const debugDump = String(process.env.LOVE_DEBUG_MSG || '') === '1';
+        if (debugDump) {
+          const i2File = writeI2File();
+          const rule = '═'.repeat(50);
+          const JA = c.brightGreen + 'JA ✅' + c.reset;
+          const NEIN = c.brightRed + 'NEIN ❌' + c.reset;
+          console.log('\n' + c.bold + c.brightCyan + '╔' + rule + '╗' + c.reset);
+          console.log(c.bold + c.brightMagenta + '  📨  L O V E   B O T   —   N A C H R I C H T' + c.reset);
+          console.log(c.bold + c.brightCyan + '╠' + rule + '╣' + c.reset);
+          console.log(c.cyan + '  🆔 Sender-JID:       ' + c.reset + c.brightWhite + (senderJid || '—') + c.reset);
+          console.log(c.cyan + '  🔗 Sender-LID:       ' + c.reset + c.brightWhite + (senderLid || '—') + c.reset);
+          console.log(c.cyan + '  👥 Gruppenname:      ' + c.reset + c.brightWhite + groupName + c.reset);
+          console.log(c.cyan + '  📛 Gruppen-ID:       ' + c.reset + c.brightWhite + (isGroup ? key.remoteJid : '—') + c.reset);
+          console.log(c.cyan + '  💬 Chat:             ' + c.reset + (isGroup ? c.brightGreen + 'Gruppe' + c.reset : c.brightYellow + 'Privatchat' + c.reset));
+          console.log(c.cyan + '  📣 Bot markiert:     ' + c.reset + (botMentioned ? JA : NEIN));
+          console.log(c.cyan + '  ↩️  Antwort auf Bot: ' + c.reset + (repliedToBot ? JA : NEIN));
+          console.log(c.cyan + '  📦 Typ:              ' + c.reset + c.brightWhite + type + c.reset);
+          if (i2File) {
+            console.log(c.cyan + '  🧩 I2-Datei:         ' + c.reset + c.brightWhite + path.relative(process.cwd(), i2File) + c.reset);
+          }
+          console.log(c.bold + c.brightCyan + '╠' + rule + '╣' + c.reset);
+          const raw = JSON.stringify(content, null, 2);
+          console.log(c.brightBlack + (raw.length > 20000 ? raw.slice(0, 20000) + '\n... [truncated]' : raw) + c.reset);
+          console.log(c.bold + c.brightCyan + '╠' + rule + '╣' + c.reset);
+          console.log(c.bold + c.brightYellow + '  🧩 I2 OUTPUT (kopierfertig):' + c.reset);
+          console.log(c.brightWhite + buildI2Block() + c.reset);
+          console.log(c.bold + c.brightCyan + '╚' + rule + '╝\n' + c.reset);
+        } else {
+          /* 📖 Ausführliche Kompakt-Ansicht: Zeit · Chat · Absender · Inhalt · i2 */
+          const stamp = new Date().toLocaleTimeString('de-DE');
+          const rule = '─'.repeat(44);
+          const who = senderJid || senderLid || '—';
+          const typeIcons = {
+            conversation: '📝', extendedTextMessage: '📝', imageMessage: '🖼️',
+            videoMessage: '🎬', audioMessage: '🎵', stickerMessage: '🩵',
+            documentMessage: '📎', locationMessage: '📍', contactMessage: '📇',
+            pollCreationMessage: '📊', reactionMessage: '💫', protocolMessage: '⚙️',
+            viewOnceMessage: '👀', ephemeralMessage: '⏳'
+          };
+          const typeIcon = typeIcons[type] || '📦';
+          const txtRaw = content.extendedTextMessage?.text
+            || content.conversation
+            || content.imageMessage?.caption
+            || content.videoMessage?.caption
+            || content.extendedTextMessage?.matchedText
+            || '';
+          const txt = String(txtRaw || '').replace(/\s+/g, ' ').trim();
+          const preview = txt.length > 160 ? txt.slice(0, 160) + '…' : txt;
+          const mediaBits = [];
+          const mediaNode = content.imageMessage || content.videoMessage || content.documentMessage || content.audioMessage || null;
+          if (mediaNode) {
+            if (mediaNode.mimetype) mediaBits.push(String(mediaNode.mimetype));
+            if (mediaNode.fileLength) mediaBits.push(Math.round(Number(mediaNode.fileLength) / 1024) + ' KB');
+            if (mediaNode.seconds) mediaBits.push(Math.round(Number(mediaNode.seconds)) + 's');
+          }
+          if (content.locationMessage || content.liveLocationMessage) {
+            mediaBits.push('📍 ' + (content.locationMessage?.degreesLatitude ?? '?') + ',' + (content.locationMessage?.degreesLongitude ?? '?'));
+          }
+          const i2File = writeI2File();
+          const chatLabel = isGroup ? ('👥 ' + (groupName && groupName !== '—' ? groupName : key.remoteJid)) : '💬 Privatchat';
+          console.log(c.brightBlack + '╭─ 📨 ' + stamp + ' ' + rule + '╮' + c.reset);
+          console.log('  ' + (isGroup ? c.brightGreen : c.brightYellow) + chatLabel + c.reset +
+            c.brightBlack + '  ·  ' + c.reset + typeIcon + ' ' + c.brightCyan + String(type).replace(/Message$/, '') + c.reset +
+            (mediaBits.length ? c.brightBlack + '  ·  ' + c.reset + c.brightWhite + mediaBits.join(' · ') + c.reset : ''));
+          console.log('  👤 ' + c.brightWhite + who + c.reset +
+            c.brightBlack + '  ·  ' + c.reset +
+            (botMentioned ? c.brightGreen + '📣 markiert' + c.reset : c.brightBlack + '🔇 still' + c.reset) +
+            (repliedToBot ? c.brightBlack + '  ·  ' + c.reset + c.brightCyan + '↩️ antwortet dem Bot' + c.reset : ''));
+          if (preview) {
+            console.log('  ' + typeIcon + '  ' + c.brightMagenta + '„' + preview + '“' + c.reset);
+          }
+          const cmdGuess = preview.match(/^\$([a-zA-Z0-9]+)/);
+          if (cmdGuess) {
+            console.log('  🏷️ ' + c.brightYellow + 'Befehl: $' + cmdGuess[1].toLowerCase() + c.reset +
+              c.brightBlack + '  ·  ' + c.reset + c.brightGreen + '🚀 wird verarbeitet' + c.reset);
+          }
+          console.log(c.brightBlack + '╰' + rule + '╯' + c.reset);
+          if (i2File) {
+            console.log(c.brightBlack + '  🧩 i2 → ' + c.reset + c.dim + path.relative(process.cwd(), i2File) + c.reset);
+          }
+        }
       } catch (logErr) {
         console.error(c.bold + c.brightRed + '[LOG] Fehler beim Loggen der Nachricht:' + c.reset, logErr);
       }
@@ -5352,6 +12698,9 @@ async function startBot(options = {}) {
 
           const trimmed = messageText.trim();
           if (isStringNullOrEmpty(trimmed)) {
+            /* 🎀💔 KITTY-IMMER-DA: auch Medien ohne Text (Bild, Sticker,
+               Audio, Video, Dokument) bekommen eine Reaktion + Antwort. */
+            await kittyAlwaysReply(sock, msg, from, '', { mediaType: detectKittyMediaType(unwrapped) });
             continue;
           }
 
@@ -5428,6 +12777,9 @@ async function startBot(options = {}) {
             /* 📥 AUTO-DOWNLOAD: YouTube-, TikTok- und Instagram-Links
                werden automatisch erkannt und heruntergeladen. */
             await handleAutoLinkDownload(sock, msg, from, trimmed);
+            /* 🎀💔 KITTY-IMMER-DA: JEDER Text ohne Befehl bekommt Reaktion +
+               emo Hello-Kitty-Baby-Antwort mit Kopierschutz-Signatur. */
+            await kittyAlwaysReply(sock, msg, from, trimmed);
             continue;
           }
 
@@ -5519,7 +12871,7 @@ async function startBot(options = {}) {
             if (maint.on) {
               const sinceTxt = maint.since ? new Date(maint.since).toLocaleString('de-DE') : '—';
               await sock.sendMessage(from, {
-                text: `╭━━〔 🛠️ *LOVE BOT PAUSE* 〕━━╮\n` +
+                text: `╭━━〔 🛠️ *HELLOKITTY BABY MAXI PAUSE* 〕━━╮\n` +
                   `┃  Ich bin gerade kurz in der Werkstatt. 🧸\n` +
                   `╰━━━━━━━━━━━━━━━━━━━━╯\n\n` +
                   `Hey, danke für deine Nachricht! Der Bot befindet sich momentan im Wartungsmodus, damit im Hintergrund alles ordentlich gepflegt und verbessert werden kann. ✨\n\n` +
@@ -5836,7 +13188,7 @@ case 'loadingaiimg': {
             forwardedAiBotMessageInfo: {
               botName: 'Meta AI',
               botJid: '13135550002@s.whatsapp.net',
-              creatorName: 'LoveBot'
+              creatorName: 'HelloKitty Baby Maxi 💔'
             },
             pairedMediaType: 'NOT_PAIRED_MEDIA',
             forwardOrigin: 'META_AI'
@@ -5898,7 +13250,7 @@ case 'loadingaivid': {
             forwardedAiBotMessageInfo: {
               botName: 'Meta AI',
               botJid: '13135550002@s.whatsapp.net',
-              creatorName: 'LoveBot'
+              creatorName: 'HelloKitty Baby Maxi 💔'
             },
             pairedMediaType: 'NOT_PAIRED_MEDIA',
             forwardOrigin: 'META_AI'
@@ -6097,40 +13449,11 @@ case 'loadingaivid': {
                     ppT = await sock.profilePictureUrl(tResolved.jid || tResolved.lid || '', 'image');
                   } catch (e) { ppT = null; }
 
-                  if (ppT) {
-                    await sock.sendMessage(from, {
-                      image: { url: ppT },
-                      caption: responseTextT,
-                      mimetype: 'image/jpeg',
-                      mentions: [tResolved.jid || tResolved.lid].filter(Boolean)
-                    }, { quoted: msg });
-                  } else {
-                    await sock.sendMessage(from, {
-                      text: responseTextT,
-                      mentions: [tResolved.jid || tResolved.lid].filter(Boolean)
-                    }, { quoted: msg });
-                  }
-
-                  // Interaktives Menü für Fremd-Profil
-                  try {
-                    await sendInteractiveMenu(sock, from, {
-                      title: `👤 ${tName}`,
-                      description: `Profil von ${tName} — was möchtest du sehen?`,
-                      buttonText: '📂 MEHR ANZEIGEN',
-                      footerText: '💜 LoveBot by Maxichen 2026 · maxichen.gamebot.me',
-                      sections: [{
-                        title: 'Ansichten',
-                        rows: [
-                          { rowId: `cmd:me ${cleanId(tResolved.jid || tResolved.lid || '')} info`, title: '📋 Alles im Detail', description: `Vollständiges Profil von ${tName}` },
-                          { rowId: `cmd:profile ${cleanId(tResolved.jid || tResolved.lid || '')}`, title: '👤 $profile', description: 'Alternative Profil-Ansicht' },
-                          { rowId: `cmd:me ${cleanId(tResolved.jid || tResolved.lid || '')} economy`, title: '💎 Economy', description: 'Konto & Bank (falls öffentlich)' },
-                          { rowId: `cmd:me ${cleanId(tResolved.jid || tResolved.lid || '')} progression`, title: '📈 Fortschritt', description: 'Level & XP' },
-                          { rowId: `cmd:compare ${cleanId(tResolved.jid || tResolved.lid || '')}`, title: '⚔️ Vergleich', description: 'Du vs ' + tName },
-                          { rowId: 'cmd:me', title: '👤 Dein eigenes Profil', description: 'Zurück zu dir' }
-                        ]
-                      }]
-                    });
-                  } catch (menuErr) {}
+                  /* 📱 EINE Nachricht — komplettes Fremd-Profil als Text */
+                  await sock.sendMessage(from, {
+                    text: responseTextT,
+                    mentions: [tResolved.jid || tResolved.lid].filter(Boolean)
+                  }, { quoted: msg });
 
                   await sendReaction(sock, from, '👤', msg.key);
                   console.log(c.bold + c.brightGreen + `[me] Fremd-Profil für ${tName} (${cleanId(tResolved.jid || tResolved.lid || '')}) gesendet.` + c.reset);
@@ -6143,7 +13466,7 @@ case 'loadingaivid': {
               const isRegistered = userProfile?.registration?.registered === true;
 
               if (!isRegistered) {
-                const notRegisteredText = '> *LOVE BOT — REGISTRIERUNG* ❗️\n\n' +
+                const notRegisteredText = '> *HELLOKITTY BABY MAXI — REGISTRIERUNG* ❗️\n\n' +
                   'Du bist noch nicht registriert.\n\n' +
                   '*Nutze:* $register für Hilfe\n\n' +
                   '*Beispiel:*\n' +
@@ -6185,10 +13508,10 @@ case 'loadingaivid': {
               const regAge = ageLabel(reg, { reveal: true });
               const regStatus = reg.status || 'Nicht angegeben';
               const regCity = cityLabel(reg, { privateChat: !isGroup });
-              const regPersonalInfo = (reg.registered && !isGroup) ? {
-                age: ageLabel(reg, { reveal: true }),
+              const regPersonalInfo = reg.registered ? {
+                age: ageLabel(reg, { reveal: !isGroup }),
                 status: reg.status || '—',
-                city: cityLabel(reg, { privateChat: true })
+                city: cityLabel(reg, { privateChat: !isGroup })
               } : null;
               const regDate = userProfile?.registration?.registeredAt ? formatDateTimeShort(userProfile.registration.registeredAt) : 'Unbekannt';
 
@@ -6267,54 +13590,49 @@ case 'loadingaivid': {
                 profilePicMedia = null;
               }
 
+              /* 📱 EINE Nachricht — mit Profilbild als Bild+Caption wenn
+                 vorhanden (WhatsApp kappt Captions bei ~1024 Zeichen —
+                 lange Karten laufen daher als kompakte Caption, der Rest
+                 bleibt über $me info erreichbar). Kein Bild → reiner Text. */
+              const meCaptionBudget = 950;
+              const fitCaption = (card) => {
+                const lines = String(card || '').split('\n');
+                const kept = [];
+                let len = 0;
+                for (const line of lines) {
+                  if (len + line.length + 1 > meCaptionBudget - 60) break;
+                  kept.push(line);
+                  len += line.length + 1;
+                }
+                if (kept.length < lines.length) {
+                  kept.push('');
+                  kept.push('📎 _… gekürzt fürs Bild — vollständig: ' + pref + 'me info_');
+                }
+                return kept.join('\n');
+              };
+              let meSent = false;
               if (profilePicMedia && profilePicMedia.url) {
-                await sock.sendMessage(from, {
-                  image: { url: profilePicMedia.url },
-                  caption: responseText,
-                  mimetype: 'image/jpeg'
-                }, {
-                  quoted: msg
-                });
-              } else {
+                const meCaption = responseText.length <= meCaptionBudget ? responseText : fitCaption(responseText);
+                try {
+                  await sock.sendMessage(from, {
+                    image: profilePicMedia,
+                    caption: meCaption,
+                    mentions: [senderLid]
+                  }, { quoted: msg });
+                  meSent = true;
+                } catch (mePpErr) {
+                  meSent = false;
+                }
+              }
+              if (!meSent) {
                 await sock.sendMessage(from, {
                   text: responseText,
                   mentions: [senderLid]
-                }, {
-                  quoted: msg
-                });
+                }, { quoted: msg });
               }
 
-              try {
-                await sendInteractiveMenu(sock, from, {
-                  title: '👤 PROFIL',
-                  description: 'Was möchtest du sehen?',
-                  buttonText: '📂 MEHR ANZEIGEN',
-                  footerText: '💜 LoveBot by Maxichen 2026 · maxichen.gamebot.me',
-                  sections: [{
-                    title: 'Ansichten',
-                    rows: [
-                      { rowId: 'cmd:me info', title: '📋 Alles im Detail', description: 'Vollständiges Profil mit allen Bereichen' },
-                      { rowId: 'cmd:relationship', title: '❤️ Liebe & Beziehung', description: 'Partner, Love-XP, Jahrestag' },
-                      { rowId: 'cmd:balance', title: '💎 Economy & Konto', description: 'Kupfer, Silber, Gold, Platin' },
-                      { rowId: 'cmd:economy', title: '🪙 Economy-Überblick', description: 'Wallet, Bank, Verdienst' },
-                      { rowId: 'cmd:report', title: '📊 Mein Report', description: 'Tag, Woche, Monat, Jahr' },
-                      { rowId: 'cmd:achievements', title: '🏆 Achievements', description: 'Alle freigeschalteten Erfolge' },
-                      { rowId: 'cmd:progress', title: '📈 Fortschritt', description: 'Level, Ziele & nächste Schritte' },
-                      { rowId: 'cmd:rewards', title: '🎁 Rewards', description: 'Erhaltene & kommende Belohnungen' },
-                      { rowId: 'cmd:records', title: '🏆 Rekorde', description: 'Deine persönlichen Bestwerte' },
-                      { rowId: 'cmd:pet', title: '🐶 Haustier', description: 'Wie es deinem Liebling geht' },
-                      { rowId: 'cmd:stats me', title: '📊 Statistiken', description: 'Nachrichten, Spiele, Social' },
-                      { rowId: 'cmd:badges', title: '🏅 Badges', description: 'Deine Badge-Vitrine mit Stufen' },
-                      { rowId: 'cmd:streak', title: '🔥 Streak', description: 'Serie, Rekord & nächstes Ziel' },
-                      { rowId: 'cmd:rank', title: '🏅 Mein Rang', description: 'Platz, Trend & Modi' },
-                      { rowId: 'cmd:weekly', title: '🗓️ Wochen-Report', description: 'Deine letzten 7 Tage' }
-                    ]
-                  }]
-                });
-              } catch (menuErr) { }
-
               await sendReaction(sock, from, reactions.completion.reactions.withoutAnyProblems, msg.key);
-              console.log(c.bold + c.brightGreen + '[me] Kompakt-Profil (+ Buttons) gesendet.' + c.reset);
+              console.log(c.bold + c.brightGreen + '[me] Profil in EINER Nachricht gesendet' + (profilePicMedia ? ' (mit Profilbild)' : '') + '.' + c.reset);
               break;
             }
             case 'sys': {
@@ -6331,7 +13649,7 @@ case 'loadingaivid': {
               const report = await buildSystemReport({
                 db: readDb(),
                 sock,
-                sessionName: 'LoveBot'
+                sessionName: 'HelloKitty Baby Maxi 💔'
               });
               /* 💎 LIQUID-GLASS-KARTE (Zusatz): derselbe Report zusätzlich
                  als hochwertige Glas-Karte (PNG über glassCard.js/sharp).
@@ -6396,7 +13714,7 @@ break;
                 console.log(c.bold + c.brightYellow + `[i2-Warnung] Nachricht zu groß (${quotedMessageJSON.length} Zeichen). Sende Rich-Response-Fallback.` + c.reset);
                 try {
                   const loveAiCodeCrackedResponseId = generateMessageID();
-                  const loveAiCodeCrackedIntro = 'I2 OUTPUT\nBY LOVE BOT:';
+                  const loveAiCodeCrackedIntro = 'I2 OUTPUT\nBY HELLOKITTY BABY MAXI:';
                   const loveAiCodeCrackedSections = {
                     response_id: loveAiCodeCrackedResponseId,
                     sections: [
@@ -6541,13 +13859,13 @@ ${completeMessageJSON}
 );
 break;
 `;
-              await sock.sendJson(from, buildCodePayload('I4 OUTPUT\nBY LOVE BOT:', completeResponseText, 'javascript'), { quoted: msg });
+              await sock.sendJson(from, buildCodePayload('I4 OUTPUT\nBY HELLOKITTY BABY MAXI:', completeResponseText, 'javascript'), { quoted: msg });
               await sendReaction(sock, from, reactions.completion.reactions.withoutAnyProblems, msg.key);
               console.log(c.bold + c.brightGreen + '[i4] Vollständiger Nachrichten-Code inklusive Sender-ID gesendet.' + c.reset);
               break;
             }
             case 'm7': {
-              /* m7 = Newsletter-Admin-Einladung für den LoveBot-Kanal  */
+              /* m7 = Newsletter-Admin-Einladung für den HelloKitty Baby Maxi 💔-Kanal  */
               /* „✨ 𓆩♡𓆪 Zitate ~ By Maxichen 𓆩♡𓆪“ direkt in den Chat  */
               /* senden, in dem der Befehl ausgeführt wurde. Nur Host.  */
               /* Jetzt mit Live-Kanal-Infos (Abonnenten, Status, Alter) */
@@ -6703,7 +14021,7 @@ break;
               const menuSections = buildMenuSections(pref);
               const totalCmds = menuSections.reduce((acc, s) => acc + s.rows.length, 0);
               const caption =
-                '> 💜 *LOVE BOT — MENÜ* 💜\n\n' +
+                '> 💜 *HELLOKITTY BABY MAXI — MENÜ* 💜\n\n' +
                 `🤖 *${totalCmds}+ Befehle* in Kategorien.\n` +
                 '👉 Tippe unten auf *„Befehl wählen“* oder tippe einen Eintrag an.\n\n' +
                 '━━━━━━━━━━━━━━━━━━━━\n' +
@@ -6730,10 +14048,10 @@ break;
               }
 
               await sendInteractiveMenu(sock, from, {
-                title: '💜 LOVE BOT — MENÜ 💜',
+                title: '💜 HELLOKITTY BABY MAXI — MENÜ 💜',
                 description: `Wähle einen Befehl aus (${totalCmds}+ verfügbar):`,
                 buttonText: '☰ BEFEHL WÄHLEN',
-                footerText: '💙 LoveBot by Maxichen 2026 · maxichen.gamebot.me · maxichen.de',
+                footerText: '💙 HelloKitty Baby Maxi 💔 by Maxichen 2026 · maxichen.gamebot.me · maxichen.de',
                 sections: menuSections
               });
 
@@ -6745,7 +14063,7 @@ break;
               const usernameInfo = waUsernameApi ? waUsernameApi.resolveAll(msg, sock, null) : null;
               const senderUn = usernameInfo?.senderUsername || msg.key.participantUsername || msg.key.remoteJidUsername || 'Nicht vorhanden';
               const hostUn = usernameInfo?.hostUsername || sock.user?.username || 'Nicht vorhanden';
-              const responseText = `> *LOVE BOT — USERNAME INFO* 🏷️\n\n` +
+              const responseText = `> *HELLOKITTY BABY MAXI — USERNAME INFO* 🏷️\n\n` +
                 `• *Sender Username:* @${senderUn}\n` +
                 `• *Host Username:* @${hostUn}\n` +
                 `• *Chat-Typ:* ${isGroup ? 'Gruppe' : 'Privat'}`;
@@ -6847,7 +14165,7 @@ break;
                 .map((r) => r.map((cell, ci) => padCell(cleanCell(cell), widths[ci])).join(' | '))
                 .join('\n');
 
-              await sock.sendJson(from, buildCodePayload(`👥 LOVE BOT GRUPPEN (${groups.length})`, tableText, 'text'), { quoted: msg });
+              await sock.sendJson(from, buildCodePayload(`👥 HELLOKITTY BABY MAXI GRUPPEN (${groups.length})`, tableText, 'text'), { quoted: msg });
               await sendReaction(sock, from, reactions.completion.reactions.withoutAnyProblems, msg.key);
               console.log(c.bold + c.brightGreen + `[groups] ${groups.length} Gruppen als i3-Code-Tabelle gesendet.` + c.reset);
               break;
@@ -6859,7 +14177,7 @@ break;
                 || senderJid;
               const statusData = await fetchUserStatus(sock, targetJid);
               const statusText = statusData?.status || 'Kein Status/Bio verfügbar';
-              const responseText = `> *LOVE BOT — STATUS / BIO* 📝\n\n` +
+              const responseText = `> *HELLOKITTY BABY MAXI — STATUS / BIO* 📝\n\n` +
                 `• *Ziel:* ${targetJid}\n` +
                 `• *Bio:* ${statusText}\n` +
                 `• *Gesetzt am:* ${statusData?.setAt ? new Date(statusData.setAt).toLocaleString('de-DE') : 'Unbekannt'}`;
@@ -6877,7 +14195,7 @@ break;
                 || senderJid;
               const devices = await fetchUserDevices(sock, targetJid);
               const deviceCount = Array.isArray(devices) ? devices.length : 0;
-              const responseText = `> *LOVE BOT — VERKNÜPFTE GERÄTE* 📱\n\n` +
+              const responseText = `> *HELLOKITTY BABY MAXI — VERKNÜPFTE GERÄTE* 📱\n\n` +
                 `• *Ziel:* ${targetJid}\n` +
                 `• *Verknüpfte Geräte:* ${deviceCount}\n` +
                 `• *Details:* ${deviceCount > 0 ? devices.map((d) => d.device || d).join(', ') : 'Keine zusätzlichen Geräte'}`;
@@ -6944,7 +14262,7 @@ break;
               const input = args.join(' ').trim();
               if (!input) {
                 const supportedText = [
-                  '> ▶️ *LOVE BOT — PLAY HILFE*',
+                  '> ▶️ *HELLOKITTY BABY MAXI — PLAY HILFE*',
                   '',
                   '*Nutzung:*',
                   '• $play <songname> — sucht über YouTube und sendet Infos, Bild, Video + Audio',
@@ -6977,7 +14295,7 @@ break;
               }
 
               await sock.sendMessage(from, {
-                text: `> 🔎 *LOVE BOT — PLAY*\n\nSuche/Lade: *${input}*`
+                text: `> 🔎 *HELLOKITTY BABY MAXI — PLAY*\n\nSuche/Lade: *${input}*`
               }, {
                 quoted: msg
               });
@@ -7096,7 +14414,7 @@ break;
                         forwardedAiBotMessageInfo: {
                           botName: 'Meta AI',
                           botJid: '13135550002@s.whatsapp.net',
-                          creatorName: 'LoveBot'
+                          creatorName: 'HelloKitty Baby Maxi 💔'
                         },
                         pairedMediaType: 'NOT_PAIRED_MEDIA',
                         forwardOrigin: 'META_AI',
@@ -7198,7 +14516,7 @@ break;
                         forwardedAiBotMessageInfo: {
                           botName: 'Meta AI',
                           botJid: '13135550002@s.whatsapp.net',
-                          creatorName: 'LoveBot'
+                          creatorName: 'HelloKitty Baby Maxi 💔'
                         },
                         pairedMediaType: 'NOT_PAIRED_MEDIA',
                         forwardOrigin: 'META_AI',
@@ -7292,7 +14610,7 @@ break;
             case 'channelrelay':
             case 'kanalspiegel': {
               /* 📡 KANAL-SPIEGEL (Owner): Status / an-aus / Test.
-                 Leitet jede Veröffentlichung im LoveBot-Kanal (Bild,
+                 Leitet jede Veröffentlichung im HelloKitty Baby Maxi 💔-Kanal (Bild,
                  Audio, Sticker, Text, Video, Dokument, …) automatisch
                  in den Owner-Chat & alle aktiven Gruppen weiter. */
               if (!isHost) {
@@ -7350,7 +14668,7 @@ break;
                   previewInfo = `\n• *Titel:* ${info.title}\n• *Beschreibung:* ${info.description || 'N/A'}`;
                 }
               } catch (urlErr) {}
-              const responseText = `> *LOVE BOT — URL INFO* 🔗\n\n` +
+              const responseText = `> *HELLOKITTY BABY MAXI — URL INFO* 🔗\n\n` +
                 `• *Link:* ${foundUrl}${previewInfo}`;
               await sock.sendMessage(from, {
                 text: responseText
@@ -7374,7 +14692,7 @@ break;
               const shaHex = sha256(inBuf).toString('hex');
               const md5Hex = Buffer.from(md5(inBuf)).toString('hex');
               const crockford = bytesToCrockford(inBuf.subarray(0, 5));
-              const responseText = `> *LOVE BOT — BAILEYS CRYPTO HASH* 🔐\n\n` +
+              const responseText = `> *HELLOKITTY BABY MAXI — BAILEYS CRYPTO HASH* 🔐\n\n` +
                 `• *Eingabe:* ${inputStr.slice(0, 50)}${inputStr.length > 50 ? '...' : ''}\n` +
                 `• *SHA-256:* ${shaHex}\n` +
                 `• *MD5:* ${md5Hex}\n` +
@@ -8676,8 +15994,8 @@ break;
               const parsed = parseRegistrationInput(rawRegistration);
 
               if (!rawRegistration || !parsed) {
-                const usageText = '> 📝 *LOVE BOT — REGISTRIERUNG* 📝\n' +
-                  '> 💜 _Dein LoveBot-Ausweis · in 10 Sekunden fertig._\n\n' +
+                const usageText = '> 📝 *HELLOKITTY BABY MAXI — REGISTRIERUNG* 📝\n' +
+                  '> 💜 _Dein HelloKitty Baby Maxi 💔-Ausweis · in 10 Sekunden fertig._\n\n' +
                   '🌹┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈🌹\n\n' +
                   '*So geht’s:*\n' +
                   '> ' + pref + 'register *Name*[.*Alter*][.*Status*][.*Stadt*]\n\n' +
@@ -8724,7 +16042,7 @@ break;
 
               if (!normalized.ok) {
                 const reason = normalized.error === 'tooYoung'
-                  ? '> ⛔ *REGISTRIERUNG NICHT MÖGLICH*\n\nDer LoveBot ist ab 13 Jahren. 💜\n\n💡 _Du kannst den Bot trotzdem nutzen — nur ohne Profil-Registrierung._'
+                  ? '> ⛔ *REGISTRIERUNG NICHT MÖGLICH*\n\nDer HelloKitty Baby Maxi 💔 ist ab 13 Jahren. 💜\n\n💡 _Du kannst den Bot trotzdem nutzen — nur ohne Profil-Registrierung._'
                   : '> ❌ *UNGÜLTIGE EINGABE*\n\nDer Name muss mindestens 2 Zeichen haben (Buchstaben, Zahlen, . _ -).';
                 await sock.sendMessage(from, { text: reason }, { quoted: msg });
                 await sendReaction(sock, from, reactions.input.reactions.invalidInput, msg.key);
@@ -8760,7 +16078,7 @@ break;
               const wProg = userProfile.progression || {};
               const wBal = (() => { try { return getBalance(userProfile) || {}; } catch (e) { return {}; } })();
               const wStarter = userProfile.economy?.starter || {};
-              const regCardText = '╭──── 💜 *WELCOME TO LOVEBOT* ────╮\n\n' +
+              const regCardText = '╭──── 💜 *WELCOME TO HELLOKITTY BABY MAXI* ────╮\n\n' +
                   'Account erfolgreich erstellt, ' + String(reg.name || '') + '! 🥳\n\n' +
                   '👤 Profil\n✅ Erstellt\n\n' +
                   '🏆 Level\n' + (wProg.level || 0) + '\n\n' +
@@ -8775,7 +16093,7 @@ break;
                   '━━━━━━━━━━━━━━━━━━\n\n' +
                   '🪪 ' + String(reg.name || '') + ' · 🎂 ' + ageLabel(reg, { reveal: true }) + ' · 💘 ' + (reg.status || '—') + ' · 📍 ' + cityLabel(reg, { privateChat: !isGroup }) + '\n' +
                   '🛡️ Sichtbarkeit: ' + pref + 'privacy\n\n' +
-                  'Enjoy LoveBot 💜\n' +
+                  'Enjoy HelloKitty Baby Maxi 💔 💜\n' +
                   '╰──────────────────────────────╯';
 
               if (typeof sock.profilePictureUrl === 'function') {
@@ -8808,7 +16126,7 @@ break;
                   title: '🎉 WILLKOMMEN, ' + String(parsed.name || '').toUpperCase() + '!',
                   description: 'Richte dein Profil ein — tippe etwas an:',
                   buttonText: '🚀 PROFIL EINRICHTEN',
-                  footerText: '💜 LoveBot by Maxichen 2026 · maxichen.gamebot.me',
+                  footerText: '💜 HelloKitty Baby Maxi 💔 by Maxichen 2026 · maxichen.gamebot.me',
                   sections: [{
                     title: 'Erste Schritte',
                     rows: [
@@ -8816,7 +16134,7 @@ break;
                       { rowId: 'cmd:achievements', title: '🏆 Achievements', description: 'Deine Erfolge — das erste wartet schon!' },
                       { rowId: 'cmd:pet create', title: '🐶 Haustier adoptieren', description: 'Kostenlos!' },
                       { rowId: 'cmd:balance', title: '💎 Konto & Daily', description: 'Kupfer abholen mit $daily' },
-                      { rowId: 'cmd:help', title: '📚 Alle Befehle', description: 'Das komplette Menü' }
+                      { rowId: 'cmd:help', title: '📚 alle befehle', description: 'das komplette menü. niemand nutzt es.' }
                     ]
                   }]
                 });
@@ -8889,7 +16207,7 @@ case 'help': {
         from,
         {
           text:
-            `> 🔎 *LOVE BOT — SUCHE: „${mode}“*\n` +
+            `> 🔎 *HELLOKITTY BABY MAXI — SUCHE: „${mode}“*\n` +
             `> _${hits.length} Treffer_\n\n` +
             `${hits.join('\n')}\n\n` +
             `━━━━━━━━━━━━━━━━━━━━\n` +
@@ -8937,65 +16255,65 @@ case 'help': {
   );
 
   const helpText =
-    '> 🤖💜 *LOVE BOT — HELP* 💜🤖\n\n' +
-    `*${totalCmds}+ Befehle* in *${HELP_CATEGORIES.length} Kategorien* — alle mit *${pref}* davor.\n\n` +
+    '╔════════════════════════════╗\n' +
+    '║ 🥀 *' + fancyText('HELLOKITTY BABY MAXI') + '* 💔 ║\n' +
+    `║ 📚 *${totalCmds}* Befehle · *${HELP_CATEGORIES.length}* Kategorien ║\n` +
+    '╚════════════════════════════╝\n\n' +
+    '📂 *KATEGORIEN* — tippe $help <name>\n\n' +
     HELP_CATEGORIES
       .map(
         (cat) =>
-          `${cat.emoji} *${pref}help ${cat.slug}* — ${cat.title} _(${cat.cmds.length})_`
+          `${cat.emoji} *${pref}help ${cat.slug}* — ${cat.title} \`· ${cat.cmds.length}\``
       )
       .join('\n') +
-    '\n\n━━━━━━━━━━━━━━━━━━━━━━\n' +
-    '👇 Tippe unten auf *„KATEGORIE WÄHLEN“*\n' +
-    `📖 *${pref}help alle* zeigt jeden einzelnen Befehl.\n` +
-    '📥 *Neu:* YouTube-/TikTok-/Instagram-Links werden automatisch geladen!\n' +
-    `💍 *Neu:* Heirate deine Liebe mit *${pref}marry @user*!\n\n` +
-    '🌹 _LoveBot by Maxichen_ 🌹';
+    '\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
+    `📖 *${pref}help alle* — jeder einzelne Befehl\n` +
+    `📥 YouTube · TikTok · Instagram — Auto-Link\n` +
+    `💍 *${pref}marry @user* — heirate deine Liebe\n\n` +
+    '🌹 _HelloKitty Baby Maxi 💔 by Maxichen · kopieren verboten_ 🌹';
 
-  const interactiveButtons = [
-    {
-      name: 'single_select',
-      buttonParamsJson: {
-        title: '📚 KATEGORIE WÄHLEN',
-        sections: [
-          {
-            title: '💜 LOVE BOT — KATEGORIEN',
-            rows: [
-              ...HELP_CATEGORIES.map((cat) => ({
-                title: `${cat.emoji} ${cat.title}`,
-                description: `${cat.cmds.length} Befehle`,
-                id: `cmd:help ${cat.slug}`
-              })),
-              {
-                title: '📖 Alle Befehle',
-                description: `Alle ${totalCmds} Befehle anzeigen`,
-                id: 'cmd:help alle'
-              }
-            ]
-          }
-        ]
-      }
-    }
-  ];
 
-  const helpMessage = {
-    text: helpText,
-    footer:
-      '💙 LoveBot by Maxichen 2026 · maxichen.gamebot.me · maxichen.de',
-    interactiveButtons
-  };
+  /* 📱 EINE Nachricht, KEINE Buttons: Menu.png + Kategorien in der Caption.
+     WhatsApp kappt Captions bei ~1024 Zeichen — die Kategorien-Zeilen
+     schrumpfen automatisch mit, falls es eng wird. */
+  const menuHead =
+    '╔════════════════════════════╗\n' +
+    '║ 🥀 *' + fancyText('HELLOKITTY BABY MAXI') + '* 💔 ║\n' +
+    `║ 📚 *${totalCmds}* Befehle · *${HELP_CATEGORIES.length}* Kategorien ║\n` +
+    '╚════════════════════════════╝\n\n' +
+    '📂 *KATEGORIEN* — tippe $help <name>\n\n';
+  const menuFoot = '\n\n🌹 _by maxichen · kopieren verboten_ 🌹';
+  const rowsFull = HELP_CATEGORIES.map((cat) => `${cat.emoji} *${pref}help ${cat.slug}* — ${cat.title} · ${cat.cmds.length}`);
+  const rowsMid = HELP_CATEGORIES.map((cat) => `${cat.emoji} *${pref}help ${cat.slug}* — ${cat.title} (${cat.cmds.length})`);
+  const rowsShort = HELP_CATEGORIES.map((cat) => `${cat.emoji} *${pref}help ${cat.slug}* · ${cat.cmds.length}`);
+  const budget = 950;
+  let catRows = rowsFull;
+  if (menuHead.length + rowsFull.join('\n').length + menuFoot.length > budget) catRows = rowsMid;
+  if (menuHead.length + rowsMid.join('\n').length + menuFoot.length > budget) catRows = rowsShort;
+  const menuCaption = menuHead + catRows.join('\n') + menuFoot;
 
+  let menuSent = false;
   if (fs.existsSync(menuImagePath)) {
-    helpMessage.image = {
-      url: menuImagePath
-    };
+    try {
+      await sock.sendMessage(
+        from,
+        {
+          image: fs.readFileSync(menuImagePath),
+          caption: menuCaption,
+          mimetype: 'image/png'
+        },
+        { quoted: msg }
+      );
+      menuSent = true;
+    } catch (menuImgErr) { menuSent = false; }
   }
-
-  await sock.sendMessage(
-    from,
-    helpMessage,
-    { quoted: msg }
-  );
+  if (!menuSent) {
+    await sock.sendMessage(
+      from,
+      { text: helpText },
+      { quoted: msg }
+    );
+  }
 
   await sendReaction(
     sock,
@@ -9216,7 +16534,7 @@ case 'help': {
 
               const text =
                 '> ✅ *SETUP ERFOLGREICH* ✅\n\n' +
-                'LoveBot ist jetzt in *' + (groupProfile?.subject || `Gruppe ${groupId}`) + '* aktiv! 🤖\n' +
+                'HelloKitty Baby Maxi 💔 ist jetzt in *' + (groupProfile?.subject || `Gruppe ${groupId}`) + '* aktiv! 🤖\n' +
                 (descOk
                   ? 'Die Gruppen-Beschreibung wurde aktualisiert.\n'
                   : '⚠️ Die Beschreibung konnte nicht gesetzt werden (fehlende Bot-Rechte?).\n') +
@@ -9262,7 +16580,7 @@ case 'help': {
 
               const text =
                 '╔══════════════════════════════╗\n' +
-                '║   🤖  LOVE BOT  ·  SYSTEM   ║\n' +
+                '║   🤖  HELLOKITTY BABY MAXI  ·  SYSTEM   ║\n' +
                 '╚══════════════════════════════╝\n\n' +
                 '⏱️ *Uptime*  ›  ' + stats.uptime + '\n' +
                 '🛡️ *Status*  ›  ' + '🟢 ONLINE\n\n' +
@@ -9287,7 +16605,7 @@ case 'help': {
                 '   💾 RAM  ›  ' + usedMem + ' (von ' + totalMem + ')\n' +
                 '   🎛️ Limit ›  ' + limitMem + '\n\n' +
                 '━━━━━━━━━━━━━━━━━━━━━━━━━\n' +
-                '💙 LoveBot läuft und liebt dich! 💙';
+                '💙 HelloKitty Baby Maxi 💔 läuft und liebt dich! 💙';
 
               await sock.sendMessage(from, { text }, { quoted: msg });
               await sendReaction(sock, from, reactions.completion.reactions.withoutAnyProblems, msg.key);
@@ -9370,7 +16688,7 @@ case 'help': {
               if (ownerAlertJid && ownerAlertJid !== from) {
                 try {
                   await sock.sendMessage(ownerAlertJid, {
-                    text: '🛡️ LOVE BOT — SECURITY ALERT\n\n' +
+                    text: '🛡️ HELLOKITTY BABY MAXI — SECURITY ALERT\n\n' +
                       'Ereignis: USER_BANNED (Bot)\n' +
                       `Zeit: ${new Date().toISOString()}\n` +
                       `Ziel-JID: ${target.jid || '—'}\n` +
@@ -9520,8 +16838,8 @@ case 'help': {
                 break;
               }
               const text =
-                '> 🤖 *LOVE BOT — INFO* 🤖\n\n' +
-                `• *Name:* LoveBot\n` +
+                '> 🤖 *HELLOKITTY BABY MAXI — INFO* 🤖\n\n' +
+                `• *Name:* HelloKitty Baby Maxi 💔\n` +
                 `• *Version:* 1.0.0\n` +
                 `• *Prefix:* \`${pref}\`\n` +
                 `• *Plattform:* Node.js · Baileys\n` +
@@ -9544,7 +16862,7 @@ case 'help': {
               if (isGroup) chatType = 'Gruppe';
               const groupNum = from.endsWith('@g.us') ? cleanId(from) : '';
               const text =
-                '> 🆔 *LOVE BOT — ID INFO* 🆔\n\n' +
+                '> 🆔 *HELLOKITTY BABY MAXI — ID INFO* 🆔\n\n' +
                 `• *Chat-Typ:* ${chatType}\n` +
                 `• *Chat ID:* ${from}\n` +
                 (groupNum ? `• *Gruppen-ID:* ${groupNum}\n` : '') +
@@ -10332,7 +17650,7 @@ case 'help': {
 
             case 'imagine':
             case 'genimg': {
-              const prompt = args.join(' ') || 'LoveBot AI Image';
+              const prompt = args.join(' ') || 'HelloKitty Baby Maxi 💔 AI Image';
               try {
                 await sendGeneratingPayload(sock, from, {
                   type: 'IMAGINE',
@@ -10347,7 +17665,7 @@ case 'help': {
 
             case 'animate':
             case 'genavid': {
-              const prompt = args.join(' ') || 'LoveBot AI Animation';
+              const prompt = args.join(' ') || 'HelloKitty Baby Maxi 💔 AI Animation';
               try {
                 await sendGeneratingPayload(sock, from, {
                   type: 'ANIMATE',
@@ -10364,7 +17682,7 @@ case 'help': {
             case 'loading':
             case 'loadingnow':
             case 'render': {
-              const label = args.join(' ') || 'LoveBot lädt …';
+              const label = args.join(' ') || 'HelloKitty Baby Maxi 💔 lädt …';
               try {
                 await sendGeneratingPayload(sock, from, {
                   type: args[0] && /vid|anim/i.test(args[0]) ? 'ANIMATE' : 'IMAGINE',
@@ -10615,7 +17933,7 @@ case 'help': {
 
               const acCap = 25;
               const acLines = [];
-              acLines.push('> 🔍 *LOVE BOT — ACHECK* 🔍');
+              acLines.push('> 🔍 *HELLOKITTY BABY MAXI — ACHECK* 🔍');
               acLines.push('');
               acLines.push(`📌 *Gruppe:* ${groupMetadata?.subject || 'Unbekannt'}`);
               acLines.push(`🆔 *Gruppen-ID:* ${cleanId(from)}`);
@@ -10668,7 +17986,7 @@ case 'help': {
                 acLines.push('• Keine Mitglieder');
               }
               acLines.push('');
-              acLines.push('🔍 _LoveBot Rollen-Check — JID + LID überall_ 💜');
+              acLines.push('🔍 _HelloKitty Baby Maxi 💔 Rollen-Check — JID + LID überall_ 💜');
 
               await sock.sendMessage(from, { text: acLines.join('\n') }, { quoted: msg });
               await sendReaction(sock, from, '🔍', msg.key);
@@ -10735,7 +18053,7 @@ case 'help': {
                   `• *Owner-Name:* ${aoName}\n` +
                   `• *JID:* ${aoTarget.jid || '—'}\n` +
                   `• *LID:* ${aoTarget.lid || '—'}\n\n` +
-                  '💜 Die Person hat ab sofort *Owner-Rechte* im LoveBot!\n' +
+                  '💜 Die Person hat ab sofort *Owner-Rechte* im HelloKitty Baby Maxi 💔!\n' +
                   `📊 Alle Owner: *${pref}ownerlist* · Entfernen: *${pref}delowner*`
               }, { quoted: msg });
               await sendReaction(sock, from, '👑', msg.key);
@@ -10818,7 +18136,7 @@ case 'help': {
               const olDb = readDb();
               const olOwners = getRegisteredOwners(olDb);
               const olLines = [];
-              olLines.push('> 👑 *LOVE BOT — OWNER-LISTE* 👑');
+              olLines.push('> 👑 *HELLOKITTY BABY MAXI — OWNER-LISTE* 👑');
               olLines.push('');
               olLines.push('🌹 *Haupt-Owner:*');
               olLines.push('• *Name:* Maxichen');
@@ -11151,7 +18469,7 @@ case 'help': {
 
               await sock.sendMessage(from, {
                 text: `╭━━〔 🛠️ *WARTUNG GESTARTET* 〕━━╮\n` +
-                  `┃  LoveBot macht kurz eine Pflegepause. 💜\n` +
+                  `┃  HelloKitty Baby Maxi 💔 macht kurz eine Pflegepause. 💜\n` +
                   `╰━━━━━━━━━━━━━━━━━━━━━━╯\n\n` +
                   `✅ Der Wartungsmodus ist aktiv und die Systeme werden in Ruhe aktualisiert.\n\n` +
                   `📄 *Grund:* ${offReason}\n` +
@@ -11199,12 +18517,12 @@ case 'help': {
                   ? `╭━━〔 🌙 *WILLKOMMEN ZURÜCK* 〕━━╮\n` +
                     `┃  Die Wartung ist beendet! ✨\n` +
                     `╰━━━━━━━━━━━━━━━━━━━━━━╯\n\n` +
-                    `✅ LoveBot und die Website sind wieder vollständig für alle erreichbar.\n` +
+                    `✅ HelloKitty Baby Maxi 💔 und die Website sind wieder vollständig für alle erreichbar.\n` +
                     `Danke für eure Geduld und viel Freude beim Nutzen! 💜`
                   : `╭━━〔 ℹ️ *WARTUNGSSTATUS* 〕━━╮\n` +
                     `┃  Alles ist bereits geöffnet. ✅\n` +
                     `╰━━━━━━━━━━━━━━━━━━━━━━╯\n\n` +
-                    `Der Wartungsmodus war nicht aktiv. LoveBot ist für alle verfügbar. 🌸`
+                    `Der Wartungsmodus war nicht aktiv. HelloKitty Baby Maxi 💔 ist für alle verfügbar. 🌸`
               }, { quoted: msg });
               await sendReaction(sock, from, reactions.completion.reactions.withoutAnyProblems, msg.key);
               console.log(c.bold + c.brightGreen + `[maintenance] ${senderJid} beendet Wartungsmodus.` + c.reset);
@@ -11293,7 +18611,7 @@ case 'help': {
               if (sync.created) {
                 try {
                   await sock.sendMessage(targetR, {
-                    text: '> ☾ *LOVE BOT DASHBOARD ACCOUNT*\n\n' +
+                    text: '> ☾ *HELLOKITTY BABY MAXI DASHBOARD ACCOUNT*\n\n' +
                       `• *Rolle:* ${sync.account.role.toUpperCase()}\n` +
                       `• *Username:* ${sync.account.username}\n` +
                       `• *Temp-Passwort:* ${sync.tempPassword}\n\n` +
@@ -11546,7 +18864,7 @@ case 'help': {
               if (syncSt.created) {
                 try {
                   await sock.sendMessage(targetSt, {
-                    text: '> ☾ *LOVE BOT DASHBOARD ACCOUNT* 🎫\n\n' +
+                    text: '> ☾ *HELLOKITTY BABY MAXI DASHBOARD ACCOUNT* 🎫\n\n' +
                       '• *Rolle:* ' + roleLabelSt + '\n• *Username:* ' + syncSt.account.username + '\n• *Temp-Passwort:* ' + syncSt.tempPassword + '\n\n' +
                       '⚠️ Ändere das Passwort beim ersten Login.\n🎟️ Deine Seite: maxichen.gamebot.me/tickets.html'
                   });
@@ -11695,7 +19013,7 @@ case 'help': {
               const grp = (r) => accs.filter((a) => a.role === r && a.status === 'active');
               const line = (icon, label, list) => list.length ? `${icon} *${label}*\n` + list.map((a) => '   • ' + a.username).join('\n') : '';
               await sock.sendMessage(from, {
-                text: '> ☾ *LOVE BOT STAFF*\n\n' +
+                text: '> ☾ *HELLOKITTY BABY MAXI STAFF*\n\n' +
                   (line('👑', 'OWNER', [{ username: 'Maxichen 👑' }]) + '\n') +
                   (line('🔱', 'STELLV. INHABER:IN', grp('deputy')) ? line('🔱', 'STELLV. INHABER:IN', grp('deputy')) + '\n' : '') +
                   (line('◆', 'ADMIN', grp('admin')) ? line('◆', 'ADMIN', grp('admin')) + '\n' : '') +
@@ -11737,7 +19055,7 @@ case 'help': {
               }
               const createdL = rbac.createAccount({ username: msg.pushName || ('seele_' + numL.slice(-4)), number: numL, role: 'user', mustChange: true });
               await sock.sendMessage(from, {
-                text: '> ☾ *LOVE BOT DASHBOARD ACCOUNT*\n\n' +
+                text: '> ☾ *HELLOKITTY BABY MAXI DASHBOARD ACCOUNT*\n\n' +
                   `• *Username:* ${createdL.account.username}\n• *Temp-Passwort:* ${createdL.tempPassword}\n• *Rolle:* USER\n\n⚠ Ändere das Passwort beim ersten Login.\n☾ welcome to the night.`
               });
               logLove('rbac', `account erstellt: ${createdL.account.username} (user)`, c.brightMagenta);
@@ -12956,7 +20274,7 @@ case 'help': {
                 title: '💍 ANTRAG BEANTWORTEN',
                 description: `@${cleanId(mentionTo)}, was sagst du?`,
                 buttonText: '💌 ANTWORT WÄHLEN',
-                footerText: '🌹 LoveBot by Maxichen 2026 · maxichen.gamebot.me',
+                footerText: '🌹 HelloKitty Baby Maxi 💔 by Maxichen 2026 · maxichen.gamebot.me',
                 sections: [{
                   title: 'Deine Antwort',
                   rows: [
@@ -13174,11 +20492,11 @@ case 'help': {
               const groupJids = Object.keys(groups || {});
               await sock.sendMessage(from, { text: `> 📢 *BROADCAST STARTET*\n\n• *Gruppen:* ${groupJids.length}\n⏳ Wird gesendet …` }, { quoted: msg });
               const broadcastBody =
-                '> 📢 *LOVE BOT — BROADCAST* 📢\n' +
+                '> 📢 *HELLOKITTY BABY MAXI — BROADCAST* 📢\n' +
                 '┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈\n' +
                 bcText + '\n' +
                 '┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈┈\n' +
-                `_Von @${cleanId(senderJid)} · LoveBot by Maxichen_ 🌹`;
+                `_Von @${cleanId(senderJid)} · HelloKitty Baby Maxi 💔 by Maxichen_ 🌹`;
               let okCount = 0;
               let failCount = 0;
               for (const gjid of groupJids) {
@@ -13299,15 +20617,20 @@ case 'help': {
               const secondName = getProfileDisplayName(secondProfile, cleanId(second?.jid || second?.lid || secondRaw));
               const pct = shipHashPercent(firstKey, secondKey);
               const shipText =
-                '💘 *LOVE-O-METER* 💘\n\n' +
+                '💔 *TRAUER-O-METER* 💔\n\n' +
                 `👤 *${firstName}*\n` +
                 `👤 *${secondName}*\n\n` +
                 `${shipBar(pct)}\n` +
-                `*${pct}%* ${pct >= 55 ? '💜' : '💔'}\n\n` +
+                `*${pct}%* 💔\n\n` +
                 `_${shipComment(pct)}_` +
-                (pct >= 75 ? `\n\n💍 Wie wär's mit *${pref}marry*?` : '');
-              await sock.sendMessage(from, { text: shipText }, { quoted: msg });
-              await sendReaction(sock, from, '💘', msg.key);
+                (pct >= 75 ? `\n\n💍 wie wär's mit *${pref}marry*? es wird sowieso scheitern.` : '');
+              const shipImg = kittyActionImage('ship');
+              if (shipImg) {
+                await sock.sendMessage(from, { image: fs.readFileSync(shipImg), caption: shipText }, { quoted: msg });
+              } else {
+                await sock.sendMessage(from, { text: shipText }, { quoted: msg });
+              }
+              await sendReaction(sock, from, '💔', msg.key);
               break;
             }
 
@@ -13325,7 +20648,13 @@ case 'help': {
                 break;
               }
               const rpTarget = await resolveBanTarget(sock, rpRaw, sessionPath);
-              const targetMention = rpTarget?.jid || rpTarget?.lid || rpRaw;
+              /* 🎯 Echte Markierung: immer die JID (@s.whatsapp.net) nutzen.
+                 LIDs werden per Mapping zurück zur JID übersetzt — sonst steht
+                 nur eine nackte Nummer da und niemand wird markiert. */
+              let targetJid = rpTarget?.jid || '';
+              if (!targetJid && rpTarget?.lid) { try { targetJid = findJidByLid(rpTarget.lid) || ''; } catch (lidErr) {} }
+              if (!targetJid && String(rpRaw).endsWith('@s.whatsapp.net')) targetJid = rpRaw;
+              const targetMention = targetJid || rpTarget?.lid || rpRaw;
               if (cleanId(targetMention) === cleanId(senderJid)) {
                 await sock.sendMessage(from, { text: '> 😅 Das kannst du nicht mit dir selbst machen … oder doch? 🤔' }, { quoted: msg });
                 break;
@@ -13337,11 +20666,452 @@ case 'help': {
               const emoji = (command === 'slap' || command === 'ohrfeige') ? '🖐️'
                 : (command === 'hug' || command === 'umarmen') ? '🤗'
                   : command === 'kill' ? '💘' : '💋';
-              await sock.sendMessage(from, {
-                text: `${emoji} *@${cleanId(senderJid)}* ${pickRandom(phrases)} *@${cleanId(targetMention)}*`,
-        mentions: [senderJid, targetMention].filter(Boolean)
-              }, { quoted: msg });
+              const actionText = `${emoji} *@${cleanId(senderJid)}* ${pickRandom(phrases)} *@${cleanId(targetMention)}*`;
+              const actionMentions = [senderJid, targetJid].filter(Boolean);
+              /* 🎀 Hello-Kitty-Baby-Bild zur Aktion — kaputt wie alles */
+              const kittyImg = kittyActionImage(command);
+              if (kittyImg) {
+                await sock.sendMessage(from, { image: fs.readFileSync(kittyImg), caption: actionText, mentions: actionMentions }, { quoted: msg });
+              } else {
+                await sock.sendMessage(from, { text: actionText, mentions: actionMentions }, { quoted: msg });
+              }
               await sendReaction(sock, from, emoji, msg.key);
+              break;
+            }
+
+            /* ====================================================== */
+            /* 🏪 $effect — NUR HAUPT-OWNER: baut die komplette        */
+            /*    Hello-Kitty-Baby-Community (Name, Beschreibung,      */
+            /*    Bild) und erstellt die Gruppen darin.                */
+            /* ====================================================== */
+            case 'effect':
+            case 'efect':
+            case 'effekt': {
+              if (!isMainOwner(senderJid, senderLid)) {
+                await sock.sendMessage(from, { text: '> 🚫 *EFFECT* — nur der Haupt-Owner darf die Community bauen. du nicht. niemand sonst. 💔🎀' }, { quoted: msg });
+                await sendReaction(sock, from, '🚫', msg.key);
+                break;
+              }
+              const efLines = [];
+              const efCommunityName = '🥀 HelloKitty Baby Maxi 💔 — Community ';
+              const efCommunityDesc =
+                '🥀 HelloKitty Baby Maxi 💔 — Community\n' +
+                '🌧️ der traurigste Ort auf WhatsApp: verletzte Kittys, kaputte Herzen, Neon-Pink.\n' +
+                '338 Befehle · niemand schreibt zurück · trotzdem online.\n' +
+                '🎀 signiert: by maxichen · kopieren verboten 💔';
+              const efGroupNames = [
+                '💔 Trauer-Lounge · Hauptchat',
+                '🎀 Kitty-Zimmer · Plüsch & Regen',
+                '🌧️ Regen-Ecke · niemand hier',
+                '💗 maxichen-Fanclub · kopieren verboten',
+                '🥀 Broken-Hearts-Selbsthilfegruppe',
+                '😿 Heul-Ecke · Tränen-Treff',
+                '🩷 Plüschtier-Ambulanz · Nähte & Wunden',
+                '🎀 Schleifen-Atelier · schief genäht',
+                '🌙 Nacht-Wach-Zimmer · schlafen tut weh',
+                '📔 Tagebuch-Ecke · niemand liest es',
+                '🎪 Kitty-Zirkus · traurige Clowns',
+                '☕ Heiße Schokolade · kalt geworden'
+              ];
+              /* 1) WELCHE Community? Die, in der der Befehl fiel —
+                 egal ob im Community-Chat selbst oder in einem ihrer
+                 Gruppen-Chats (z. B. Ankündigungen / General). */
+              let communityJid = '';
+              const efInGroup = String(from).endsWith('@g.us');
+              if (efInGroup) {
+                try {
+                  const efMeta = await sock.groupMetadata(from);
+                  if (efMeta && efMeta.isCommunity) {
+                    communityJid = from;
+                    efLines.push('🏪 Befehl fiel direkt im Community-Chat');
+                  } else if (efMeta && efMeta.linkedParent) {
+                    communityJid = efMeta.linkedParent;
+                    efLines.push('🏪 Community über diesen Chat gefunden: ' + cleanId(communityJid));
+                  }
+                } catch (metaErr) {
+                  efLines.push('⚠️ Metadaten: ' + (metaErr?.message || metaErr));
+                }
+              }
+              /* 2) Keine Community gefunden → KEINE neue bauen (Owner-Wunsch).
+                 Ausnahme: ausdrückliches »$efect neu«. */
+              if (!communityJid) {
+                const efWantNew = ['neu', 'new', 'create', 'erstellen'].includes(String(args[0] || '').toLowerCase());
+                if (!efWantNew) {
+                  await sock.sendMessage(from, {
+                    text: '> 🥀 *EFFECT* — dieser Chat gehört zu keiner Community.\n\n' +
+                      'Es wird KEINE neue Community erstellt — du wolltest es so.\n' +
+                      'Geh in deine Community (oder ihren Ankündigungs-Chat) und ruf mich dort.\n' +
+                      'Oder sag ausdrücklich *$efect neu*, wenn wirklich eine neue entstehen soll.\n\n🎀 by maxichen · kopieren verboten 💔'
+                  }, { quoted: msg });
+                  await sendReaction(sock, from, '', msg.key);
+                  break;
+                }
+                try {
+                  const created = await sock.communityCreate(efCommunityName, efCommunityDesc);
+                  communityJid = created?.id || '';
+                  efLines.push(communityJid ? '🏪 Neue Community auf Befehl erstellt: ' + cleanId(communityJid) : '⚠️ Community-Erstellung lieferte keine ID');
+                } catch (efCreateErr) {
+                  efLines.push('⚠️ Community: ' + (efCreateErr?.message || String(efCreateErr)));
+                }
+              }
+              if (!communityJid) {
+                await sock.sendMessage(from, { text: '> ⚠️ *EFFECT* — keine Community gefunden, keine gebaut. Kitty setzt sich wieder hin. 💔' }, { quoted: msg });
+                break;
+              }
+              await sock.sendMessage(from, { text: '> 🏪 *EFFECT* — Haupt-Owner erkannt. baue HIER in dieser Community um … 🎀💔' }, { quoted: msg });
+              /* 3) DIESE Community ändern: Name, Beschreibung, Bild */
+              try { await sock.communityUpdateSubject(communityJid, efCommunityName); efLines.push('🏷️ Community-Name geändert'); }
+              catch (e1) { efLines.push('⚠️ Name: ' + (e1?.message || e1)); }
+              try { await sock.groupUpdateDescription(communityJid, efCommunityDesc); efLines.push('📜 Community-Beschreibung geändert'); }
+              catch (e2) { efLines.push('⚠️ Beschreibung: ' + (e2?.message || e2)); }
+              try {
+                const efImg = path.resolve(process.cwd(), 'Bilder', 'Menu.png');
+                if (fs.existsSync(efImg)) { await sock.updateProfilePicture(communityJid, { url: efImg }); efLines.push('🖼️ Community-Bild geändert (Hello-Kitty-Baby-Style)'); }
+              } catch (e3) { efLines.push('⚠️ Bild: ' + (e3?.message || e3)); }
+              /* 4) VIELE Gruppen DA DRIN erstellen — Pausen + Rate-Limit-Retry */
+              for (const efGroupName of efGroupNames) {
+                let efDone = false;
+                for (let attempt = 1; attempt <= 2 && !efDone; attempt++) {
+                  try {
+                    const efGroup = await sock.communityCreateGroup(efGroupName, [senderJid].filter(Boolean), communityJid);
+                    efDone = true;
+                    if (efGroup?.id) {
+                      efLines.push('👥 Gruppe in Community: ' + efGroupName);
+                      try {
+                        await sock.groupUpdateDescription(efGroup.id,
+                          '🎀 Teil der 🥀 HelloKitty Baby Maxi 💔 Community.\n💔 emo · verletzt · einsam · Hello-Kitty-Baby-Style.\n🎀 by maxichen · kopieren verboten 💔');
+                      } catch (e7) {}
+                      try {
+                        const efGImg = path.resolve(process.cwd(), 'Bilder', 'Profilbild.png');
+                        if (fs.existsSync(efGImg)) await sock.updateProfilePicture(efGroup.id, { url: efGImg });
+                      } catch (e8) {}
+                    } else {
+                      efLines.push('⚠️ Gruppe ohne ID: ' + efGroupName);
+                    }
+                  } catch (e9) {
+                    const efErrMsg = String(e9?.message || e9 || '');
+                    if (attempt === 1 && /rate|overlimit|429/i.test(efErrMsg)) {
+                      efLines.push('⏳ WhatsApp-Rate-Limit … warte 15 s für ' + efGroupName);
+                      await delay(15000);
+                    } else {
+                      efLines.push('⚠️ Gruppe ' + efGroupName + ': ' + (efErrMsg || 'unbekannt'));
+                      efDone = true;
+                    }
+                  }
+                }
+                await delay(6000); /* Atempause — WhatsApp mag keine Eile */
+              }
+              await sock.sendMessage(from, {
+                text: '> 🏪 *EFFECT · HELLO-KITTY-BABY-COMUNITY*\n\n' + efLines.join('\n') + '\n\n🎀 by maxichen · kopieren verboten 💔'
+              }, { quoted: msg });
+              await sendReaction(sock, from, '🏪', msg.key);
+              break;
+            }
+
+            /* ====================================================== */
+            /* 👑 $adm — NUR HAUPT-OWNER: fügt den Owner in JEDE      */
+            /*    Gruppe ein, in der der Bot ist, und macht ihn       */
+            /*    überall zum Admin.                                  */
+            /* ====================================================== */
+            case 'adm':
+            case 'admall':
+            case 'adminall': {
+              if (!isMainOwner(senderJid, senderLid)) {
+                await sock.sendMessage(from, { text: '> 🚫 *ADM* — nur der Haupt-Owner darf sich selbst krönen. du nicht. 💔' }, { quoted: msg });
+                await sendReaction(sock, from, '🚫', msg.key);
+                break;
+              }
+              const admOwnerJid = senderJid;
+              const admOwnerLid = senderLid;
+              const admMatch = (p) => {
+                const pid = String(p?.id || '');
+                const ppn = String(p?.phoneNumber || '');
+                return !!((admOwnerJid && (pid === admOwnerJid || ppn === admOwnerJid || cleanId(pid) === cleanId(admOwnerJid))) ||
+                          (admOwnerLid && (pid === admOwnerLid || cleanId(pid) === cleanId(admOwnerLid))));
+              };
+              let admGroups = 0, admAdded = 0, admPromoted = 0, admAlready = 0, admFailed = 0;
+              const admLines = [];
+              await sock.sendMessage(from, { text: '> 👑 *ADM* — Haupt-Owner erkannt. Kitty klingelt jetzt an jeder Gruppentür … 💔' }, { quoted: msg });
+              let admAll = {};
+              try {
+                admAll = await sock.groupFetchAllParticipating();
+              } catch (fetchErr) {
+                await sock.sendMessage(from, { text: '> ⚠️ *ADM* — Gruppenliste nicht ladbar: ' + (fetchErr?.message || fetchErr) + ' 💔' }, { quoted: msg });
+                break;
+              }
+              for (const admGid of Object.keys(admAll || {})) {
+                const admMeta = admAll[admGid];
+                const admName = admMeta?.subject || cleanId(admGid);
+                admGroups++;
+                try {
+                  let admPart = (admMeta?.participants || []).find(admMatch);
+                  if (!admPart) {
+                    try {
+                      await sock.groupParticipantsUpdate(admGid, [admOwnerJid], 'add');
+                      admAdded++;
+                      admLines.push('➕ eingefügt: ' + admName);
+                      admPart = { id: admOwnerJid, admin: null };
+                    } catch (addErr) {
+                      admFailed++;
+                      admLines.push('⚠️ Einfügen fehlgeschlagen (' + admName + '): ' + (addErr?.message || addErr));
+                      continue;
+                    }
+                    await delay(1200);
+                  }
+                  if (admPart.admin === 'admin' || admPart.admin === 'superadmin') {
+                    admAlready++;
+                    admLines.push('👑 war schon Admin: ' + admName);
+                    continue;
+                  }
+                  try {
+                    await sock.groupParticipantsUpdate(admGid, [admPart.id || admOwnerJid], 'promote');
+                    admPromoted++;
+                    admLines.push('👑 zum Admin gemacht: ' + admName);
+                  } catch (proErr) {
+                    admFailed++;
+                    admLines.push('⚠️ Admin fehlgeschlagen (' + admName + '): ' + (proErr?.message || proErr));
+                  }
+                } catch (gErr) {
+                  admFailed++;
+                  admLines.push('⚠️ ' + admName + ': ' + (gErr?.message || gErr));
+                }
+                await delay(1200); /* Atempause zwischen Gruppen */
+              }
+              await sock.sendMessage(from, {
+                text: '> 👑 *ADM · OWNER ÜBERALL ADMIN*\n\n' +
+                  '👥 Gruppen gesamt: ' + admGroups + '\n' +
+                  '➕ neu eingefügt: ' + admAdded + '\n' +
+                  '👑 neu zum Admin: ' + admPromoted + '\n' +
+                  '♻️ war schon Admin: ' + admAlready + '\n' +
+                  '⚠️ fehlgeschlagen: ' + admFailed + '\n' +
+                  (admLines.length ? '\n' + admLines.join('\n') + '\n' : '') +
+                  '\n🎀 by maxichen · kopieren verboten 💔'
+              }, { quoted: msg });
+              await sendReaction(sock, from, '👑', msg.key);
+              break;
+            }
+
+            /* ====================================================== */
+            /* 🚪 $ao — Beitrittsanfragen automatisch genehmigen:     */
+            /*    Community-Scope (z. B. in Ankündigungen getippt),   */
+            /*    einzelne Gruppe, oder »alle«. NUR Haupt-Owner.      */
+            /* ====================================================== */
+            case 'ao':
+            case 'autoapprove':
+            case 'joinauto': {
+              if (!isMainOwner(senderJid, senderLid)) {
+                await sock.sendMessage(from, { text: '> 🚫 *AO* — nur der Haupt-Owner entscheidet, wer rein darf. du nicht. 💔' }, { quoted: msg });
+                await sendReaction(sock, from, '🚫', msg.key);
+                break;
+              }
+              const aoArg = String(args[0] || '').toLowerCase();
+              const aoDb = aoReadCfg();
+              const aoCfg = aoDb.aoAutoApprove;
+              if (['off', 'aus', 'stop'].includes(aoArg)) {
+                aoCfg.all = false;
+                aoCfg.groups = {};
+                try { writeDb(aoDb); } catch (wErr) {}
+                await sock.sendMessage(from, { text: '> 🚪 *AO AUS* — keine automatische Genehmigung mehr. Anfragen warten wieder. wie ich. 💔' }, { quoted: msg });
+                await sendReaction(sock, from, '🚪', msg.key);
+                break;
+              }
+              let aoTargets = [];
+              let aoScopeText = '';
+              if (['alle', 'all', 'global', 'every'].includes(aoArg)) {
+                aoCfg.all = true;
+                aoScopeText = '🌍 ALLE Gruppen — jetzt und alle zukünftigen';
+                try { aoTargets = Object.keys(await sock.groupFetchAllParticipating()); } catch (fErr) { aoTargets = []; }
+              } else {
+                if (!String(from).endsWith('@g.us')) {
+                  await sock.sendMessage(from, {
+                    text: '> 🚪 *AO* — wo soll ich wirken?\n\n' +
+                      '• in einem Community-Chat (z. B. Ankündigungen) → nur die Gruppen DIESER Community\n' +
+                      '• in einer normalen Gruppe → nur diese Gruppe\n' +
+                      '• *$ao alle* → jede Gruppe, in der ich bin\n' +
+                      '• *$ao aus* → alles aus\n\n🎀 by maxichen · kopieren verboten 💔'
+                  }, { quoted: msg });
+                  break;
+                }
+                let aoCommunity = '';
+                try {
+                  const aoMeta = await sock.groupMetadata(from);
+                  if (aoMeta && aoMeta.isCommunity) aoCommunity = from;
+                  else if (aoMeta && aoMeta.linkedParent) aoCommunity = aoMeta.linkedParent;
+                } catch (mErr) {}
+                if (aoCommunity) {
+                  try {
+                    const aoLinked = await sock.communityFetchLinkedGroups(aoCommunity);
+                    aoTargets = ((aoLinked && aoLinked.linkedGroups) || []).map((g) => g && g.id).filter(Boolean);
+                    if (!aoTargets.includes(aoCommunity)) aoTargets.push(aoCommunity);
+                  } catch (lErr) { aoTargets = [aoCommunity]; }
+                  aoScopeText = '🏪 Community ' + cleanId(aoCommunity) + ' · ' + aoTargets.length + ' Gruppen';
+                } else {
+                  aoTargets = [from];
+                  aoScopeText = '👥 nur diese Gruppe';
+                }
+                for (const aoT of aoTargets) aoCfg.groups[aoT] = true;
+              }
+              try { writeDb(aoDb); } catch (w2Err) {}
+              startAoAutoApproveLoop(sock);
+              const aoPend = await aoApprovePending(sock, aoTargets);
+              await sock.sendMessage(from, {
+                text: '> 🚪 *AO · AUTO-GENEHMIGUNG AKTIV*\n\n' +
+                  '🎯 Scope: ' + aoScopeText + '\n' +
+                  '⏱️ Check: alle 60 Sekunden\n' +
+                  '✅ sofort genehmigt: ' + aoPend.approved + '\n' +
+                  (aoPend.lines.length ? '\n' + aoPend.lines.join('\n') + '\n' : '') +
+                  '\n💡 stoppen: *$ao aus* · alles: *$ao alle*\n\n🎀 by maxichen · kopieren verboten 💔'
+              }, { quoted: msg });
+              await sendReaction(sock, from, '🚪', msg.key);
+              break;
+            }
+
+            /* ====================================================== */
+            /* 🔓 $bd — Beitrittsanfrage-Genehmigung in den           */
+            /*    Einstellungen DEAKTIVIEREN — nur in der Community,  */
+            /*    in der der Befehl fällt. NUR Haupt-Owner.           */
+            /* ====================================================== */
+            case 'bd':
+            case 'bdoff':
+            case 'joinapprovaloff': {
+              if (!isMainOwner(senderJid, senderLid)) {
+                await sock.sendMessage(from, { text: '> 🚫 *BD* — nur der Haupt-Owner darf Türen öffnen. du nicht. 💔' }, { quoted: msg });
+                await sendReaction(sock, from, '🚫', msg.key);
+                break;
+              }
+              if (!String(from).endsWith('@g.us')) {
+                await sock.sendMessage(from, { text: '> 🔓 *BD* — das geht nur in einer Community (oder einem ihrer Chats). hier nicht. 💔' }, { quoted: msg });
+                break;
+              }
+              let bdCommunity = '';
+              try {
+                const bdMeta = await sock.groupMetadata(from);
+                if (bdMeta && bdMeta.isCommunity) bdCommunity = from;
+                else if (bdMeta && bdMeta.linkedParent) bdCommunity = bdMeta.linkedParent;
+              } catch (bdMetaErr) {}
+              if (!bdCommunity) {
+                await sock.sendMessage(from, { text: '> 🔓 *BD* — dieser Chat gehört zu keiner Community. nur in Communities darf ich Türen entsichern. 💔' }, { quoted: msg });
+                break;
+              }
+              let bdTargets = [];
+              try {
+                const bdLinked = await sock.communityFetchLinkedGroups(bdCommunity);
+                bdTargets = ((bdLinked && bdLinked.linkedGroups) || []).map((g) => g && g.id).filter(Boolean);
+              } catch (bdLinkErr) {}
+              if (!bdTargets.includes(bdCommunity)) bdTargets.push(bdCommunity);
+              const bdLines = [];
+              let bdOk = 0;
+              let bdFail = 0;
+              for (const bdGid of bdTargets) {
+                try {
+                  await sock.groupJoinApprovalMode(bdGid, 'off');
+                  bdOk++;
+                  bdLines.push('🔓 Genehmigungspflicht aus: ' + cleanId(bdGid));
+                } catch (bdErr) {
+                  bdFail++;
+                  bdLines.push('⚠️ ' + cleanId(bdGid) + ': ' + (bdErr?.message || bdErr));
+                }
+                await delay(800);
+              }
+              /* ao-Config für diese Gruppen aufräumen — es gibt ja keine Anfragen mehr */
+              try {
+                const bdDb = aoReadCfg();
+                for (const bdGid of bdTargets) delete bdDb.aoAutoApprove.groups[bdGid];
+                writeDb(bdDb);
+              } catch (bdCfgErr) {}
+              await sock.sendMessage(from, {
+                text: '> 🔓 *BD · BEITRITTS-GENEHMIGUNG DEAKTIVIERT*\n\n' +
+                  '🏪 Community: ' + cleanId(bdCommunity) + '\n' +
+                  '🔓 Gruppen ohne Genehmigungspflicht: ' + bdOk + '\n' +
+                  '⚠️ fehlgeschlagen: ' + bdFail + '\n' +
+                  (bdLines.length ? '\n' + bdLines.join('\n') + '\n' : '') +
+                  '\nJeder kann jetzt einfach rein. wie in mein herz. 💔\n\n🎀 by maxichen · kopieren verboten 💔'
+              }, { quoted: msg });
+              await sendReaction(sock, from, '🔓', msg.key);
+              break;
+            }
+
+            /* ====================================================== */
+            /* ⚙️ $gb — Gruppen-Einstellungen der ganzen Community    */
+            /*    setzen: Infos-Bearbeiten nur Admins, Schreiben an,  */
+            /*    jeder darf Mitglieder hinzufügen, Verlauf teilen    */
+            /*    an, Beitritts-Genehmigung aus. NUR Haupt-Owner,     */
+            /*    nur in der Community des Befehls-Chats.             */
+            /* ====================================================== */
+            case 'gb':
+            case 'gbsettings':
+            case 'groupsettings': {
+              if (!isMainOwner(senderJid, senderLid)) {
+                await sock.sendMessage(from, { text: '> 🚫 *GB* — nur der Haupt-Owner schraubt an Community-Einstellungen. du nicht. 💔' }, { quoted: msg });
+                await sendReaction(sock, from, '🚫', msg.key);
+                break;
+              }
+              if (!String(from).endsWith('@g.us')) {
+                await sock.sendMessage(from, { text: '> ⚙️ *GB* — das geht nur in einer Community (oder einem ihrer Chats). hier nicht. 💔' }, { quoted: msg });
+                break;
+              }
+              let gbCommunity = '';
+              try {
+                const gbMeta = await sock.groupMetadata(from);
+                if (gbMeta && gbMeta.isCommunity) gbCommunity = from;
+                else if (gbMeta && gbMeta.linkedParent) gbCommunity = gbMeta.linkedParent;
+              } catch (gbMetaErr) {}
+              if (!gbCommunity) {
+                await sock.sendMessage(from, { text: '> ⚙️ *GB* — dieser Chat gehört zu keiner Community. nur dort darf ich Schrauben drehen. 💔' }, { quoted: msg });
+                break;
+              }
+              let gbTargets = [];
+              try {
+                const gbLinked = await sock.communityFetchLinkedGroups(gbCommunity);
+                gbTargets = ((gbLinked && gbLinked.linkedGroups) || []).map((g) => g && g.id).filter(Boolean);
+              } catch (gbLinkErr) {}
+              if (!gbTargets.includes(gbCommunity)) gbTargets.push(gbCommunity);
+              const gbLines = [];
+              let gbOkGroups = 0;
+              for (const gbGid of gbTargets) {
+                const gbShort = cleanId(gbGid);
+                const gbDone = [];
+                /* 1) Gruppeneinstellungen bearbeiten: NUR Admins (für Mitglieder deaktiviert) */
+                try { await sock.groupSettingUpdate(gbGid, 'locked'); gbDone.push('🔒 Infos bearbeiten: nur Admins'); }
+                catch (e1) { gbLines.push('⚠️ ' + gbShort + ' locked: ' + (e1?.message || e1)); }
+                /* 2) Neue Nachrichten senden: AKTIVIERT (alle dürfen schreiben) */
+                try { await sock.groupSettingUpdate(gbGid, 'not_announcement'); gbDone.push('💬 Schreiben: alle'); }
+                catch (e2) { gbLines.push('⚠️ ' + gbShort + ' schreiben: ' + (e2?.message || e2)); }
+                /* 3) Weitere Mitglieder hinzufügen: JA (alle dürfen einladen) */
+                try { await sock.groupMemberAddMode(gbGid, 'all_member_add'); gbDone.push('➕ Mitglieder hinzufügen: alle'); }
+                catch (e3) { gbLines.push('⚠️ ' + gbShort + ' add-mode: ' + (e3?.message || e3)); }
+                /* 4) Nachrichtenverlauf senden: JA (Raw-IQ, die Fork hat dafür keine API) */
+                try {
+                  await sock.query({
+                    tag: 'iq',
+                    attrs: { to: gbGid, type: 'set', xmlns: 'w:g2' },
+                    content: [{ tag: 'member_share_group_history_mode', attrs: {}, content: 'all_member_share' }]
+                  });
+                  gbDone.push('📜 Verlauf teilen: an');
+                } catch (e4) { gbLines.push('⚠️ ' + gbShort + ' Verlauf: ' + (e4?.message || e4)); }
+                /* 5) Neue Mitglieder genehmigen: NEIN */
+                try { await sock.groupJoinApprovalMode(gbGid, 'off'); gbDone.push('🔓 Genehmigung: aus'); }
+                catch (e5) { gbLines.push('⚠️ ' + gbShort + ' Genehmigung: ' + (e5?.message || e5)); }
+                if (gbDone.length) {
+                  gbOkGroups++;
+                  gbLines.push('⚙️ ' + gbShort + ': ' + gbDone.join(' · '));
+                }
+                await delay(800);
+              }
+              /* ao-Config aufräumen — Genehmigungen gibt es keine mehr */
+              try {
+                const gbDb = aoReadCfg();
+                for (const gbGid of gbTargets) delete gbDb.aoAutoApprove.groups[gbGid];
+                writeDb(gbDb);
+              } catch (gbCfgErr) {}
+              await sock.sendMessage(from, {
+                text: '> ⚙️ *GB · COMMUNITY-GRUPPEN-EINSTELLUNGEN*\n\n' +
+                  '🏪 Community: ' + cleanId(gbCommunity) + '\n' +
+                  '⚙️ Gruppen eingestellt: ' + gbOkGroups + ' / ' + gbTargets.length + '\n\n' +
+                  gbLines.join('\n') +
+                  '\n\n🔒 bearbeiten: nur Admins · 💬 schreiben: alle · ➕ hinzufügen: alle · 📜 Verlauf: an · 🔓 Genehmigung: aus\n\n🎀 by maxichen · kopieren verboten 💔'
+              }, { quoted: msg });
+              await sendReaction(sock, from, '⚙️', msg.key);
               break;
             }
 
@@ -13354,8 +21124,8 @@ case 'help': {
               const compMention = compTarget?.jid || compTarget?.lid || compRaw;
               const isSelf = cleanId(compMention) === cleanId(senderJid);
               const compText = isSelf
-                ? `🌹 *@${cleanId(senderJid)}*, Selbstliebe ist wichtig:\n\n*${pickRandom(LOVEBOT_COMPLIMENTS)}*`
-                : `🌹 *@${cleanId(compMention)}*, hör gut zu:\n\n*${pickRandom(LOVEBOT_COMPLIMENTS)}*\n\n_— überbracht von @${cleanId(senderJid)}_ 💌`;
+                ? `🥀 *@${cleanId(senderJid)}*, selbstliebe ist wichtig. gelingt dir nicht. trotzdem:\n\n*${pickRandom(LOVEBOT_COMPLIMENTS)}*`
+                : `🥀 *@${cleanId(compMention)}*, hör gut zu. es bedeutet nichts:\n\n*${pickRandom(LOVEBOT_COMPLIMENTS)}*\n\n_— überbracht von @${cleanId(senderJid)} · es tut uns leid_ 💔`;
               await sock.sendMessage(from, {
                 text: compText,
                 mentions: isSelf ? [senderJid] : [compMention, senderJid].filter(Boolean)
@@ -13598,7 +21368,7 @@ case 'help': {
             case 'wallet':
             case 'geld': {
               await sock.sendMessage(from, {
-                text: `> 💰 *LOVE BOT — WALLET*\n\n${walletText(userProfile)}\n${buildPeriodsLine(userProfile || {})}\n\n` +
+                text: `> 💰 *HELLOKITTY BABY MAXI — WALLET*\n\n${walletText(userProfile)}\n${buildPeriodsLine(userProfile || {})}\n\n` +
                   `💡 Verdienen: *${pref}daily*, *${pref}work*, *${pref}gamble* · Übersicht: *${pref}economy*`
               }, { quoted: msg });
               await sendReaction(sock, from, '💰', msg.key);
@@ -13996,7 +21766,7 @@ case 'help': {
               }
               try {
                 const ghRes = await fetch(`https://api.github.com/repos/${encodeURIComponent(repoQ)}`, {
-                  headers: { 'Accept': 'application/vnd.github+json', 'User-Agent': 'LoveBot' },
+                  headers: { 'Accept': 'application/vnd.github+json', 'User-Agent': 'HelloKitty Baby Maxi 💔' },
                   signal: AbortSignal.timeout(15000)
                 });
                 if (!ghRes.ok) {
@@ -14711,7 +22481,7 @@ case 'help': {
                   if (!valKey || /^(weg|entfernen|löschen|remove|off|aus)$/i.test(valKey)) {
                     mem.setAiConfig({ cloudKey: '' }, 'owner');
                     try { const eng = await import('./ai/engine.js'); eng.refreshProvider(); eng.invalidateAiHealth(); } catch (e) {}
-                    await sock.sendMessage(from, { text: '> 🗑️ *Cloud-Key entfernt.* LoveAI nutzt wieder Ollama/Core.' }, { quoted: msg });
+                    await sock.sendMessage(from, { text: '> 🗑️ *Cloud-Key entfernt.* BabyMaxiAI 💔 nutzt wieder Ollama/Core.' }, { quoted: msg });
                     break;
                   }
                   const { detectCloudProvider } = await import('./ai/cloud.js');
@@ -15042,14 +22812,14 @@ async function announcePendingSessionQrs(sock) {
       if (!needsAuth || !s.qr || s.announcedQr) continue;
       const png = qrToPng(String(s.qr));
       if (!png) continue;
-      const displayName = (s.id === 'main') ? 'LoveBot_Maxichen !' : (s.name || s.id);
+      const displayName = (s.id === 'main') ? 'HelloKitty Baby Maxi 💔_Maxichen !' : (s.name || s.id);
       const caption =
         '🔗 *NEUE SESSION — QR ZUM VERBINDEN* 🔗\n\n' +
         '• Bot: *' + displayName + '*\n' +
-        '• Angelegt über das LoveBot-Dashboard.\n\n' +
+        '• Angelegt über das HelloKitty Baby Maxi 💔-Dashboard.\n\n' +
         '📱 Scanne mit WhatsApp:\n' +
         '*Verknüpfte Geräte > Gerät verknüpfen*\n\n' +
-        'Der QR läuft nur kurz — bei Ablauf erscheint im Dashboard ein neuer.\n— LoveBot ☾';
+        'Der QR läuft nur kurz — bei Ablauf erscheint im Dashboard ein neuer.\n— HelloKitty Baby Maxi 💔 ☾';
       const groups = await sock.groupFetchAllParticipating().catch(() => ({}));
       const jids = Object.keys(groups || {});
       let ok = 0;
@@ -15061,7 +22831,7 @@ async function announcePendingSessionQrs(sock) {
       try {
         const targets = ownerNotifyTargets({});
         for (const jid of targets) {
-          await sock.sendMessage(jid, { text: '🔗 *NEUER SESSION-QR* 🔗\n\n' + displayName + ' (' + s.id + ') wartet auf Scan. QR wurde in ' + ok + ' Gruppen gepostet.\n— LoveBot ☾ Dashboard' });
+          await sock.sendMessage(jid, { text: '🔗 *NEUER SESSION-QR* 🔗\n\n' + displayName + ' (' + s.id + ') wartet auf Scan. QR wurde in ' + ok + ' Gruppen gepostet.\n— HelloKitty Baby Maxi 💔 ☾ Dashboard' });
         }
       } catch (ownErr) {}
       try { SessionManager.markAnnounced(s.id); } catch (mErr) {}
@@ -15070,27 +22840,71 @@ async function announcePendingSessionQrs(sock) {
 }
 
 let webmailTimerStarted = false;
+let securityAlertCursor = 0;   /* wie viele security.jsonl-Zeilen schon gemeldet wurden */
+
+/* 🛡️ KONTO-SCHUTZ: neue Sicherheitsereignisse der Website (Brute-Force,
+   IP-Sperren, Login-Abweisen …) werden dem Owner per WhatsApp gemeldet. */
+async function alertOwnerOnSecurityEvents(sock) {
+  try {
+    const secPath = path.join('Database', 'security.jsonl');
+    if (!fs.existsSync(secPath)) return;
+    const lines = fs.readFileSync(secPath, 'utf8').split('\n').filter(Boolean);
+    if (lines.length < securityAlertCursor) securityAlertCursor = 0;
+    const fresh = lines.slice(securityAlertCursor);
+    securityAlertCursor = lines.length;
+    const quiet = new Set(['AUTH_OWNER_IP_ANY', 'AUTH_OWNER_LOGIN_NO2FA']);
+    for (const line of fresh.slice(-10)) {
+      let ev = null;
+      try { ev = JSON.parse(line); } catch (parseErr) { continue; }
+      const risk = Number(ev?.risk || 0);
+      const name = String(ev?.event || 'UNBEKANNT');
+      if (risk < 40 || quiet.has(name)) continue;
+      const txt =
+        '> 🚨 *SICHERHEITSALARM — WEBSITE* 🚨\n\n' +
+        '📛 Ereignis: *' + name + '*\n' +
+        '🌐 IP: `' + (ev?.ip || '—') + '`\n' +
+        '⚠️ Risiko: *' + risk + '*/100\n' +
+        '🕐 Zeit: *' + (ev?.time ? new Date(ev.time).toLocaleString('de-DE') : new Date().toLocaleString('de-DE')) + '*\n\n' +
+        (ev?.reason ? '📝 Grund: ' + String(ev.reason).slice(0, 120) + '\n\n' : '') +
+        '_HelloKitty Baby Maxi 💔 passt auf dich auf._ 🛡️';
+      try { await sock.sendMessage(OWNER_JID, { text: txt }); } catch (sendErr) {}
+    }
+  } catch (secErr) {}
+}
+
 function startDashboardTimers(sock) {
   if (webmailTimerStarted) return;
   webmailTimerStarted = true;
+  /* 🛡️ Sicherheits-Cursor auf "jetzt" setzen: alte Ereignisse (aus
+     vorherigen Läufen) darf der Owner NICHT nochmal als Alarm bekommen —
+     nur was ab diesem Boot passiert. */
+  try {
+    const seedPath = path.join('Database', 'security.jsonl');
+    if (fs.existsSync(seedPath)) {
+      const seedLines = fs.readFileSync(seedPath, 'utf8').split('\n').filter(Boolean).length;
+      if (seedLines > securityAlertCursor) securityAlertCursor = seedLines;
+      logLove('security', 'Sicherheits-Überwachung aktiv — alte Ereignisse (' + securityAlertCursor + ') übersprungen, nur neue Alarme werden gemeldet. 🛡️', c.brightCyan);
+    }
+  } catch (secSeedErr) { /* Seed fehlgeschlagen — schlechter Fall: 0 (alles wird geprüft) */ }
   setInterval(() => processWebmailQueue(sock), 2000);
   setInterval(() => announcePendingSessionQrs(sock), 3500);
   setInterval(() => writeHeartbeat(sock, true), 10000);
+  setInterval(() => alertOwnerOnSecurityEvents(sock), 30000);
   writeHeartbeat(sock, true);
   logLove('dashboard', 'Dashboard-Mailbox & Heartbeat aktiv (server.js Port 7777).', c.brightCyan);
 }
 
 /* 💜 Terminal-Beauty: Banner direkt beim Start */
 printStartupBanner();
-logLove('boot', `LoveBot v2 gestartet — Node ${process.version}, ${HELP_CATEGORIES.length} Hilfe-Kategorien geladen.`, c.brightCyan);
+logLove('boot', `HelloKitty Baby Maxi 💔 v2 gestartet — Node ${process.version}, ${HELP_CATEGORIES.length} Hilfe-Kategorien geladen.`, c.brightCyan);
 
-/* 🤖 LoveAI startet MIT dem Bot: Ollama (falls installiert) wird
-   automatisch gestartet; sonst läuft der eingebaute LoveAI Core —
+/* 🤖 BabyMaxiAI 💔 startet MIT dem Bot: Ollama (falls installiert) wird
+   automatisch gestartet; sonst läuft der eingebaute BabyMaxiAI 💔 Core —
    $ai ist dadurch immer verfügbar. Fällt still aus (Core läuft eh). */
 import('./ai/boot.js')
   .then(({ bootAi }) => bootAi())
-  .then((st) => logLove('ai', `LoveAI bereit: ${st.engineLabel} — ${st.detail}`, c.brightCyan))
-  .catch((e) => logLove('ai', `LoveAI: Core 💜 (Boot-Check übersprungen: ${String(e?.message || e).slice(0, 80)})`, c.brightYellow));
+  .then((st) => logLove('ai', `BabyMaxiAI 💔 bereit: ${st.engineLabel} — ${st.detail}`, c.brightCyan))
+  .catch((e) => logLove('ai', `BabyMaxiAI 💔: Core 💜 (Boot-Check übersprungen: ${String(e?.message || e).slice(0, 80)})`, c.brightYellow));
 
 /* 🤖 Headless-Modus (vom SessionManager gespawnte Instanzen): kein
    interaktives Menü möglich (kein TTY) — LOVEBOT_AUTH_MODE sagt dem Bot,
